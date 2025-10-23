@@ -1,0 +1,39 @@
+# Development Dockerfile
+FROM python:3.11-slim
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Install system dependencies for development
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install uv for fast package management
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements first for better caching
+COPY pyproject.toml requirements.txt ./
+
+# Install Python dependencies including dev dependencies
+RUN uv pip install --system --no-cache -e ".[dev]"
+
+# Create non-root user
+RUN useradd --create-home --shell /bin/bash app \
+    && chown -R app:app /app
+USER app
+
+# Expose port for MCP server and debugpy
+EXPOSE 8000 5678
+
+# Default command for development
+CMD ["uv", "run", "python", "-m", "tailscalemcp"]

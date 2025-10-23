@@ -1,0 +1,455 @@
+"""
+Tailscale Monitoring and Metrics Module
+
+Provides comprehensive monitoring capabilities including Prometheus metrics,
+Grafana dashboard integration, and network visualization tools.
+"""
+
+import time
+from typing import Any
+
+import structlog
+from prometheus_client import Counter, Gauge, Histogram, Info, generate_latest
+from pydantic import BaseModel, Field
+
+from .exceptions import TailscaleMCPError
+
+logger = structlog.get_logger(__name__)
+
+# Prometheus Metrics
+DEVICE_COUNT = Gauge("tailscale_devices_total", "Total number of devices", ["status"])
+DEVICE_ONLINE = Gauge("tailscale_devices_online", "Number of online devices")
+NETWORK_LATENCY = Histogram(
+    "tailscale_network_latency_seconds",
+    "Network latency between devices",
+    ["from_device", "to_device"],
+)
+BYTES_SENT = Counter("tailscale_bytes_sent_total", "Total bytes sent", ["device_id"])
+BYTES_RECEIVED = Counter(
+    "tailscale_bytes_received_total", "Total bytes received", ["device_id"]
+)
+API_REQUESTS = Counter(
+    "tailscale_api_requests_total", "Total API requests", ["endpoint", "status"]
+)
+ACL_RULES = Gauge("tailscale_acl_rules_total", "Total number of ACL rules")
+EXIT_NODES = Gauge("tailscale_exit_nodes_total", "Number of exit nodes")
+SUBNET_ROUTES = Gauge("tailscale_subnet_routes_total", "Number of subnet routes")
+TAILNET_INFO = Info("tailnet_info", "Tailnet information")
+
+
+class NetworkMetrics(BaseModel):
+    """Network metrics data model."""
+
+    timestamp: float = Field(..., description="Timestamp of the metrics")
+    devices_total: int = Field(..., description="Total number of devices")
+    devices_online: int = Field(..., description="Number of online devices")
+    devices_offline: int = Field(..., description="Number of offline devices")
+    exit_nodes: int = Field(..., description="Number of exit nodes")
+    subnet_routes: int = Field(..., description="Number of subnet routes")
+    acl_rules: int = Field(..., description="Number of ACL rules")
+    network_health_score: float = Field(..., description="Network health score (0-100)")
+
+
+class DeviceMetrics(BaseModel):
+    """Device-specific metrics data model."""
+
+    device_id: str = Field(..., description="Device identifier")
+    name: str = Field(..., description="Device name")
+    status: str = Field(..., description="Device status")
+    last_seen: float = Field(..., description="Last seen timestamp")
+    bytes_sent: int = Field(..., description="Bytes sent")
+    bytes_received: int = Field(..., description="Bytes received")
+    latency_ms: float = Field(..., description="Average latency in milliseconds")
+    is_exit_node: bool = Field(..., description="Is exit node")
+    advertised_routes: list[str] = Field(
+        default_factory=list, description="Advertised routes"
+    )
+
+
+class TailscaleMonitor:
+    """Comprehensive Tailscale network monitoring and metrics collection."""
+
+    def __init__(self, api_key: str | None = None, tailnet: str | None = None):
+        """Initialize the monitoring system.
+
+        Args:
+            api_key: Tailscale API key
+            tailnet: Tailnet name
+        """
+        self.api_key = api_key
+        self.tailnet = tailnet
+        self.metrics_history: list[NetworkMetrics] = []
+        self.device_metrics: dict[str, DeviceMetrics] = {}
+        self.last_update = 0.0
+        self.update_interval = 30.0  # Update every 30 seconds
+
+        logger.info("Tailscale monitoring system initialized")
+
+    async def collect_metrics(self) -> NetworkMetrics:
+        """Collect comprehensive network metrics."""
+        try:
+            current_time = time.time()
+
+            # Collect device data (this would be replaced with actual API calls)
+            devices = await self._get_devices_data()
+            online_devices = [d for d in devices if d.get("status") == "online"]
+            offline_devices = [d for d in devices if d.get("status") == "offline"]
+
+            # Collect network statistics
+            exit_nodes = len([d for d in devices if d.get("is_exit_node", False)])
+            subnet_routes = len([d for d in devices if d.get("advertised_routes", [])])
+            acl_rules = await self._get_acl_rules_count()
+
+            # Calculate network health score
+            health_score = self._calculate_health_score(devices, online_devices)
+
+            metrics = NetworkMetrics(
+                timestamp=current_time,
+                devices_total=len(devices),
+                devices_online=len(online_devices),
+                devices_offline=len(offline_devices),
+                exit_nodes=exit_nodes,
+                subnet_routes=subnet_routes,
+                acl_rules=acl_rules,
+                network_health_score=health_score,
+            )
+
+            # Update Prometheus metrics
+            await self._update_prometheus_metrics(metrics, devices)
+
+            # Store metrics history
+            self.metrics_history.append(metrics)
+            if len(self.metrics_history) > 1000:  # Keep last 1000 entries
+                self.metrics_history = self.metrics_history[-1000:]
+
+            self.last_update = current_time
+            logger.info(
+                "Metrics collected successfully",
+                devices_total=metrics.devices_total,
+                devices_online=metrics.devices_online,
+                health_score=metrics.network_health_score,
+            )
+
+            return metrics
+
+        except Exception as e:
+            logger.error("Error collecting metrics", error=str(e))
+            raise TailscaleMCPError(f"Failed to collect metrics: {e}") from e
+
+    async def get_prometheus_metrics(self) -> str:
+        """Get Prometheus-formatted metrics."""
+        try:
+            # Update metrics if needed
+            if time.time() - self.last_update > self.update_interval:
+                await self.collect_metrics()
+
+            return generate_latest().decode("utf-8")
+        except Exception as e:
+            logger.error("Error generating Prometheus metrics", error=str(e))
+            raise TailscaleMCPError(f"Failed to generate metrics: {e}") from e
+
+    async def create_grafana_dashboard(
+        self, grafana_url: str, api_key: str
+    ) -> dict[str, Any]:
+        """Create a Grafana dashboard for Tailscale monitoring."""
+        try:
+            dashboard_config = {
+                "dashboard": {
+                    "id": None,
+                    "title": f"Tailscale Network - {self.tailnet}",
+                    "tags": ["tailscale", "networking", "monitoring"],
+                    "timezone": "browser",
+                    "panels": await self._create_dashboard_panels(),
+                    "time": {"from": "now-1h", "to": "now"},
+                    "refresh": "30s",
+                    "schemaVersion": 30,
+                    "version": 1,
+                }
+            }
+
+            logger.info(
+                "Grafana dashboard created",
+                dashboard_title=dashboard_config["dashboard"]["title"],
+            )
+            return dashboard_config
+
+        except Exception as e:
+            logger.error("Error creating Grafana dashboard", error=str(e))
+            raise TailscaleMCPError(f"Failed to create Grafana dashboard: {e}") from e
+
+    async def generate_network_topology(self) -> dict[str, Any]:
+        """Generate network topology visualization data."""
+        try:
+            devices = await self._get_devices_data()
+            connections = await self._get_device_connections()
+
+            topology = {
+                "nodes": [
+                    {
+                        "id": device["id"],
+                        "label": device["name"],
+                        "status": device["status"],
+                        "type": "exit_node" if device.get("is_exit_node") else "device",
+                        "x": hash(device["id"]) % 1000,  # Simple positioning
+                        "y": hash(device["name"]) % 1000,
+                    }
+                    for device in devices
+                ],
+                "edges": [
+                    {
+                        "from": conn["from"],
+                        "to": conn["to"],
+                        "label": f"{conn['latency']}ms",
+                        "width": conn["bandwidth"] / 1000000,  # Normalize bandwidth
+                    }
+                    for conn in connections
+                ],
+                "metadata": {
+                    "total_devices": len(devices),
+                    "total_connections": len(connections),
+                    "last_updated": time.time(),
+                },
+            }
+
+            logger.info(
+                "Network topology generated",
+                nodes=len(topology["nodes"]),
+                edges=len(topology["edges"]),
+            )
+
+            return topology
+
+        except Exception as e:
+            logger.error("Error generating network topology", error=str(e))
+            raise TailscaleMCPError(f"Failed to generate network topology: {e}") from e
+
+    async def get_network_health_report(self) -> dict[str, Any]:
+        """Generate comprehensive network health report."""
+        try:
+            metrics = await self.collect_metrics()
+
+            # Analyze trends
+            recent_metrics = [
+                m for m in self.metrics_history if time.time() - m.timestamp < 3600
+            ]  # Last hour
+
+            health_report = {
+                "current_status": {
+                    "overall_health": metrics.network_health_score,
+                    "devices_online": metrics.devices_online,
+                    "devices_total": metrics.devices_total,
+                    "uptime_percentage": (
+                        metrics.devices_online / metrics.devices_total * 100
+                    )
+                    if metrics.devices_total > 0
+                    else 0,
+                },
+                "trends": {
+                    "health_trend": self._calculate_trend(
+                        [m.network_health_score for m in recent_metrics]
+                    ),
+                    "device_trend": self._calculate_trend(
+                        [m.devices_online for m in recent_metrics]
+                    ),
+                },
+                "alerts": await self._generate_alerts(metrics),
+                "recommendations": await self._generate_recommendations(metrics),
+                "timestamp": time.time(),
+            }
+
+            logger.info(
+                "Network health report generated",
+                health_score=health_report["current_status"]["overall_health"],
+            )
+
+            return health_report
+
+        except Exception as e:
+            logger.error("Error generating health report", error=str(e))
+            raise TailscaleMCPError(f"Failed to generate health report: {e}") from e
+
+    async def _get_devices_data(self) -> list[dict[str, Any]]:
+        """Get devices data (placeholder for actual API implementation)."""
+        # This would be replaced with actual Tailscale API calls
+        return [
+            {
+                "id": "device1",
+                "name": "my-laptop",
+                "status": "online",
+                "is_exit_node": False,
+                "advertised_routes": [],
+            },
+            {
+                "id": "device2",
+                "name": "my-server",
+                "status": "online",
+                "is_exit_node": True,
+                "advertised_routes": ["0.0.0.0/0", "::/0"],
+            },
+            {
+                "id": "device3",
+                "name": "my-phone",
+                "status": "offline",
+                "is_exit_node": False,
+                "advertised_routes": [],
+            },
+        ]
+
+    async def _get_acl_rules_count(self) -> int:
+        """Get ACL rules count."""
+        # Placeholder for actual API call
+        return 5
+
+    async def _get_device_connections(self) -> list[dict[str, Any]]:
+        """Get device connection data."""
+        # Placeholder for geographic/network distance calculation
+        return [
+            {
+                "from": "device1",
+                "to": "device2",
+                "latency": 15.2,
+                "bandwidth": 100000000,
+            },
+            {
+                "from": "device1",
+                "to": "device3",
+                "latency": 25.8,
+                "bandwidth": 50000000,
+            },
+        ]
+
+    async def _update_prometheus_metrics(
+        self, metrics: NetworkMetrics, devices: list[dict[str, Any]]
+    ) -> None:
+        """Update Prometheus metrics."""
+        DEVICE_COUNT.labels(status="online").set(metrics.devices_online)
+        DEVICE_COUNT.labels(status="offline").set(metrics.devices_offline)
+        DEVICE_ONLINE.set(metrics.devices_online)
+        EXIT_NODES.set(metrics.exit_nodes)
+        SUBNET_ROUTES.set(metrics.subnet_routes)
+        ACL_RULES.set(metrics.acl_rules)
+
+        # Update device-specific metrics
+        for device in devices:
+            BYTES_SENT.labels(device_id=device["id"]).inc(1000000)  # Simulated data
+            BYTES_RECEIVED.labels(device_id=device["id"]).inc(800000)  # Simulated data
+
+    async def _create_dashboard_panels(self) -> list[dict[str, Any]]:
+        """Create Grafana dashboard panels."""
+        return [
+            {
+                "id": 1,
+                "title": "Device Status",
+                "type": "stat",
+                "targets": [
+                    {
+                        "expr": "tailscale_devices_online",
+                        "legendFormat": "Online Devices",
+                    }
+                ],
+                "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+            },
+            {
+                "id": 2,
+                "title": "Network Health Score",
+                "type": "gauge",
+                "targets": [
+                    {
+                        "expr": "tailscale_network_health_score",
+                        "legendFormat": "Health Score",
+                    }
+                ],
+                "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+            },
+            {
+                "id": 3,
+                "title": "Bandwidth Usage",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "rate(tailscale_bytes_sent_total[5m])",
+                        "legendFormat": "Bytes Sent/sec",
+                    }
+                ],
+                "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8},
+            },
+        ]
+
+    def _calculate_health_score(
+        self, devices: list[dict[str, Any]], online_devices: list[dict[str, Any]]
+    ) -> float:
+        """Calculate network health score."""
+        if not devices:
+            return 0.0
+
+        online_ratio = len(online_devices) / len(devices)
+        base_score = online_ratio * 100
+
+        # Adjust based on other factors
+        exit_nodes = len([d for d in devices if d.get("is_exit_node", False)])
+        if exit_nodes > 0:
+            base_score += 5  # Bonus for having exit nodes
+
+        return min(100.0, base_score)
+
+    def _calculate_trend(self, values: list[float]) -> str:
+        """Calculate trend direction."""
+        if len(values) < 2:
+            return "stable"
+
+        recent_avg = sum(values[-3:]) / len(values[-3:])
+        older_avg = (
+            sum(values[:3]) / len(values[:3]) if len(values) >= 6 else recent_avg
+        )
+
+        if recent_avg > older_avg * 1.05:
+            return "increasing"
+        elif recent_avg < older_avg * 0.95:
+            return "decreasing"
+        else:
+            return "stable"
+
+    async def _generate_alerts(self, metrics: NetworkMetrics) -> list[dict[str, Any]]:
+        """Generate network alerts."""
+        alerts = []
+
+        if metrics.network_health_score < 80:
+            alerts.append(
+                {
+                    "level": "warning",
+                    "message": f"Network health score is low: {metrics.network_health_score}%",
+                    "timestamp": time.time(),
+                }
+            )
+
+        if metrics.devices_online / metrics.devices_total < 0.8:
+            alerts.append(
+                {
+                    "level": "critical",
+                    "message": f"Low device uptime: {metrics.devices_online}/{metrics.devices_total} devices online",
+                    "timestamp": time.time(),
+                }
+            )
+
+        return alerts
+
+    async def _generate_recommendations(self, metrics: NetworkMetrics) -> list[str]:
+        """Generate network recommendations."""
+        recommendations = []
+
+        if metrics.exit_nodes == 0:
+            recommendations.append(
+                "Consider adding an exit node for better connectivity"
+            )
+
+        if metrics.subnet_routes == 0:
+            recommendations.append(
+                "Consider configuring subnet routes for local network access"
+            )
+
+        if metrics.network_health_score < 90:
+            recommendations.append(
+                "Review device connectivity and network configuration"
+            )
+
+        return recommendations

@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  tailscalemcp:
+    build: .
+    container_name: tailscalemcp
+    environment:
+      - TAILSCALE_API_KEY=${TAILSCALE_API_KEY}
+      - TAILSCALE_TAILNET=${TAILSCALE_TAILNET}
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./src:/app/src
+      - ./logs:/app/logs
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  dev:
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: tailscalemcp-dev
+    environment:
+      - TAILSCALE_API_KEY=${TAILSCALE_API_KEY}
+      - TAILSCALE_TAILNET=${TAILSCALE_TAILNET}
+      - LOG_LEVEL=DEBUG
+    volumes:
+      - .:/app
+      - /app/.venv
+    ports:
+      - "8000:8000"
+      - "5678:5678"  # debugpy port
+    command: ["uv", "run", "python", "-m", "tailscalemcp"]
+    profiles:
+      - dev
+
+networks:
+  default:
+    name: tailscalemcp-network

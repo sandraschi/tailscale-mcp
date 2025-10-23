@@ -1,0 +1,81 @@
+{
+  "name": "tailscale-mcp",
+  "version": "1.0.0",
+  "description": "FastMCP 2.10 compliant Tailscale network controller",
+  "author": "Your Name <your.email@example.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/tailscalemcp"
+  },
+  "keywords": ["tailscale", "mcp", "network", "vpn", "management"],
+  "prompts": [
+    {
+      "name": "list_devices_prompt",
+      "description": "List all devices in the Tailscale network with optional filtering",
+      "template": "List all {online_only?online :''}devices{filter_tags? with tags {filter_tags|join:', '} :''}"
+    },
+    {
+      "name": "get_device_prompt",
+      "description": "Get detailed information about a specific device",
+      "template": "Show me details for device {device_id}"
+    },
+    {
+      "name": "authorize_device_prompt",
+      "description": "Authorize a device to join the Tailscale network",
+      "template": "Authorize device {device_id}"
+    }
+  ],
+  "tools": [
+    {
+      "name": "list_devices",
+      "description": "List all devices in the Tailscale network",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "online_only": {
+            "type": "boolean",
+            "description": "Only return online devices",
+            "default": false
+          },
+          "filter_tags": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Filter devices by tags"
+          }
+        }
+      },
+      "prompt": "list_devices_prompt"
+    },
+    {
+      "name": "get_device",
+      "description": "Get details for a specific device",
+      "parameters": {
+        "type": "object",
+        "required": ["device_id"],
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "description": "The ID of the device to retrieve"
+          }
+        }
+      },
+      "prompt": "get_device_prompt"
+    },
+    {
+      "name": "authorize_device",
+      "description": "Authorize a device to join the Tailscale network",
+      "parameters": {
+        "type": "object",
+        "required": ["device_id"],
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "description": "The ID of the device to authorize"
+          }
+        }
+      },
+      "prompt": "authorize_device_prompt"
+    }
+  ]
+}
