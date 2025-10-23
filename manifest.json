@@ -2,8 +2,8 @@
   "manifest_version": "0.2",
   "name": "tailscale-mcp",
   "version": "2.0.0",
-  "description": "Comprehensive Tailscale MCP server with 10 portmanteau tools and 74 operations",
-  "long_description": "Professional Tailscale MCP server providing comprehensive network management, monitoring, and automation capabilities. Features 10 portmanteau tools covering device management, network operations, monitoring, file sharing, security, automation, backup, performance, reporting, and integrations.",
+  "description": "Comprehensive Tailscale MCP server with 12 portmanteau tools and 91+ operations",
+  "long_description": "Professional Tailscale MCP server providing comprehensive network management, monitoring, and automation capabilities. Features 12 portmanteau tools covering device management, network operations, monitoring, file sharing, security, automation, backup, performance, reporting, integrations, help system, and status monitoring.",
   "author": {
     "name": "Sandra Schi",
     "email": "sandra@sandraschi.dev",
@@ -102,26 +102,136 @@
     {
       "name": "tailscale_integration",
       "description": "Third-party integrations (6 operations): webhooks, Slack, Discord, PagerDuty, Datadog"
+    },
+    {
+      "name": "tailscale_help",
+      "description": "Comprehensive multilevel help system (4 topics): overview, examples, best_practices, troubleshooting with basic/intermediate/advanced/expert levels"
+    },
+    {
+      "name": "tailscale_status",
+      "description": "System status and health monitoring (7 components): overview, devices, network, services, metrics, alerts, health with basic/intermediate/advanced/diagnostic levels"
     }
   ],
   "prompts": [
     {
-      "name": "device_management",
-      "description": "Manage Tailscale devices and users",
-      "arguments": ["operation", "device_id", "name", "tags"],
-      "text": "Perform ${arguments.operation} on Tailscale device ${arguments.device_id} with name '${arguments.name}' and tags ${arguments.tags}. Provide comprehensive device management capabilities."
+      "name": "device_list_online",
+      "description": "List all online Tailscale devices with filtering options",
+      "arguments": ["filter_tags", "search_query"],
+      "text": "List all online Tailscale devices${arguments.filter_tags ? ' filtered by tags: ' + arguments.filter_tags : ''}${arguments.search_query ? ' matching search: ' + arguments.search_query : ''}. Provide detailed device information including status, IP addresses, last seen, and any relevant metadata."
     },
     {
-      "name": "network_management",
-      "description": "Configure Tailscale network and DNS settings",
+      "name": "device_authorize",
+      "description": "Authorize or revoke device access with reason",
+      "arguments": ["device_id", "authorize", "reason"],
+      "text": "${arguments.authorize ? 'Authorize' : 'Revoke'} access for Tailscale device ${arguments.device_id}${arguments.reason ? ' with reason: ' + arguments.reason : ''}. Provide confirmation and updated device status."
+    },
+    {
+      "name": "device_rename_tag",
+      "description": "Rename device and manage tags",
+      "arguments": ["device_id", "new_name", "tags"],
+      "text": "Rename Tailscale device ${arguments.device_id} to '${arguments.new_name}'${arguments.tags ? ' and update tags to: ' + arguments.tags : ''}. Provide confirmation and updated device information."
+    },
+    {
+      "name": "network_dns_configure",
+      "description": "Configure MagicDNS and DNS records",
       "arguments": ["operation", "domain", "records"],
-      "text": "Configure Tailscale network with ${arguments.operation} for domain ${arguments.domain} and DNS records ${arguments.records}. Manage MagicDNS and network policies."
+      "text": "Configure Tailscale MagicDNS with ${arguments.operation} for domain ${arguments.domain}${arguments.records ? ' and DNS records: ' + arguments.records : ''}. Provide configuration status and DNS resolution details."
     },
     {
-      "name": "monitoring_analysis",
-      "description": "Analyze Tailscale network health and performance",
-      "arguments": ["timeframe", "metrics", "alerts"],
-      "text": "Analyze Tailscale network health for ${arguments.timeframe} with focus on ${arguments.metrics} and alert on ${arguments.alerts}. Provide comprehensive monitoring insights."
+      "name": "monitoring_dashboard",
+      "description": "Create Grafana monitoring dashboard",
+      "arguments": ["dashboard_type", "timeframe", "metrics"],
+      "text": "Create Grafana dashboard of type '${arguments.dashboard_type}' for ${arguments.timeframe} monitoring with focus on ${arguments.metrics}. Provide dashboard configuration and monitoring insights."
+    },
+    {
+      "name": "monitoring_health_check",
+      "description": "Perform comprehensive network health check",
+      "arguments": ["timeframe", "include_devices", "include_network"],
+      "text": "Perform comprehensive Tailscale network health check for ${arguments.timeframe}${arguments.include_devices ? ' including device status' : ''}${arguments.include_network ? ' and network connectivity' : ''}. Provide health score, issues found, and recommendations."
+    },
+    {
+      "name": "file_transfer_send",
+      "description": "Send file via Taildrop to specific device",
+      "arguments": ["file_path", "recipient_device", "expire_hours"],
+      "text": "Send file '${arguments.file_path}' to Tailscale device ${arguments.recipient_device} via Taildrop with ${arguments.expire_hours} hour expiry. Provide transfer status and confirmation details."
+    },
+    {
+      "name": "security_scan_comprehensive",
+      "description": "Run comprehensive security scan",
+      "arguments": ["scan_type", "compliance_standard", "device_filter"],
+      "text": "Run ${arguments.scan_type} security scan with ${arguments.compliance_standard} compliance${arguments.device_filter ? ' filtered to: ' + arguments.device_filter : ''}. Provide security assessment, vulnerabilities found, and remediation recommendations."
+    },
+    {
+      "name": "automation_workflow_create",
+      "description": "Create automation workflow",
+      "arguments": ["workflow_name", "trigger", "actions"],
+      "text": "Create automation workflow '${arguments.workflow_name}' with trigger '${arguments.trigger}' and actions: ${arguments.actions}. Provide workflow configuration and execution plan."
+    },
+    {
+      "name": "backup_create_schedule",
+      "description": "Create and schedule configuration backup",
+      "arguments": ["backup_name", "schedule", "retention"],
+      "text": "Create configuration backup '${arguments.backup_name}' with schedule '${arguments.schedule}' and retention '${arguments.retention}'. Provide backup details and schedule confirmation."
+    },
+    {
+      "name": "performance_optimization",
+      "description": "Analyze and optimize network performance",
+      "arguments": ["analysis_type", "timeframe", "optimization_target"],
+      "text": "Perform ${arguments.analysis_type} performance analysis for ${arguments.timeframe} with optimization target '${arguments.optimization_target}'. Provide performance metrics, bottlenecks identified, and optimization recommendations."
+    },
+    {
+      "name": "reporting_generate_custom",
+      "description": "Generate custom report with specific metrics",
+      "arguments": ["report_type", "timeframe", "metrics", "format"],
+      "text": "Generate ${arguments.report_type} report for ${arguments.timeframe} with metrics: ${arguments.metrics} in ${arguments.format} format. Provide report summary and key findings."
+    },
+    {
+      "name": "integration_webhook_setup",
+      "description": "Set up webhook integration",
+      "arguments": ["webhook_url", "events", "secret"],
+      "text": "Set up webhook integration with URL '${arguments.webhook_url}' for events: ${arguments.events}${arguments.secret ? ' with secret authentication' : ''}. Provide integration status and test results."
+    },
+    {
+      "name": "help_system_overview",
+      "description": "Get comprehensive help system overview",
+      "arguments": ["level", "category"],
+      "text": "Provide ${arguments.level} level help overview${arguments.category ? ' for category: ' + arguments.category : ''}. Include available tools, operations, usage examples, and best practices."
+    },
+    {
+      "name": "status_system_health",
+      "description": "Check comprehensive system status and health",
+      "arguments": ["component", "detail_level", "include_metrics"],
+      "text": "Check ${arguments.component} system status with ${arguments.detail_level} detail level${arguments.include_metrics ? ' including performance metrics' : ''}. Provide health assessment, issues found, and system recommendations."
+    },
+    {
+      "name": "troubleshooting_connection_issues",
+      "description": "Troubleshoot Tailscale connection problems",
+      "arguments": ["device_id", "issue_type", "timeframe"],
+      "text": "Troubleshoot ${arguments.issue_type} connection issues for device ${arguments.device_id} over ${arguments.timeframe}. Provide diagnostic steps, root cause analysis, and resolution recommendations."
+    },
+    {
+      "name": "bulk_device_operations",
+      "description": "Perform bulk operations on multiple devices",
+      "arguments": ["operation", "device_filter", "batch_size"],
+      "text": "Perform ${arguments.operation} on devices matching filter '${arguments.device_filter}' in batches of ${arguments.batch_size}. Provide progress updates and operation results."
+    },
+    {
+      "name": "network_policy_management",
+      "description": "Create and manage network access policies",
+      "arguments": ["policy_name", "rules", "priority"],
+      "text": "Create network policy '${arguments.policy_name}' with rules: ${arguments.arguments.rules} and priority ${arguments.priority}. Provide policy configuration and access control details."
+    },
+    {
+      "name": "alerting_setup_monitoring",
+      "description": "Set up monitoring alerts and notifications",
+      "arguments": ["alert_type", "thresholds", "notification_channels"],
+      "text": "Set up ${arguments.alert_type} monitoring alerts with thresholds: ${arguments.thresholds} and notification channels: ${arguments.notification_channels}. Provide alert configuration and test results."
+    },
+    {
+      "name": "capacity_planning_analysis",
+      "description": "Analyze network capacity and scaling requirements",
+      "arguments": ["timeframe", "growth_rate", "scaling_factor"],
+      "text": "Perform capacity planning analysis for ${arguments.timeframe} with growth rate ${arguments.growth_rate} and scaling factor ${arguments.scaling_factor}. Provide capacity projections and scaling recommendations."
     }
   ],
   "tools_generated": true,
