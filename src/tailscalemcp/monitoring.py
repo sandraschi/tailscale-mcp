@@ -16,25 +16,41 @@ from .exceptions import TailscaleMCPError
 
 logger = structlog.get_logger(__name__)
 
-# Prometheus Metrics
-DEVICE_COUNT = Gauge("tailscale_devices_total", "Total number of devices", ["status"])
-DEVICE_ONLINE = Gauge("tailscale_devices_online", "Number of online devices")
-NETWORK_LATENCY = Histogram(
-    "tailscale_network_latency_seconds",
-    "Network latency between devices",
-    ["from_device", "to_device"],
-)
-BYTES_SENT = Counter("tailscale_bytes_sent_total", "Total bytes sent", ["device_id"])
-BYTES_RECEIVED = Counter(
-    "tailscale_bytes_received_total", "Total bytes received", ["device_id"]
-)
-API_REQUESTS = Counter(
-    "tailscale_api_requests_total", "Total API requests", ["endpoint", "status"]
-)
-ACL_RULES = Gauge("tailscale_acl_rules_total", "Total number of ACL rules")
-EXIT_NODES = Gauge("tailscale_exit_nodes_total", "Number of exit nodes")
-SUBNET_ROUTES = Gauge("tailscale_subnet_routes_total", "Number of subnet routes")
-TAILNET_INFO = Info("tailnet_info", "Tailnet information")
+# Prometheus Metrics - Prevent duplicate registration
+try:
+    DEVICE_COUNT = Gauge("tailscale_devices_total", "Total number of devices", ["status"])
+    DEVICE_ONLINE = Gauge("tailscale_devices_online", "Number of online devices")
+    NETWORK_LATENCY = Histogram(
+        "tailscale_network_latency_seconds",
+        "Network latency between devices",
+        ["from_device", "to_device"],
+    )
+    BYTES_SENT = Counter("tailscale_bytes_sent_total", "Total bytes sent", ["device_id"])
+    BYTES_RECEIVED = Counter(
+        "tailscale_bytes_received_total", "Total bytes received", ["device_id"]
+    )
+    API_REQUESTS = Counter(
+        "tailscale_api_requests_total", "Total API requests", ["endpoint", "status"]
+    )
+except ValueError:
+    # Metrics already registered, skip creation
+    DEVICE_COUNT = None
+    DEVICE_ONLINE = None
+    NETWORK_LATENCY = None
+    BYTES_SENT = None
+    BYTES_RECEIVED = None
+    API_REQUESTS = None
+try:
+    ACL_RULES = Gauge("tailscale_acl_rules_total", "Total number of ACL rules")
+    EXIT_NODES = Gauge("tailscale_exit_nodes_total", "Number of exit nodes")
+    SUBNET_ROUTES = Gauge("tailscale_subnet_routes_total", "Number of subnet routes")
+    TAILNET_INFO = Info("tailnet_info", "Tailnet information")
+except ValueError:
+    # Metrics already registered, skip creation
+    ACL_RULES = None
+    EXIT_NODES = None
+    SUBNET_ROUTES = None
+    TAILNET_INFO = None
 
 
 class NetworkMetrics(BaseModel):
@@ -322,17 +338,24 @@ class TailscaleMonitor:
         self, metrics: NetworkMetrics, devices: list[dict[str, Any]]
     ) -> None:
         """Update Prometheus metrics."""
-        DEVICE_COUNT.labels(status="online").set(metrics.devices_online)
-        DEVICE_COUNT.labels(status="offline").set(metrics.devices_offline)
-        DEVICE_ONLINE.set(metrics.devices_online)
-        EXIT_NODES.set(metrics.exit_nodes)
-        SUBNET_ROUTES.set(metrics.subnet_routes)
-        ACL_RULES.set(metrics.acl_rules)
+        if DEVICE_COUNT is not None:
+            DEVICE_COUNT.labels(status="online").set(metrics.devices_online)
+            DEVICE_COUNT.labels(status="offline").set(metrics.devices_offline)
+        if DEVICE_ONLINE is not None:
+            DEVICE_ONLINE.set(metrics.devices_online)
+        if EXIT_NODES is not None:
+            EXIT_NODES.set(metrics.exit_nodes)
+        if SUBNET_ROUTES is not None:
+            SUBNET_ROUTES.set(metrics.subnet_routes)
+        if ACL_RULES is not None:
+            ACL_RULES.set(metrics.acl_rules)
 
         # Update device-specific metrics
         for device in devices:
-            BYTES_SENT.labels(device_id=device["id"]).inc(1000000)  # Simulated data
-            BYTES_RECEIVED.labels(device_id=device["id"]).inc(800000)  # Simulated data
+            if BYTES_SENT is not None:
+                BYTES_SENT.labels(device_id=device["id"]).inc(1000000)  # Simulated data
+            if BYTES_RECEIVED is not None:
+                BYTES_RECEIVED.labels(device_id=device["id"]).inc(800000)  # Simulated data
 
     async def _create_dashboard_panels(self) -> list[dict[str, Any]]:
         """Create Grafana dashboard panels."""

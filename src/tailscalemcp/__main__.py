@@ -6,6 +6,7 @@ This module provides the command-line interface for the Tailscale MCP server.
 
 import argparse
 import asyncio
+import logging
 import os
 import signal
 import sys
@@ -94,10 +95,9 @@ async def run_server() -> None:
     args = parse_args()
 
     # Set log level
+    log_level = getattr(logging, args.log_level.upper())
     structlog.configure(
-        wrapper_class=structlog.make_filtering_bound_logger(
-            getattr(structlog.stdlib, args.log_level.upper())
-        )
+        wrapper_class=structlog.make_filtering_bound_logger(log_level)
     )
 
     # Validate configuration
