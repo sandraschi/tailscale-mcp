@@ -118,10 +118,14 @@ async def run_server() -> None:
         logger.info("Shutdown signal received, stopping server...")
         shutdown_event.set()
 
-    # Register signal handlers
+    # Register signal handlers (Unix only)
     loop = asyncio.get_running_loop()
-    for sig in (signal.SIGINT, signal.SIGTERM):
-        loop.add_signal_handler(sig, signal_handler)
+    if sys.platform != "win32":
+        for sig in (signal.SIGINT, signal.SIGTERM):
+            loop.add_signal_handler(sig, signal_handler)
+    else:
+        # On Windows, we'll handle KeyboardInterrupt in the main() function
+        pass
 
     # Start the server
     try:
