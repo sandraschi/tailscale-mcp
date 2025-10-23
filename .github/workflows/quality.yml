@@ -25,7 +25,7 @@ jobs:
           version: "latest"
 
       - name: Install dependencies
-        run: uv pip install -e ".[dev]"
+        run: uv pip install --system -e ".[dev]"
 
       - name: Run Ruff linter
         run: uv run ruff check .
@@ -63,7 +63,7 @@ jobs:
           version: "latest"
 
       - name: Install dependencies
-        run: uv pip install -e ".[dev]"
+        run: uv pip install --system -e ".[dev]"
 
       - name: Check documentation
         run: |
@@ -99,7 +99,7 @@ jobs:
           version: "latest"
 
       - name: Install dependencies
-        run: uv pip install -e ".[dev]"
+        run: uv pip install --system -e ".[dev]"
 
       - name: Run performance tests
         run: |

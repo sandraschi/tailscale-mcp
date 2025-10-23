@@ -26,7 +26,7 @@ jobs:
 
       - name: Update dependencies
         run: |
-          uv pip install -e ".[dev]"
+          uv pip install --system -e ".[dev]"
           uv pip list --outdated
 
       - name: Check for security vulnerabilities

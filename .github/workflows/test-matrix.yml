@@ -49,12 +49,12 @@ jobs:
       - name: Install dependencies with specific FastMCP version
         if: matrix.fastmcp-version
         run: |
-          uv pip install -e ".[dev]"
-          uv pip install "fastmcp==${{ matrix.fastmcp-version }}"
+          uv pip install --system -e ".[dev]"
+          uv pip install --system "fastmcp==${{ matrix.fastmcp-version }}"
 
       - name: Install dependencies
         if: ${{ !matrix.fastmcp-version }}
-        run: uv pip install -e ".[dev]"
+        run: uv pip install --system -e ".[dev]"
 
       - name: Run tests
         run: uv run pytest --cov=tailscalemcp --cov-report=xml --cov-report=html
@@ -90,7 +90,7 @@ jobs:
           version: "latest"
 
       - name: Install dependencies
-        run: uv pip install -e ".[dev]"
+        run: uv pip install --system -e ".[dev]"
 
       - name: Run integration tests
         env:
@@ -117,7 +117,7 @@ jobs:
           version: "latest"
 
       - name: Install dependencies
-        run: uv pip install -e ".[dev]"
+        run: uv pip install --system -e ".[dev]"
 
       - name: Run load tests
         run: uv run pytest tests/load/ -v
@@ -144,8 +144,8 @@ jobs:
 
       - name: Install dependencies with specific MCP version
         run: |
-          uv pip install -e ".[dev]"
-          uv pip install "fastmcp==${{ matrix.mcp-version }}"
+          uv pip install --system -e ".[dev]"
+          uv pip install --system "fastmcp==${{ matrix.mcp-version }}"
 
       - name: Run compatibility tests
         run: uv run pytest tests/compatibility/ -v
