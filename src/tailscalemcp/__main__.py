@@ -133,11 +133,8 @@ async def run_server() -> None:
         logger.info(f"Listening on {args.host}:{args.port}")
         logger.info(f"Connected to Tailnet: {args.tailnet}")
 
-        # Start the server
-        await server.start()
-
-        # Keep the server running until shutdown is requested
-        await shutdown_event.wait()
+        # Start the server directly with FastMCP
+        await server.mcp.run()
 
     except Exception as e:
         logger.exception(f"Error running server: {e}")
