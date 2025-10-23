@@ -46,7 +46,10 @@ jobs:
           version: "latest"
 
       - name: Install dependencies
-        run: uv pip install -e ".[dev]"
+        run: uv pip install -e .
+
+      - name: Install dev dependencies
+        run: uv pip install pytest pytest-asyncio pytest-cov pytest-mock ruff mypy pre-commit types-requests
 
       - name: Run Ruff linter
         run: uv run ruff check .
@@ -89,7 +92,10 @@ jobs:
           version: "latest"
 
       - name: Install dependencies
-        run: uv pip install -e ".[dev]"
+        run: uv pip install -e .
+
+      - name: Install dev dependencies
+        run: uv pip install pytest pytest-asyncio pytest-cov pytest-mock ruff mypy pre-commit types-requests
 
       - name: Run tests with pytest
         run: uv run pytest --cov=tailscalemcp --cov-report=xml --cov-report=html --cov-report=term-missing
@@ -132,7 +138,10 @@ jobs:
           version: "latest"
 
       - name: Install dependencies
-        run: uv pip install -e ".[dev]"
+        run: uv pip install -e .
+
+      - name: Install dev dependencies
+        run: uv pip install pytest pytest-asyncio pytest-cov pytest-mock ruff mypy pre-commit types-requests bandit safety
 
       - name: Run Bandit security linter
         run: uv run bandit -r src/ -f json -o bandit-report.json || true
@@ -228,7 +237,7 @@ jobs:
           version: "latest"
 
       - name: Install dependencies
-        run: uv pip install -e ".[dev]"
+        run: uv pip install -e .
 
       - name: Install MCPB CLI
         run: npm install -g @anthropic-ai/mcpb
