@@ -106,9 +106,9 @@ class TaildropManager:
                 )
 
             # Generate transfer ID
-            transfer_id = hashlib.md5(
-                f"{file_path}_{recipient_device}_{time.time()}".encode()
-            ).hexdigest()
+        transfer_id = hashlib.sha256(
+            f"{file_path}_{recipient_device}_{time.time()}".encode()
+        ).hexdigest()
 
             # Calculate file checksum
             checksum = await self._calculate_checksum(file_path)
@@ -469,11 +469,11 @@ class TaildropManager:
 
     async def _calculate_checksum(self, file_path: Path) -> str:
         """Calculate file checksum."""
-        hash_md5 = hashlib.md5()
+        hash_sha256 = hashlib.sha256()
         with open(file_path, "rb") as f:
             for chunk in iter(lambda: f.read(4096), b""):
-                hash_md5.update(chunk)
-        return hash_md5.hexdigest()
+                hash_sha256.update(chunk)
+        return hash_sha256.hexdigest()
 
     async def _process_transfer(self, transfer_id: str) -> None:
         """Process a file transfer (simulated)."""
