@@ -1,0 +1,151 @@
+name: Test Matrix
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  test-matrix:
+    name: Test Matrix
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.10", "3.11", "3.12"]
+        include:
+          # Test with different dependency versions
+          - os: ubuntu-latest
+            python-version: "3.11"
+            fastmcp-version: "2.12.0"
+          - os: ubuntu-latest
+            python-version: "3.11"
+            fastmcp-version: "2.12.1"
+          - os: ubuntu-latest
+            python-version: "3.11"
+            fastmcp-version: "latest"
+        exclude:
+          # Exclude older Python versions on some OS
+          - os: windows-latest
+            python-version: "3.10"
+          - os: macos-latest
+            python-version: "3.10"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Install dependencies with specific FastMCP version
+        if: matrix.fastmcp-version
+        run: |
+          uv pip install -e ".[dev]"
+          uv pip install "fastmcp==${{ matrix.fastmcp-version }}"
+
+      - name: Install dependencies
+        if: ${{ !matrix.fastmcp-version }}
+        run: uv pip install -e ".[dev]"
+
+      - name: Run tests
+        run: uv run pytest --cov=tailscalemcp --cov-report=xml --cov-report=html
+
+      - name: Upload coverage
+        if: matrix.python-version == '3.11' && matrix.os == 'ubuntu-latest'
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    services:
+      tailscale-mock:
+        image: nginx:alpine
+        ports:
+          - 8080:80
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv pip install -e ".[dev]"
+
+      - name: Run integration tests
+        env:
+          TAILSCALE_API_URL: http://localhost:8080
+          TAILSCALE_API_KEY: test-key
+          TAILSCALE_TAILNET: test-tailnet
+        run: uv run pytest tests/integration/ -v
+
+  load-tests:
+    name: Load Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv pip install -e ".[dev]"
+
+      - name: Run load tests
+        run: uv run pytest tests/load/ -v
+
+  compatibility-tests:
+    name: Compatibility Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        mcp-version: ["2.12.0", "2.12.1", "latest"]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Install dependencies with specific MCP version
+        run: |
+          uv pip install -e ".[dev]"
+          uv pip install "fastmcp==${{ matrix.mcp-version }}"
+
+      - name: Run compatibility tests
+        run: uv run pytest tests/compatibility/ -v
