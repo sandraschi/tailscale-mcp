@@ -90,7 +90,7 @@ def validate_config(args: argparse.Namespace) -> None:
         )
 
 
-async def run_server() -> None:
+def run_server() -> None:
     """Run the Tailscale MCP server."""
     args = parse_args()
 
@@ -110,46 +110,24 @@ async def run_server() -> None:
     # Create server instance
     server = TailscaleMCPServer(api_key=args.api_key, tailnet=args.tailnet)
 
-    # Handle graceful shutdown
-    shutdown_event = asyncio.Event()
-
-    def signal_handler() -> None:
-        """Handle shutdown signals."""
-        logger.info("Shutdown signal received, stopping server...")
-        shutdown_event.set()
-
-    # Register signal handlers (Unix only)
-    loop = asyncio.get_running_loop()
-    if sys.platform != "win32":
-        for sig in (signal.SIGINT, signal.SIGTERM):
-            loop.add_signal_handler(sig, signal_handler)
-    else:
-        # On Windows, we'll handle KeyboardInterrupt in the main() function
-        pass
-
-    # Start the server
+    # Start the server directly with FastMCP
     try:
         logger.info(f"Starting Tailscale MCP Server v{__version__}")
         logger.info(f"Listening on {args.host}:{args.port}")
         logger.info(f"Connected to Tailnet: {args.tailnet}")
 
-        # Start the server directly with FastMCP
-        await server.mcp.run()
+        # Run the FastMCP server directly (it handles its own event loop)
+        server.mcp.run()
 
     except Exception as e:
         logger.exception(f"Error running server: {e}")
         sys.exit(1)
-    finally:
-        # Clean up
-        logger.info("Stopping server...")
-        await server.stop()
-        logger.info("Server stopped")
 
 
 def main() -> None:
     """Main entry point."""
     try:
-        asyncio.run(run_server())
+        run_server()
     except KeyboardInterrupt:
         logger.info("Shutdown requested by user")
     except Exception as e:
