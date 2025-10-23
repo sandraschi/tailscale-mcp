@@ -1,0 +1,133 @@
+{
+  "manifest_version": "0.2",
+  "name": "tailscale-mcp",
+  "version": "2.0.0",
+  "description": "Comprehensive Tailscale MCP server with 10 portmanteau tools and 74 operations",
+  "long_description": "Professional Tailscale MCP server providing comprehensive network management, monitoring, and automation capabilities. Features 10 portmanteau tools covering device management, network operations, monitoring, file sharing, security, automation, backup, performance, reporting, and integrations.",
+  "author": {
+    "name": "Sandra Schi",
+    "email": "sandra@sandraschi.dev",
+    "url": "https://github.com/sandraschi"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sandraschi/tailscale-mcp"
+  },
+  "homepage": "https://github.com/sandraschi/tailscale-mcp",
+  "documentation": "https://github.com/sandraschi/tailscale-mcp/blob/main/README.md",
+  "support": "https://github.com/sandraschi/tailscale-mcp/issues",
+  "license": "MIT",
+  "keywords": ["tailscale", "mcp", "network", "vpn", "management", "monitoring", "grafana", "automation", "portmanteau"],
+  "icon": "assets/icon.png",
+  "screenshots": [
+    "assets/screenshots/portmanteau-tools.png",
+    "assets/screenshots/grafana-dashboard.png",
+    "assets/screenshots/monitoring-overview.png"
+  ],
+  "server": {
+    "type": "python",
+    "entry_point": "src/tailscalemcp/__main__.py",
+    "mcp_config": {
+      "command": "python",
+      "args": ["-m", "tailscalemcp"],
+      "env": {
+        "PYTHONPATH": "src",
+        "TAILSCALE_API_KEY": "${user_config.api_key}",
+        "TAILSCALE_TAILNET": "${user_config.tailnet}",
+        "DEBUG_MODE": "${user_config.debug_mode}",
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  },
+  "user_config": {
+    "api_key": {
+      "type": "string",
+      "title": "Tailscale API Key",
+      "description": "Your Tailscale API key for authentication (stored securely)",
+      "sensitive": true,
+      "required": true
+    },
+    "tailnet": {
+      "type": "string",
+      "title": "Tailnet Name",
+      "description": "Your Tailscale tailnet name (e.g., 'your-company.com')",
+      "required": true,
+      "default": "example.com"
+    },
+    "debug_mode": {
+      "type": "boolean",
+      "title": "Debug Mode",
+      "description": "Enable detailed logging for troubleshooting",
+      "required": false,
+      "default": false
+    }
+  },
+  "tools": [
+    {
+      "name": "tailscale_device",
+      "description": "Comprehensive device management (15 operations): list, get, authorize, rename, tag, SSH, search, stats, exit nodes, subnet routing, user management, auth keys"
+    },
+    {
+      "name": "tailscale_network",
+      "description": "DNS and network management (9 operations): MagicDNS, DNS records, resolution, policies, statistics"
+    },
+    {
+      "name": "tailscale_monitor",
+      "description": "Monitoring and metrics (6 operations): status, Prometheus metrics, topology, health reports, Grafana dashboards"
+    },
+    {
+      "name": "tailscale_file",
+      "description": "File sharing via Taildrop (6 operations): send, receive, transfer management, statistics"
+    },
+    {
+      "name": "tailscale_security",
+      "description": "Security and compliance (8 operations): scanning, auditing, threat detection, policy management, alerting"
+    },
+    {
+      "name": "tailscale_automation",
+      "description": "Workflow automation (6 operations): workflows, scripts, batch operations, scheduling"
+    },
+    {
+      "name": "tailscale_backup",
+      "description": "Backup and disaster recovery (6 operations): backup creation, restoration, scheduling, testing"
+    },
+    {
+      "name": "tailscale_performance",
+      "description": "Performance monitoring (6 operations): latency, bandwidth, optimization, capacity planning"
+    },
+    {
+      "name": "tailscale_reporting",
+      "description": "Advanced reporting (6 operations): custom reports, analytics, scheduling, export"
+    },
+    {
+      "name": "tailscale_integration",
+      "description": "Third-party integrations (6 operations): webhooks, Slack, Discord, PagerDuty, Datadog"
+    }
+  ],
+  "prompts": [
+    {
+      "name": "device_management",
+      "description": "Manage Tailscale devices and users",
+      "arguments": ["operation", "device_id", "name", "tags"],
+      "text": "Perform ${arguments.operation} on Tailscale device ${arguments.device_id} with name '${arguments.name}' and tags ${arguments.tags}. Provide comprehensive device management capabilities."
+    },
+    {
+      "name": "network_management",
+      "description": "Configure Tailscale network and DNS settings",
+      "arguments": ["operation", "domain", "records"],
+      "text": "Configure Tailscale network with ${arguments.operation} for domain ${arguments.domain} and DNS records ${arguments.records}. Manage MagicDNS and network policies."
+    },
+    {
+      "name": "monitoring_analysis",
+      "description": "Analyze Tailscale network health and performance",
+      "arguments": ["timeframe", "metrics", "alerts"],
+      "text": "Analyze Tailscale network health for ${arguments.timeframe} with focus on ${arguments.metrics} and alert on ${arguments.alerts}. Provide comprehensive monitoring insights."
+    }
+  ],
+  "tools_generated": true,
+  "prompts_generated": false,
+  "compatibility": {
+    "platforms": ["win32", "darwin", "linux"],
+    "python_version": ">=3.10"
+  }
+}
