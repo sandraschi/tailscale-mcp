@@ -1,0 +1,137 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Tailscale MCP Server Overview",
+    "tags": ["tailscale", "mcp", "monitoring"],
+    "style": "dark",
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Device Status Overview",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "tailscale_devices_total",
+            "legendFormat": "Total Devices"
+          },
+          {
+            "expr": "tailscale_devices_online_total",
+            "legendFormat": "Online Devices"
+          },
+          {
+            "expr": "tailscale_devices_offline_total",
+            "legendFormat": "Offline Devices"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "short"
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "Network Traffic",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(tailscale_network_bytes_sent_total[5m])",
+            "legendFormat": "Bytes Sent/sec"
+          },
+          {
+            "expr": "rate(tailscale_network_bytes_received_total[5m])",
+            "legendFormat": "Bytes Received/sec"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+        "yAxes": [
+          {
+            "label": "Bytes/sec",
+            "unit": "bytes"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "API Response Times",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(tailscale_api_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "50th percentile"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(tailscale_api_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "95th percentile"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(tailscale_api_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "99th percentile"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8},
+        "yAxes": [
+          {
+            "label": "Response Time",
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Error Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(tailscale_api_requests_total{status=~\"5..\"}[5m])",
+            "legendFormat": "5xx Errors/sec"
+          },
+          {
+            "expr": "rate(tailscale_api_requests_total{status=~\"4..\"}[5m])",
+            "legendFormat": "4xx Errors/sec"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+        "yAxes": [
+          {
+            "label": "Errors/sec",
+            "unit": "short"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Log Stream",
+        "type": "logs",
+        "targets": [
+          {
+            "expr": "{job=\"tailscale-mcp\"}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+        "options": {
+          "showTime": true,
+          "showLabels": true,
+          "showCommonLabels": false,
+          "wrapLogMessage": true,
+          "prettifyLogMessage": false,
+          "enableLogDetails": true,
+          "dedupStrategy": "none",
+          "sortOrder": "Descending"
+        }
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "5s",
+    "schemaVersion": 27,
+    "version": 1,
+    "links": []
+  }
+}

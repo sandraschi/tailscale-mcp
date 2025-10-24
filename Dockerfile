@@ -1,45 +1,39 @@
-# Use Python 3.11 slim image
 FROM python:3.11-slim
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PYTHONPATH=/app \
-    PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+# Set working directory
+WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install uv for fast package management
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
-
-# Set working directory
-WORKDIR /app
-
 # Copy requirements first for better caching
-COPY pyproject.toml requirements.txt ./
+COPY requirements.txt .
+COPY pyproject.toml .
 
 # Install Python dependencies
-RUN uv pip install --system --no-cache -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir prometheus-client structlog
 
-# Copy source code
+# Copy application code
 COPY src/ ./src/
-COPY README.md ./
+COPY manifest.json .
 
-# Create non-root user
-RUN useradd --create-home --shell /bin/bash app \
-    && chown -R app:app /app
-USER app
+# Create logs directory
+RUN mkdir -p /app/logs
+
+# Expose ports
+EXPOSE 8080 9091
+
+# Set environment variables
+ENV PYTHONPATH=/app/src
+ENV LOG_LEVEL=INFO
+ENV PROMETHEUS_PORT=9091
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import sys; sys.exit(0)"
+    CMD curl -f http://localhost:9091/metrics || exit 1
 
-# Expose port (if needed for MCP server)
-EXPOSE 8000
-
-# Default command
+# Run the application
 CMD ["python", "-m", "tailscalemcp"]

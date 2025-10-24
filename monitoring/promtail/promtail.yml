@@ -1,0 +1,91 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  # Tailscale MCP Server logs
+  - job_name: tailscale-mcp-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: tailscale-mcp
+          __path__: /var/log/tailscale-mcp/*.log
+    
+    pipeline_stages:
+      - match:
+          selector: '{job="tailscale-mcp"}'
+          stages:
+            - regex:
+                expression: '(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) \[(?P<level>\w+)\] (?P<message>.*)'
+            - timestamp:
+                source: timestamp
+                format: '2006-01-02 15:04:05'
+            - labels:
+                level:
+                message:
+            - output:
+                source: message
+
+  # Docker container logs
+  - job_name: docker-logs
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+    
+    relabel_configs:
+      - source_labels: ['__meta_docker_container_name']
+        regex: 'tailscale.*'
+        target_label: job
+        replacement: 'tailscale-mcp'
+      - source_labels: ['__meta_docker_container_log_stream']
+        target_label: logstream
+      - source_labels: ['__meta_docker_container_label_logging']
+        target_label: __tmp_logging
+        regex: 'true'
+    
+    pipeline_stages:
+      - json:
+          expressions:
+            output: log
+            stream: stream
+            attrs: attrs
+      - timestamp:
+          source: attrs.time
+          format: RFC3339Nano
+      - labels:
+          stream:
+          container_name:
+      - output:
+          source: output
+
+  # System logs
+  - job_name: system-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: system
+          __path__: /var/log/syslog
+    
+    pipeline_stages:
+      - match:
+          selector: '{job="system"}'
+          stages:
+            - regex:
+                expression: '(?P<timestamp>\w{3} \d{2} \d{2}:\d{2}:\d{2}) (?P<hostname>\S+) (?P<service>\S+): (?P<message>.*)'
+            - timestamp:
+                source: timestamp
+                format: 'Jan 02 15:04:05'
+            - labels:
+                hostname:
+                service:
+                message:
+            - output:
+                source: message

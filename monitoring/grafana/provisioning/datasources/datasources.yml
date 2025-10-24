@@ -1,0 +1,37 @@
+apiVersion: 1
+
+datasources:
+  # Prometheus datasource
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true
+    jsonData:
+      timeInterval: "5s"
+      queryTimeout: "60s"
+      httpMethod: "POST"
+
+  # Loki datasource for logs
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    editable: true
+    jsonData:
+      maxLines: 1000
+      derivedFields:
+        - datasourceUid: prometheus
+          matcherRegex: "trace_id=(\\w+)"
+          name: TraceID
+          url: "$${__value.raw}"
+
+  # Grafana datasource (for internal metrics)
+  - name: Grafana
+    type: prometheus
+    access: proxy
+    url: http://grafana:3000/metrics
+    editable: true
+    jsonData:
+      timeInterval: "10s"

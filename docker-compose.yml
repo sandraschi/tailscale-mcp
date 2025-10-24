@@ -1,45 +1,106 @@
 version: '3.8'
 
 services:
-  tailscalemcp:
-    build: .
-    container_name: tailscalemcp
+  # Prometheus - Metrics collection and storage
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: tailscale-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus/rules:/etc/prometheus/rules
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  # Loki - Log aggregation
+  loki:
+    image: grafana/loki:latest
+    container_name: tailscale-loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./monitoring/loki/loki.yml:/etc/loki/local-config.yaml
+      - loki_data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  # Promtail - Log shipping to Loki
+  promtail:
+    image: grafana/promtail:latest
+    container_name: tailscale-promtail
+    volumes:
+      - ./monitoring/promtail/promtail.yml:/etc/promtail/config.yml
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - monitoring
+    restart: unless-stopped
+    depends_on:
+      - loki
+
+  # Grafana - Visualization and dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: tailscale-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    networks:
+      - monitoring
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+      - loki
+
+  # Tailscale MCP Server - Our application
+  tailscale-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tailscale-mcp-server
+    ports:
+      - "8080:8080"
     environment:
       - TAILSCALE_API_KEY=${TAILSCALE_API_KEY}
       - TAILSCALE_TAILNET=${TAILSCALE_TAILNET}
       - LOG_LEVEL=INFO
+      - PROMETHEUS_PORT=9091
     volumes:
-      - ./src:/app/src
       - ./logs:/app/logs
-    ports:
-      - "8000:8000"
+    networks:
+      - monitoring
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+    depends_on:
+      - prometheus
+      - loki
 
-  dev:
-    build: 
-      context: .
-      dockerfile: Dockerfile.dev
-    container_name: tailscalemcp-dev
-    environment:
-      - TAILSCALE_API_KEY=${TAILSCALE_API_KEY}
-      - TAILSCALE_TAILNET=${TAILSCALE_TAILNET}
-      - LOG_LEVEL=DEBUG
-    volumes:
-      - .:/app
-      - /app/.venv
-    ports:
-      - "8000:8000"
-      - "5678:5678"  # debugpy port
-    command: ["uv", "run", "python", "-m", "tailscalemcp"]
-    profiles:
-      - dev
+volumes:
+  prometheus_data:
+  loki_data:
+  grafana_data:
 
 networks:
-  default:
-    name: tailscalemcp-network
+  monitoring:
+    driver: bridge
