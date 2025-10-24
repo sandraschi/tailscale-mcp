@@ -106,9 +106,9 @@ class TaildropManager:
                 )
 
             # Generate transfer ID
-        transfer_id = hashlib.sha256(
-            f"{file_path}_{recipient_device}_{time.time()}".encode()
-        ).hexdigest()
+            transfer_id = hashlib.sha256(
+                f"{file_path}_{recipient_device}_{time.time()}".encode()
+            ).hexdigest()
 
             # Calculate file checksum
             checksum = await self._calculate_checksum(file_path)

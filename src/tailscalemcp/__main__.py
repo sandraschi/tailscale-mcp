@@ -5,10 +5,8 @@ This module provides the command-line interface for the Tailscale MCP server.
 """
 
 import argparse
-import asyncio
 import logging
 import os
-import signal
 import sys
 
 import structlog

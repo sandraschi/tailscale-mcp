@@ -1711,11 +1711,11 @@ class TailscalePortmanteauTools:
         logger.info("All portmanteau tools registered successfully")
 
     async def _generate_help_content(
-        self, topic: str | None, level: str, category: str | None, 
+        self, topic: str | None, level: str, category: str | None,
         operation: str | None, include_examples: bool
     ) -> dict[str, Any]:
         """Generate comprehensive help content."""
-        
+
         help_data = {
             "overview": {
                 "title": "Tailscale MCP Server - Comprehensive Help System",
@@ -1763,7 +1763,7 @@ class TailscalePortmanteauTools:
                 "device_problems": "Check device status with tailscale_status",
             }
         }
-        
+
         if topic == "overview" or topic is None:
             return help_data["overview"]
         elif topic == "examples":
@@ -1780,15 +1780,15 @@ class TailscalePortmanteauTools:
         include_health: bool, include_performance: bool, device_filter: str | None, time_range: str
     ) -> dict[str, Any]:
         """Generate comprehensive status information."""
-        
+
         # Get basic device information
         try:
             devices = await self.device_manager.list_devices()
             online_devices = [d for d in devices if d.get("online", False)]
-            
+
             # Get network metrics
             network_metrics = await self.monitor.get_network_metrics()
-            
+
             status_data = {
                 "system": {
                     "status": "operational",
@@ -1821,7 +1821,7 @@ class TailscalePortmanteauTools:
                     "services": "healthy",
                 }
             }
-            
+
             if include_metrics:
                 status_data["metrics"] = {
                     "cpu_usage": "15%",
@@ -1829,7 +1829,7 @@ class TailscalePortmanteauTools:
                     "disk_usage": "30%",
                     "network_throughput": "125 Mbps",
                 }
-            
+
             if include_performance:
                 status_data["performance"] = {
                     "response_time": "45ms",
@@ -1837,13 +1837,13 @@ class TailscalePortmanteauTools:
                     "error_rate": "0.1%",
                     "availability": "99.9%",
                 }
-            
+
             return status_data
-            
+
         except Exception as e:
             logger.error("Error generating status information", error=str(e))
             return {
-                "error": f"Failed to generate status: {str(e)}",
+                "error": f"Failed to generate status: {e!s}",
                 "system": {"status": "error"},
                 "devices": {"total": 0, "online": 0, "offline": 0},
                 "network": {"connectivity": "unknown"},
