@@ -22,6 +22,11 @@ if (-not (Test-Path ".env")) {
 # Create logs directory
 New-Item -ItemType Directory -Path "logs" -Force | Out-Null
 
+# Create monitoring directories
+New-Item -ItemType Directory -Path "monitoring/prometheus/rules" -Force | Out-Null
+New-Item -ItemType Directory -Path "monitoring/grafana/provisioning/datasources" -Force | Out-Null
+New-Item -ItemType Directory -Path "monitoring/grafana/provisioning/dashboards" -Force | Out-Null
+
 # Start the monitoring stack
 Write-Host "🐳 Starting Docker containers..." -ForegroundColor Blue
 docker-compose up -d

@@ -1,0 +1,227 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Tailscale MCP Logs Dashboard",
+    "tags": ["tailscale", "logs", "loki"],
+    "style": "dark",
+    "timezone": "browser",
+    "refresh": "5s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Log Level Distribution",
+        "type": "piechart",
+        "targets": [
+          {
+            "expr": "sum by (level) (count_over_time({job=\"tailscale-mcp\"}[1h]))",
+            "legendFormat": "{{level}}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 0},
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"],
+            "fields": ""
+          },
+          "pieType": "pie",
+          "tooltip": {
+            "mode": "single"
+          },
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "Error Rate Over Time",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(rate({job=\"tailscale-mcp\", level=\"ERROR\"}[5m]))",
+            "legendFormat": "Error Rate",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 0},
+        "yAxes": [
+          {
+            "label": "Errors/sec",
+            "unit": "short"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Top Error Messages",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "topk(10, sum by (message) (count_over_time({job=\"tailscale-mcp\", level=\"ERROR\"}[1h])))",
+            "legendFormat": "{{message}}",
+            "refId": "A",
+            "format": "table"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 0},
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {
+                "Time": true,
+                "__name__": true,
+                "instance": true,
+                "job": true
+              },
+              "indexByName": {},
+              "renameByName": {
+                "message": "Error Message",
+                "Value": "Count"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Device Operations Log",
+        "type": "logs",
+        "targets": [
+          {
+            "expr": "{job=\"tailscale-mcp\"} |= \"device\"",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 12, "w": 12, "x": 0, "y": 8},
+        "options": {
+          "showTime": true,
+          "showLabels": true,
+          "showCommonLabels": false,
+          "wrapLogMessage": true,
+          "prettifyLogMessage": true,
+          "enableLogDetails": true,
+          "dedupStrategy": "none",
+          "sortOrder": "Descending"
+        }
+      },
+      {
+        "id": 5,
+        "title": "Network Operations Log",
+        "type": "logs",
+        "targets": [
+          {
+            "expr": "{job=\"tailscale-mcp\"} |= \"network\" or |= \"traffic\"",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 12, "w": 12, "x": 12, "y": 8},
+        "options": {
+          "showTime": true,
+          "showLabels": true,
+          "showCommonLabels": false,
+          "wrapLogMessage": true,
+          "prettifyLogMessage": true,
+          "enableLogDetails": true,
+          "dedupStrategy": "none",
+          "sortOrder": "Descending"
+        }
+      },
+      {
+        "id": 6,
+        "title": "File Transfer Operations",
+        "type": "logs",
+        "targets": [
+          {
+            "expr": "{job=\"tailscale-mcp\"} |= \"taildrop\" or |= \"transfer\" or |= \"file\"",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 12, "w": 12, "x": 0, "y": 20},
+        "options": {
+          "showTime": true,
+          "showLabels": true,
+          "showCommonLabels": false,
+          "wrapLogMessage": true,
+          "prettifyLogMessage": true,
+          "enableLogDetails": true,
+          "dedupStrategy": "none",
+          "sortOrder": "Descending"
+        }
+      },
+      {
+        "id": 7,
+        "title": "Security Events",
+        "type": "logs",
+        "targets": [
+          {
+            "expr": "{job=\"tailscale-mcp\"} |= \"security\" or |= \"auth\" or |= \"unauthorized\" or |= \"blocked\"",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 12, "w": 12, "x": 12, "y": 20},
+        "options": {
+          "showTime": true,
+          "showLabels": true,
+          "showCommonLabels": false,
+          "wrapLogMessage": true,
+          "prettifyLogMessage": true,
+          "enableLogDetails": true,
+          "dedupStrategy": "none",
+          "sortOrder": "Descending"
+        }
+      },
+      {
+        "id": 8,
+        "title": "Log Volume Over Time",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(rate({job=\"tailscale-mcp\"}[5m])) by (level)",
+            "legendFormat": "{{level}}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 32},
+        "yAxes": [
+          {
+            "label": "Logs/sec",
+            "unit": "short"
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "All Logs Stream",
+        "type": "logs",
+        "targets": [
+          {
+            "expr": "{job=\"tailscale-mcp\"}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 16, "w": 24, "x": 0, "y": 40},
+        "options": {
+          "showTime": true,
+          "showLabels": true,
+          "showCommonLabels": false,
+          "wrapLogMessage": true,
+          "prettifyLogMessage": true,
+          "enableLogDetails": true,
+          "dedupStrategy": "none",
+          "sortOrder": "Descending"
+        }
+      }
+    ],
+    "schemaVersion": 27,
+    "version": 1,
+    "links": []
+  }
+}

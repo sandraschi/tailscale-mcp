@@ -16,32 +16,72 @@ scrape_configs:
           - localhost
         labels:
           job: tailscale-mcp
-          __path__: /var/log/tailscale-mcp/*.log
+          service: tailscale-mcp-server
+          __path__: /app/logs/tailscale-mcp*.log
     
     pipeline_stages:
       - match:
           selector: '{job="tailscale-mcp"}'
           stages:
-            - regex:
-                expression: '(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) \[(?P<level>\w+)\] (?P<message>.*)'
+            # Parse JSON logs from structlog
+            - json:
+                expressions:
+                  timestamp: timestamp
+                  level: level
+                  logger: logger
+                  message: event
+                  version: version
+                  host: host
+                  port: port
+                  tailnet: tailnet
+                  prometheus_port: prometheus_port
+                  log_file: log_file
+                  error: error
+                  operation: operation
+                  device_id: device_id
+                  device_name: device_name
+                  transfer_id: transfer_id
+                  file_path: file_path
+                  recipient: recipient
+                  status: status
+                  duration: duration
+                  bytes_sent: bytes_sent
+                  bytes_received: bytes_received
             - timestamp:
                 source: timestamp
-                format: '2006-01-02 15:04:05'
+                format: RFC3339
             - labels:
                 level:
-                message:
+                logger:
+                version:
+                host:
+                port:
+                tailnet:
+                prometheus_port:
+                log_file:
+                error:
+                operation:
+                device_id:
+                device_name:
+                transfer_id:
+                file_path:
+                recipient:
+                status:
+                duration:
+                bytes_sent:
+                bytes_received:
             - output:
                 source: message
 
-  # Docker container logs
-  - job_name: docker-logs
+  # Docker container logs for Tailscale MCP
+  - job_name: docker-tailscale-mcp-logs
     docker_sd_configs:
       - host: unix:///var/run/docker.sock
         refresh_interval: 5s
     
     relabel_configs:
       - source_labels: ['__meta_docker_container_name']
-        regex: 'tailscale.*'
+        regex: 'tailscale-mcp.*'
         target_label: job
         replacement: 'tailscale-mcp'
       - source_labels: ['__meta_docker_container_log_stream']

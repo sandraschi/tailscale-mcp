@@ -1,0 +1,296 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Tailscale Device Activity Dashboard",
+    "tags": ["tailscale", "devices", "activity"],
+    "style": "dark",
+    "timezone": "browser",
+    "refresh": "10s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Device Status Overview",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "tailscale_devices_total",
+            "legendFormat": "Total Devices"
+          },
+          {
+            "expr": "tailscale_devices_online_total",
+            "legendFormat": "Online"
+          },
+          {
+            "expr": "tailscale_devices_offline_total",
+            "legendFormat": "Offline"
+          },
+          {
+            "expr": "tailscale_devices_authorized_total",
+            "legendFormat": "Authorized"
+          },
+          {
+            "expr": "tailscale_devices_pending_total",
+            "legendFormat": "Pending"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0},
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "short"
+          }
+        },
+        "options": {
+          "colorMode": "background",
+          "graphMode": "none",
+          "justifyMode": "auto",
+          "orientation": "auto"
+        }
+      },
+      {
+        "id": 2,
+        "title": "Device Activity Heatmap",
+        "type": "heatmap",
+        "targets": [
+          {
+            "expr": "sum(rate(tailscale_device_activity_total[5m])) by (device_name, le)",
+            "legendFormat": "{{device_name}}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 12, "w": 12, "x": 0, "y": 8},
+        "options": {
+          "calculate": false,
+          "calculation": {},
+          "cellGap": 2,
+          "cellValues": {},
+          "color": {
+            "exponent": 0.5,
+            "fill": "dark-orange",
+            "mode": "scheme",
+            "reverse": false,
+            "scale": "exponential",
+            "scheme": "Oranges",
+            "steps": 64
+          },
+          "exemplars": {
+            "color": "rgba(255,0,255,0.7)"
+          },
+          "filterValues": {
+            "le": 1e-9
+          },
+          "legend": {
+            "show": false
+          },
+          "rowsFrame": {
+            "layout": "auto"
+          },
+          "tooltip": {
+            "show": true,
+            "yHistogram": false
+          },
+          "yAxis": {
+            "axisPlacement": "left",
+            "reverse": false,
+            "unit": "short"
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Device Connection Status",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "tailscale_device_info",
+            "legendFormat": "Device Info",
+            "refId": "A",
+            "format": "table"
+          }
+        ],
+        "gridPos": {"h": 12, "w": 12, "x": 12, "y": 8},
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {
+                "Time": true,
+                "__name__": true,
+                "instance": true,
+                "job": true
+              },
+              "indexByName": {},
+              "renameByName": {
+                "device_id": "Device ID",
+                "device_name": "Device Name",
+                "status": "Status",
+                "last_seen": "Last Seen",
+                "ip_address": "IP Address",
+                "os": "OS",
+                "version": "Version"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Device Authorization Events",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(tailscale_device_authorizations_total[5m])",
+            "legendFormat": "{{device_name}} - {{action}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 20},
+        "yAxes": [
+          {
+            "label": "Authorizations/sec",
+            "unit": "short"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Device Activity by Type",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(tailscale_device_activity_total[5m])",
+            "legendFormat": "{{device_name}} - {{activity_type}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 20},
+        "yAxes": [
+          {
+            "label": "Activity/sec",
+            "unit": "short"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Device Last Seen Timeline",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "tailscale_device_last_seen_seconds",
+            "legendFormat": "{{device_name}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 28},
+        "yAxes": [
+          {
+            "label": "Seconds Since Last Seen",
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Device Network Traffic",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(tailscale_device_bytes_sent_total[5m])",
+            "legendFormat": "{{device_name}} - Sent"
+          },
+          {
+            "expr": "rate(tailscale_device_bytes_received_total[5m])",
+            "legendFormat": "{{device_name}} - Received"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 36},
+        "yAxes": [
+          {
+            "label": "Bytes/sec",
+            "unit": "bytes"
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Device Geolocation Map",
+        "type": "geomap",
+        "targets": [
+          {
+            "expr": "tailscale_device_location",
+            "legendFormat": "{{device_name}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 36},
+        "options": {
+          "basemap": {
+            "name": "OpenStreetMap",
+            "type": "osm"
+          },
+          "controls": {
+            "showZoom": true,
+            "showAttribution": true,
+            "showScale": true,
+            "showMeasure": true
+          },
+          "layers": [
+            {
+              "type": "markers",
+              "config": {
+                "showLegend": true,
+                "style": {
+                  "color": {
+                    "fixed": "dark-green"
+                  },
+                  "opacity": 0.4,
+                  "size": {
+                    "fixed": 5,
+                    "min": 2,
+                    "max": 15
+                  },
+                  "symbol": {
+                    "fixed": "img/icons/marker/circle.svg",
+                    "mode": "fixed"
+                  }
+                }
+              }
+            }
+          ],
+          "view": {
+            "id": "zero",
+            "lat": 0,
+            "lon": 0,
+            "zoom": 1
+          }
+        }
+      },
+      {
+        "id": 9,
+        "title": "Device Activity Log",
+        "type": "logs",
+        "targets": [
+          {
+            "expr": "{job=\"tailscale-mcp\"} |= \"device\"",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 16, "w": 24, "x": 0, "y": 44},
+        "options": {
+          "showTime": true,
+          "showLabels": true,
+          "showCommonLabels": false,
+          "wrapLogMessage": true,
+          "prettifyLogMessage": true,
+          "enableLogDetails": true,
+          "dedupStrategy": "none",
+          "sortOrder": "Descending"
+        }
+      }
+    ],
+    "schemaVersion": 27,
+    "version": 1,
+    "links": []
+  }
+}

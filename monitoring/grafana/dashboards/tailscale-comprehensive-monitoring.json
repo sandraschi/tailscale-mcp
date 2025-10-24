@@ -1,0 +1,258 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Tailscale Comprehensive Monitoring",
+    "tags": ["tailscale", "comprehensive", "monitoring"],
+    "style": "dark",
+    "timezone": "browser",
+    "refresh": "5s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "System Health Overview",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=\"tailscale-mcp\"}",
+            "legendFormat": "MCP Server Status"
+          },
+          {
+            "expr": "up{job=\"prometheus\"}",
+            "legendFormat": "Prometheus Status"
+          },
+          {
+            "expr": "up{job=\"grafana\"}",
+            "legendFormat": "Grafana Status"
+          },
+          {
+            "expr": "up{job=\"loki\"}",
+            "legendFormat": "Loki Status"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0},
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            },
+            "unit": "short"
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "Tailscale Network Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "tailscale_devices_total",
+            "legendFormat": "Total Devices"
+          },
+          {
+            "expr": "tailscale_devices_online_total",
+            "legendFormat": "Online Devices"
+          },
+          {
+            "expr": "tailscale_devices_offline_total",
+            "legendFormat": "Offline Devices"
+          },
+          {
+            "expr": "tailscale_network_connectivity_score",
+            "legendFormat": "Connectivity Score"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8},
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "short"
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Network Traffic & Performance",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(tailscale_network_bytes_sent_total[5m])",
+            "legendFormat": "Bytes Sent/sec"
+          },
+          {
+            "expr": "rate(tailscale_network_bytes_received_total[5m])",
+            "legendFormat": "Bytes Received/sec"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(tailscale_api_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "95th Percentile Response Time"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+        "yAxes": [
+          {
+            "label": "Rate",
+            "unit": "short"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Error Rate & Log Volume",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(tailscale_api_requests_total{status=~\"5..\"}[5m])",
+            "legendFormat": "5xx Server Errors/sec"
+          },
+          {
+            "expr": "sum(rate({job=\"tailscale-mcp\", level=\"ERROR\"}[5m]))",
+            "legendFormat": "Error Logs/sec"
+          },
+          {
+            "expr": "sum(rate({job=\"tailscale-mcp\"}[5m]))",
+            "legendFormat": "Total Logs/sec"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+        "yAxes": [
+          {
+            "label": "Rate/sec",
+            "unit": "short"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Device Activity Timeline",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(tailscale_device_activity_total[5m])",
+            "legendFormat": "{{device_name}} - {{activity_type}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24},
+        "yAxes": [
+          {
+            "label": "Activity/sec",
+            "unit": "short"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "File Transfer Activity",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(tailscale_taildrop_transfers_total[5m])",
+            "legendFormat": "Transfers/sec"
+          },
+          {
+            "expr": "rate(tailscale_taildrop_bytes_transferred_total[5m])",
+            "legendFormat": "Bytes Transferred/sec"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24},
+        "yAxes": [
+          {
+            "label": "Rate",
+            "unit": "short"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Real-time Log Stream",
+        "type": "logs",
+        "targets": [
+          {
+            "expr": "{job=\"tailscale-mcp\"}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 12, "w": 12, "x": 0, "y": 32},
+        "options": {
+          "showTime": true,
+          "showLabels": true,
+          "showCommonLabels": false,
+          "wrapLogMessage": true,
+          "prettifyLogMessage": true,
+          "enableLogDetails": true,
+          "dedupStrategy": "none",
+          "sortOrder": "Descending"
+        }
+      },
+      {
+        "id": 8,
+        "title": "Error Logs Stream",
+        "type": "logs",
+        "targets": [
+          {
+            "expr": "{job=\"tailscale-mcp\", level=\"ERROR\"}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 12, "w": 12, "x": 12, "y": 32},
+        "options": {
+          "showTime": true,
+          "showLabels": true,
+          "showCommonLabels": false,
+          "wrapLogMessage": true,
+          "prettifyLogMessage": true,
+          "enableLogDetails": true,
+          "dedupStrategy": "none",
+          "sortOrder": "Descending"
+        }
+      },
+      {
+        "id": 9,
+        "title": "Device Status Table",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "tailscale_device_info",
+            "legendFormat": "Device Info",
+            "refId": "A",
+            "format": "table"
+          }
+        ],
+        "gridPos": {"h": 12, "w": 24, "x": 0, "y": 44},
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {
+                "Time": true,
+                "__name__": true,
+                "instance": true,
+                "job": true
+              },
+              "indexByName": {},
+              "renameByName": {
+                "device_id": "Device ID",
+                "device_name": "Device Name",
+                "status": "Status",
+                "last_seen": "Last Seen",
+                "ip_address": "IP Address",
+                "os": "OS",
+                "version": "Version"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "schemaVersion": 27,
+    "version": 1,
+    "links": []
+  }
+}
