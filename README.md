@@ -21,11 +21,21 @@ A FastMCP 2.12 compliant server for managing Tailscale networks with modern Pyth
   - `tailscale_performance`: Performance monitoring (latency, bandwidth, optimization, capacity planning)
   - `tailscale_reporting`: Advanced reporting (custom reports, analytics, scheduling, export)
   - `tailscale_integration`: Third-party integrations (webhooks, Slack, Discord, PagerDuty, Datadog)
-- **📊 Comprehensive Monitoring**: Real-time network metrics and health scoring
-- **📈 Grafana Dashboards**: Pre-built dashboards for network visualization
+- **📊 Comprehensive Monitoring Stack**: Complete observability with Grafana, Prometheus, and Loki
+  - **Real-time dashboards** for network visualization and device monitoring
+  - **Structured logging** with JSON format for easy parsing and analysis
+  - **Prometheus metrics** for performance monitoring and alerting
+  - **Log aggregation** with Loki for centralized log analysis
+  - **Docker Compose** setup for easy deployment and management
+- **📈 Grafana Dashboards**: 4 comprehensive dashboards for different monitoring needs
+  - Network Overview: Device status, traffic, API performance
+  - Logs Dashboard: Error analysis, log streams, security events
+  - Device Activity: Activity heatmaps, geolocation, timelines
+  - Comprehensive Monitoring: Combined overview of all metrics and logs
 - **🔍 Network Topology**: Visual network topology and device relationships
-- **⚡ Prometheus Metrics**: Export metrics for monitoring systems
+- **⚡ Prometheus Metrics**: Export metrics for monitoring systems with custom metrics
 - **🏥 Health Reports**: Automated health analysis and recommendations
+- **📝 Structured Logging**: JSON-formatted logs with rich context for Loki integration
 - **Modern Tooling**: FastMCP 2.12, Ruff, Pytest, structured logging
 - **Container Ready**: Docker support with development and production images
 - **CI/CD**: Comprehensive GitHub Actions pipeline with security scanning
@@ -275,15 +285,15 @@ pip install tailscalemcp
 
 ### From Source
 
-```bash
-git clone https://github.com/yourusername/tailscalemcp.git
-cd tailscalemcp
+   ```bash
+   git clone https://github.com/yourusername/tailscalemcp.git
+   cd tailscalemcp
 pip install -e .
-```
+   ```
 
 ### Using Docker
 
-```bash
+   ```bash
 docker pull tailscalemcp:latest
 docker run -p 8000:8000 tailscalemcp:latest
 ```
@@ -326,6 +336,78 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
+## 📊 Monitoring Stack
+
+### Complete Observability Solution
+
+The TailscaleMCP server includes a comprehensive monitoring stack with Grafana, Prometheus, and Loki for complete observability of your Tailscale network.
+
+#### Features
+
+- **📈 Real-time Dashboards**: 4 comprehensive Grafana dashboards for different monitoring needs
+- **📝 Structured Logging**: JSON-formatted logs with rich context for easy analysis
+- **⚡ Prometheus Metrics**: Custom metrics for device activity, network traffic, and API performance
+- **🔍 Log Aggregation**: Centralized log collection and analysis with Loki
+- **🐳 Docker Compose**: Easy deployment and management of the entire monitoring stack
+
+#### Quick Start with Monitoring
+
+```bash
+# Clone and setup
+git clone https://github.com/sandraschi/tailscale-mcp.git
+cd tailscale-mcp
+cp env.example .env
+
+# Edit .env with your Tailscale credentials
+# TAILSCALE_API_KEY=your_api_key_here
+# TAILSCALE_TAILNET=your_tailnet_name_here
+
+# Start the complete monitoring stack
+.\scripts\start-monitoring.ps1
+
+# Access services:
+# - Grafana: http://localhost:3000 (admin/admin)
+# - Prometheus: http://localhost:9090
+# - Loki: http://localhost:3100
+# - MCP Server: http://localhost:8080
+```
+
+#### Available Dashboards
+
+1. **Network Overview**: Device status, network traffic, API performance metrics
+2. **Logs Dashboard**: Error analysis, log streams, security event monitoring
+3. **Device Activity**: Activity heatmaps, geolocation mapping, device timelines
+4. **Comprehensive Monitoring**: Combined overview of all metrics and logs
+
+#### Monitoring Documentation
+
+For detailed information about the monitoring stack, see:
+- [Monitoring Documentation](docs/monitoring/README.md)
+- [Architecture Guide](docs/monitoring/Architecture.md)
+- [Grafana Configuration](docs/monitoring/Grafana.md)
+- [Prometheus Setup](docs/monitoring/Prometheus.md)
+- [Loki Configuration](docs/monitoring/Loki.md)
+- [Deployment Guide](docs/monitoring/Deployment.md)
+
+#### General MCP Monitoring Standards
+
+For comprehensive monitoring standards and reusable templates for all heavyweight MCP servers:
+- [MCP Monitoring Standards](docs/monitoring/MCP_MONITORING_STANDARDS.md)
+- [Monitoring Templates](docs/monitoring/MONITORING_TEMPLATES.md)
+
+#### Specialized Monitoring Cases
+
+For specialized monitoring documentation for specific use cases:
+- [Tapo Cameras MCP Monitoring](docs/monitoring/TAPO_CAMERAS_MCP_MONITORING.md) - Home surveillance and security monitoring
+- [Tapo Cameras Dashboard Templates](docs/monitoring/TAPO_CAMERAS_DASHBOARD_TEMPLATES.md) - Specialized Grafana dashboards for home security
+
+#### Mobile Monitoring Integration
+
+For mobile monitoring solutions:
+- [RebootX Integration](docs/monitoring/REBOOTX_INTEGRATION.md) - Mobile infrastructure monitoring with RebootX app for iPad
+- [RebootX Integration Guide](docs/integrations/REBOOTX_INTEGRATION.md) - Tailscale MCP specific RebootX integration
+- [RebootX On-Prem Setup Guide](docs/monitoring/REBOOTX_ON_PREM_SETUP_GUIDE.md) - Complete setup with fixed IP configuration
+
 ## ⚙️ Configuration
 
 ### Environment Variables
@@ -335,6 +417,8 @@ if __name__ == "__main__":
 | `TAILSCALE_API_KEY` | Your Tailscale API key | Yes |
 | `TAILSCALE_TAILNET` | Your Tailnet name | Yes |
 | `LOG_LEVEL` | Logging level (DEBUG, INFO, WARNING, ERROR) | No (default: INFO) |
+| `PROMETHEUS_PORT` | Prometheus metrics port | No (default: 9091) |
+| `LOG_FILE` | Log file path | No (default: logs/tailscale-mcp.log) |
 
 ### Example Configuration
 
@@ -485,7 +569,7 @@ make setup
 
 ### Development Commands
 
-```bash
+   ```bash
 # Run tests
 make test
 
@@ -510,7 +594,7 @@ make run
 
 ### Docker Development
 
-```bash
+   ```bash
 # Build development image
 make docker-dev
 

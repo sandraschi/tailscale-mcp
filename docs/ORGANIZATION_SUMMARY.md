@@ -1,6 +1,6 @@
 # 📚 Documentation Organization Summary
 
-**Complete reorganization of notepadpp-mcp documentation - October 8, 2025**
+**Complete documentation organization for TailscaleMCP - October 24, 2025**
 
 ---
 

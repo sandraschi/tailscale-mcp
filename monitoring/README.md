@@ -48,9 +48,53 @@ This directory contains the complete monitoring stack for the Tailscale MCP serv
 
 4. **Access the services:**
    - **Grafana**: http://localhost:3000 (admin/admin)
+   - **RebootX On-Prem API**: http://localhost:9001
+   - **RebootX Swagger UI**: http://localhost:9002
    - **Prometheus**: http://localhost:9090
    - **Loki**: http://localhost:3100
    - **MCP Server**: http://localhost:8080
+
+## 📱 RebootX On-Prem Integration
+
+The monitoring stack includes RebootX On-Prem integration, allowing you to monitor and manage your Tailscale infrastructure from the RebootX mobile app.
+
+### Features
+
+- **Mobile Infrastructure Monitoring**: Monitor your infrastructure from your smartphone
+- **Remote Management**: Stop, reboot, and manage services remotely
+- **Real-time Metrics**: View live metrics and dashboards
+- **SSH Access**: Connect to servers directly from the app
+
+### Quick Start with RebootX
+
+1. **Install RebootX mobile app** from App Store/Google Play
+2. **Start RebootX On-Prem integration:**
+   ```powershell
+   .\scripts\start-rebootx-on-prem.ps1
+   ```
+3. **Configure RebootX app:**
+   - Server URL: `http://localhost:9001`
+   - API Key: `tailscale-mcp-rebootx-key-2024`
+   - Path Prefix: `tailscale-mcp`
+
+### Available Runnables
+
+- **Tailscale MCP Server** (tailscale-mcp-001)
+- **Grafana Dashboard** (grafana-001)
+- **Prometheus Metrics** (prometheus-001)
+- **Loki Log Aggregation** (loki-001)
+
+### Available Dashboards
+
+- **Tailscale Network Overview**: Active devices, network health, bandwidth usage
+- **Monitoring Infrastructure**: Grafana views, Prometheus metrics, Loki logs
+- **Security Metrics**: Security scans, failed auth attempts, blocked IPs
+- **Performance Metrics**: Network latency, bandwidth usage, CPU/memory usage
+
+For detailed information, see:
+- [RebootX On-Prem Documentation](rebootx-on-prem/README.md)
+- [RebootX On-Prem Setup Guide](REBOOTX_ON_PREM_SETUP_GUIDE.md) - Complete setup with fixed IP configuration
+- [RebootX Quick Reference](REBOOTX_QUICK_REFERENCE.md) - Quick reference for configuration
 
 ## 📊 Grafana Dashboards
 

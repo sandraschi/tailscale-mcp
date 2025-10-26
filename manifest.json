@@ -43,16 +43,17 @@
     "api_key": {
       "type": "string",
       "title": "Tailscale API Key",
-      "description": "Your Tailscale API key for authentication (stored securely)",
+      "description": "Your Tailscale API key from https://login.tailscale.com/admin/settings/keys",
       "sensitive": true,
-      "required": true
+      "required": true,
+      "placeholder": "tskey-api-xxxxxxxxxxxxx"
     },
     "tailnet": {
       "type": "string",
-      "title": "Tailnet Name",
-      "description": "Your Tailscale tailnet name (e.g., 'your-company.com')",
+      "title": "Tailnet ID",
+      "description": "Your Tailscale tailnet ID (found in your admin console URL)",
       "required": true,
-      "default": "example.com"
+      "placeholder": "TkEvDCMcjR11CNTRL"
     },
     "debug_mode": {
       "type": "boolean",

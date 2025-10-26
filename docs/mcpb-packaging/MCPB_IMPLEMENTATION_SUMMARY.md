@@ -15,7 +15,7 @@ Successfully implemented complete MCPB (MCP Bundle) packaging for the Notepad++ 
 1. **MCPB CLI Installation** - Installed @anthropic-ai/mcpb v1.1.1
 2. **Configuration Files** - Created and validated mcpb.json and manifest.json
 3. **Build Script** - Created PowerShell build script with full validation
-4. **Package Build** - Successfully built notepadpp-mcp.mcpb (0.19 MB)
+4. **Package Build** - Successfully built tailscale-mcp.mcpb (0.19 MB)
 5. **GitHub Actions** - Created automated CI/CD workflow
 6. **Documentation** - Updated all documentation to v1.2.0
 
@@ -27,7 +27,7 @@ Successfully implemented complete MCPB (MCP Bundle) packaging for the Notepad++ 
 
 | Property | Value |
 |----------|-------|
-| **Name** | notepadpp-mcp |
+| **Name** | tailscale-mcp |
 | **Version** | 1.2.0 |
 | **Size** | 0.19 MB |
 | **Format** | .mcpb (MCP Bundle) |
@@ -51,7 +51,7 @@ Successfully implemented complete MCPB (MCP Bundle) packaging for the Notepad++ 
 
 ```json
 {
-  "name": "notepadpp-mcp",
+  "name": "tailscale-mcp",
   "version": "1.2.0",
   "description": "Comprehensive Notepad++ automation with 26 tools",
   "author": "Sandra Schi",
@@ -60,7 +60,7 @@ Successfully implemented complete MCPB (MCP Bundle) packaging for the Notepad++ 
     "version": "2.12.0",
     "server": {
       "command": "python",
-      "args": ["-m", "notepadpp_mcp.tools.server"],
+      "args": ["-m", "tailscalemcp.mcp_server"],
       "transport": "stdio"
     },
     "capabilities": {
@@ -79,7 +79,7 @@ Successfully implemented complete MCPB (MCP Bundle) packaging for the Notepad++ 
 ```json
 {
   "manifest_version": "0.2",
-  "name": "notepadpp-mcp",
+  "name": "tailscale-mcp",
   "version": "1.2.0",
   "description": "Comprehensive Notepad++ automation with 26 powerful tools",
   "author": {
@@ -88,35 +88,36 @@ Successfully implemented complete MCPB (MCP Bundle) packaging for the Notepad++ 
   },
   "server": {
     "type": "python",
-    "entry_point": "src/notepadpp_mcp/tools/server.py",
+    "entry_point": "src/tailscalemcp/mcp_server.py",
     "mcp_config": {
       "command": "python",
-      "args": ["-m", "notepadpp_mcp.tools.server"],
+      "args": ["-m", "tailscalemcp.mcp_server"],
       "env": {
         "PYTHONPATH": "${PWD}",
-        "NOTEPADPP_PATH": "${user_config.notepadpp_path}",
-        "NOTEPADPP_AUTO_START": "${user_config.auto_start}",
-        "NOTEPADPP_TIMEOUT": "${user_config.timeout}",
+        "TAILSCALE_API_KEY": "${user_config.tailscale_api_key}",
+        "TAILSCALE_TAILNET": "${user_config.tailscale_tailnet}",
+        "LOG_LEVEL": "${user_config.log_level}",
         "PYTHONUNBUFFERED": "1"
       }
     }
   },
   "user_config": {
-    "notepadpp_path": {
-      "type": "file",
-      "title": "Notepad++ Executable",
-      "required": false,
-      "default": "C:\\Program Files\\Notepad++\\notepad++.exe"
-    },
-    "auto_start": {
-      "type": "boolean",
-      "title": "Auto-start Notepad++",
-      "default": true
-    },
-    "timeout": {
+    "tailscale_api_key": {
       "type": "string",
-      "title": "Operation Timeout (seconds)",
-      "default": "30"
+      "title": "Tailscale API Key",
+      "required": true,
+      "default": ""
+    },
+    "tailscale_tailnet": {
+      "type": "string",
+      "title": "Tailscale Tailnet Name",
+      "required": true,
+      "default": ""
+    },
+    "log_level": {
+      "type": "string",
+      "title": "Log Level",
+      "default": "INFO"
     }
   },
   "tools": [
@@ -188,7 +189,7 @@ Successfully implemented complete MCPB (MCP Bundle) packaging for the Notepad++ 
 
 ### Release Assets
 
-- **MCPB Package** - notepadpp-mcp.mcpb
+- **MCPB Package** - tailscale-mcp.mcpb
 - **Python Wheel** - .whl file
 - **Source Distribution** - .tar.gz file
 - **Auto-generated** release notes
@@ -262,9 +263,9 @@ The MCPB package prompts users for configuration:
    - Timeout for Notepad++ operations
 
 Configuration values are passed as environment variables:
-- `NOTEPADPP_PATH` = ${user_config.notepadpp_path}
-- `NOTEPADPP_AUTO_START` = ${user_config.auto_start}
-- `NOTEPADPP_TIMEOUT` = ${user_config.timeout}
+- `TAILSCALE_API_KEY` = ${user_config.tailscale_api_key}
+- `TAILSCALE_TAILNET` = ${user_config.tailscale_tailnet}
+- `LOG_LEVEL` = ${user_config.log_level}
 
 ---
 
@@ -275,11 +276,11 @@ Updated documentation to reflect v1.2.0:
 ### Main Documentation
 - ✅ **README.md** - Updated to 26 tools, v1.2.0
 - ✅ **CHANGELOG.md** - Added v1.2.0 release notes
-- ✅ **src/notepadpp_mcp/docs/README.md** - Updated API docs
-- ✅ **src/notepadpp_mcp/docs/PRD.md** - Updated implementation status
+- ✅ **docs/README.md** - Updated API docs
+- ✅ **docs/API_REFERENCE.md** - Updated implementation status
 
 ### New Documentation
-- ✅ **src/notepadpp_mcp/docs/PLUGIN_ECOSYSTEM.md** - 300+ lines
+- ✅ **docs/TAILSCALE_MCP_PORTMANTEAU_TOOLS.md** - 300+ lines
 - ✅ **docs/MCPB_IMPLEMENTATION_SUMMARY.md** - This file
 
 ---
@@ -293,10 +294,10 @@ Updated documentation to reflect v1.2.0:
 .\scripts\build-mcpb-package.ps1 -NoSign
 
 # 2. Test installation
-# Drag dist\notepadpp-mcp.mcpb to Claude Desktop
+# Drag dist\tailscale-mcp.mcpb to Claude Desktop
 
 # 3. Configure settings
-# Set Notepad++ path and preferences
+# Set Tailscale API key and tailnet preferences
 
 # 4. Test tools
 # Try all 26 tools in Claude Desktop
@@ -377,7 +378,7 @@ The Notepad++ MCP Server now has:
 - ✅ Plugin ecosystem integration
 - ✅ Comprehensive documentation
 
-**Package Ready**: `dist/notepadpp-mcp.mcpb` (0.19 MB)
+**Package Ready**: `dist/tailscale-mcp.mcpb` (0.19 MB)
 
 ---
 

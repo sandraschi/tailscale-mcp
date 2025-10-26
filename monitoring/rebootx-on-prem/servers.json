@@ -1,0 +1,197 @@
+[
+    {
+        "flavor": "tailscale-device",
+        "fqdn": "tailscale-mcp-server.local",
+        "id": "tailscale-mcp-001",
+        "ipv4": "100.64.0.1",
+        "metrics": [
+            {
+                "label": "Active Devices",
+                "ratio": null,
+                "thresholds": [5, 15],
+                "unit": "devices",
+                "value": 8
+            },
+            {
+                "label": "Network Health",
+                "ratio": null,
+                "thresholds": [70, 90],
+                "unit": "%",
+                "value": 85
+            },
+            {
+                "label": "API Response Time",
+                "ratio": null,
+                "thresholds": [200, 500],
+                "unit": "ms",
+                "value": 150
+            },
+            {
+                "label": "Uptime",
+                "ratio": null,
+                "thresholds": [95, 99],
+                "unit": "%",
+                "value": 99.8
+            }
+        ],
+        "name": "Tailscale MCP Server",
+        "scopes": {
+            "geo": {
+                "label": "Local Network",
+                "value": "local"
+            },
+            "logical": {
+                "label": "Tailscale Infrastructure",
+                "value": "tailscale-infra"
+            }
+        },
+        "ssh": {
+            "keyName": "tailscale-admin-key",
+            "port": 22,
+            "username": "admin"
+        },
+        "stack": "python",
+        "status": "on"
+    },
+    {
+        "flavor": "grafana-dashboard",
+        "fqdn": "grafana.local",
+        "id": "grafana-001",
+        "ipv4": "100.64.0.2",
+        "metrics": [
+            {
+                "label": "Dashboard Views",
+                "ratio": null,
+                "thresholds": [10, 50],
+                "unit": "views",
+                "value": 25
+            },
+            {
+                "label": "Query Response Time",
+                "ratio": null,
+                "thresholds": [100, 300],
+                "unit": "ms",
+                "value": 120
+            },
+            {
+                "label": "Active Users",
+                "ratio": null,
+                "thresholds": [2, 8],
+                "unit": "users",
+                "value": 3
+            }
+        ],
+        "name": "Grafana Dashboard",
+        "scopes": {
+            "geo": {
+                "label": "Local Network",
+                "value": "local"
+            },
+            "logical": {
+                "label": "Monitoring Infrastructure",
+                "value": "monitoring"
+            }
+        },
+        "ssh": {
+            "keyName": "grafana-admin-key",
+            "port": 22,
+            "username": "grafana"
+        },
+        "stack": "grafana",
+        "status": "on"
+    },
+    {
+        "flavor": "prometheus-metrics",
+        "fqdn": "prometheus.local",
+        "id": "prometheus-001",
+        "ipv4": "100.64.0.3",
+        "metrics": [
+            {
+                "label": "Metrics Scraped",
+                "ratio": null,
+                "thresholds": [1000, 5000],
+                "unit": "metrics",
+                "value": 2500
+            },
+            {
+                "label": "Scrape Duration",
+                "ratio": null,
+                "thresholds": [50, 200],
+                "unit": "ms",
+                "value": 75
+            },
+            {
+                "label": "Storage Usage",
+                "ratio": 0.15,
+                "thresholds": [80, 95],
+                "unit": "%",
+                "value": 12
+            }
+        ],
+        "name": "Prometheus Metrics",
+        "scopes": {
+            "geo": {
+                "label": "Local Network",
+                "value": "local"
+            },
+            "logical": {
+                "label": "Monitoring Infrastructure",
+                "value": "monitoring"
+            }
+        },
+        "ssh": {
+            "keyName": "prometheus-admin-key",
+            "port": 22,
+            "username": "prometheus"
+        },
+        "stack": "prometheus",
+        "status": "on"
+    },
+    {
+        "flavor": "loki-logs",
+        "fqdn": "loki.local",
+        "id": "loki-001",
+        "ipv4": "100.64.0.4",
+        "metrics": [
+            {
+                "label": "Log Entries/sec",
+                "ratio": null,
+                "thresholds": [100, 500],
+                "unit": "logs/sec",
+                "value": 250
+            },
+            {
+                "label": "Storage Usage",
+                "ratio": 0.25,
+                "thresholds": [70, 90],
+                "unit": "%",
+                "value": 18
+            },
+            {
+                "label": "Query Latency",
+                "ratio": null,
+                "thresholds": [100, 500],
+                "unit": "ms",
+                "value": 180
+            }
+        ],
+        "name": "Loki Log Aggregation",
+        "scopes": {
+            "geo": {
+                "label": "Local Network",
+                "value": "local"
+            },
+            "logical": {
+                "label": "Monitoring Infrastructure",
+                "value": "monitoring"
+            }
+        },
+        "ssh": {
+            "keyName": "loki-admin-key",
+            "port": 22,
+            "username": "loki"
+        },
+        "stack": "loki",
+        "status": "on"
+    }
+]

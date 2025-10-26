@@ -1,0 +1,128 @@
+[
+    {
+        "id": "tailscale-network-overview",
+        "metrics": [
+            {
+                "id": "active-devices",
+                "label": "Active Devices",
+                "unit": "devices",
+                "value": 8
+            },
+            {
+                "id": "network-health-score",
+                "label": "Network Health Score",
+                "unit": "%",
+                "value": 85
+            },
+            {
+                "id": "total-bandwidth",
+                "label": "Total Bandwidth Usage",
+                "unit": "Mbps",
+                "value": 45
+            },
+            {
+                "id": "api-response-time",
+                "label": "API Response Time",
+                "unit": "ms",
+                "value": 150
+            },
+            {
+                "id": "uptime-percentage",
+                "label": "System Uptime",
+                "unit": "%",
+                "value": 99.8
+            }
+        ],
+        "name": "Tailscale Network Overview"
+    },
+    {
+        "id": "monitoring-infrastructure",
+        "metrics": [
+            {
+                "id": "grafana-dashboard-views",
+                "label": "Grafana Dashboard Views",
+                "unit": "views",
+                "value": 25
+            },
+            {
+                "id": "prometheus-metrics-count",
+                "label": "Prometheus Metrics Count",
+                "unit": "metrics",
+                "value": 2500
+            },
+            {
+                "id": "loki-log-entries",
+                "label": "Loki Log Entries/sec",
+                "unit": "logs/sec",
+                "value": 250
+            },
+            {
+                "id": "monitoring-uptime",
+                "label": "Monitoring Stack Uptime",
+                "unit": "%",
+                "value": 99.9
+            }
+        ],
+        "name": "Monitoring Infrastructure"
+    },
+    {
+        "id": "security-metrics",
+        "metrics": [
+            {
+                "id": "security-scan-results",
+                "label": "Security Scan Results",
+                "unit": "issues",
+                "value": 2
+            },
+            {
+                "id": "failed-auth-attempts",
+                "label": "Failed Auth Attempts",
+                "unit": "attempts",
+                "value": 0
+            },
+            {
+                "id": "blocked-ips",
+                "label": "Blocked IP Addresses",
+                "unit": "IPs",
+                "value": 5
+            },
+            {
+                "id": "security-score",
+                "label": "Overall Security Score",
+                "unit": "%",
+                "value": 92
+            }
+        ],
+        "name": "Security Metrics"
+    },
+    {
+        "id": "performance-metrics",
+        "metrics": [
+            {
+                "id": "avg-latency",
+                "label": "Average Network Latency",
+                "unit": "ms",
+                "value": 25
+            },
+            {
+                "id": "peak-bandwidth",
+                "label": "Peak Bandwidth Usage",
+                "unit": "Mbps",
+                "value": 75
+            },
+            {
+                "id": "cpu-usage",
+                "label": "CPU Usage",
+                "unit": "%",
+                "value": 35
+            },
+            {
+                "id": "memory-usage",
+                "label": "Memory Usage",
+                "unit": "%",
+                "value": 42
+            }
+        ],
+        "name": "Performance Metrics"
+    }
+]

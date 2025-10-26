@@ -52,6 +52,13 @@ class TailscaleMCPServer:
         self.api_key = api_key or os.getenv("TAILSCALE_API_KEY")
         self.tailnet = tailnet or os.getenv("TAILSCALE_TAILNET")
 
+        # Log configuration (but not the actual API key for security)
+        if self.api_key:
+            api_key_preview = f"{self.api_key[:20]}..." if len(self.api_key) > 20 else "set"
+            logger.info("API credentials loaded", api_key_preview=api_key_preview, tailnet=self.tailnet)
+        else:
+            logger.error("No API credentials found! Check user_config or environment variables")
+
         # Initialize FastMCP
         self.mcp = FastMCP("Tailscale Network Controller MCP")
 

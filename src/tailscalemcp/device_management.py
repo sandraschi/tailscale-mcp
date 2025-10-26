@@ -5,12 +5,14 @@ Provides comprehensive device management capabilities including authorization,
 SSH access, device tagging, and advanced configuration management.
 """
 
+import os
 import time
 from typing import Any
 
 import structlog
 from pydantic import BaseModel, Field
 
+from .api_client import TailscaleAPIClient
 from .exceptions import TailscaleMCPError
 
 logger = structlog.get_logger(__name__)
@@ -75,8 +77,20 @@ class AdvancedDeviceManager:
         self.ssh_keys: dict[str, SSHKey] = {}
         self.device_tags: dict[str, DeviceTag] = {}
         self.device_groups: dict[str, list[str]] = {}
+        
+        # Initialize API client for real Tailscale API calls
+        self.api_client = TailscaleAPIClient(api_key=api_key, tailnet=tailnet)
+        
+        # Configurable timeout for determining if a device is online
+        # Default: 1 hour - balances catching offline devices with reasonable active time
+        self.online_timeout_seconds = os.getenv("TAILSCALE_ONLINE_TIMEOUT_SECONDS", "3600")
+        try:
+            self.online_timeout_seconds = int(self.online_timeout_seconds)
+        except ValueError:
+            self.online_timeout_seconds = 3600  # Default to 1 hour
 
         logger.info("Advanced device manager initialized", tailnet=tailnet)
+
 
     async def authorize_device(
         self, device_id: str, authorize: bool = True, reason: str | None = None
@@ -337,6 +351,109 @@ class AdvancedDeviceManager:
         except Exception as e:
             logger.error("Error disabling SSH access", error=str(e))
             raise TailscaleMCPError(f"Failed to disable SSH access: {e}") from e
+
+    async def list_devices(
+        self,
+        online_only: bool = False,
+        filter_tags: list[str] | None = None,
+    ) -> list[dict[str, Any]]:
+        """List all devices with optional filtering using real Tailscale API.
+
+        Args:
+            online_only: Only return online devices
+            filter_tags: Filter devices by tags
+
+        Returns:
+            List of device information from real Tailscale API
+        """
+        try:
+            # Make real API call to Tailscale
+            api_devices = await self.api_client.list_devices()
+            
+            devices_list = []
+            current_time = time.time()
+
+            for api_device in api_devices:
+                # Map API response to our format
+                device_id = api_device.get("id", "")
+                
+                # Parse lastSeen timestamp
+                last_seen_raw = api_device.get("lastSeen")
+                if isinstance(last_seen_raw, str):
+                    from datetime import datetime
+                    try:
+                        last_seen_ts = datetime.fromisoformat(last_seen_raw.replace('Z', '+00:00')).timestamp()
+                    except:
+                        last_seen_ts = current_time
+                else:
+                    last_seen_ts = last_seen_raw if last_seen_raw else current_time
+                
+                # Determine online status based on connectedToControl and lastSeen
+                # This is a compromise: connectedToControl is known to be unreliable for iOS devices
+                # that remain "connected" in the background even when off
+                connected_to_control = api_device.get("connectedToControl", False)
+                
+                # Calculate time since last seen
+                time_since_seen = current_time - last_seen_ts if last_seen_ts else float('inf')
+                
+                # Use configurable timeout (default: 1 hour)
+                # Devices that haven't been seen within this timeframe are considered offline
+                # regardless of connectedToControl status. This helps with iOS devices that 
+                # report connectedToControl=True when off
+                recently_active = time_since_seen < self.online_timeout_seconds
+                
+                # Device is online if connected AND recently active
+                is_online = connected_to_control and recently_active
+                
+                # Apply online filter
+                if online_only and not is_online:
+                    continue
+                
+                # Apply tag filtering
+                if filter_tags:
+                    device_tags = api_device.get("tags", [])
+                    matching_tags = [tag for tag in filter_tags if tag in device_tags]
+                    if not matching_tags:
+                        continue
+
+                # Extract device information from API response
+                addresses = api_device.get("addresses", [])
+                
+                device_data = {
+                    "device_id": device_id,
+                    "name": api_device.get("name", "unknown"),
+                    "hostname": api_device.get("hostname", "unknown"),
+                    "os": api_device.get("os", "unknown"),
+                    "ip_addresses": addresses,
+                    "status": "online" if is_online else "offline",
+                    "online": is_online,
+                    "last_seen": last_seen_ts,
+                    "time_since_seen": current_time - last_seen_ts if last_seen_ts else None,
+                    "authorized": api_device.get("authorized", True),
+                    "tags": api_device.get("tags", []),
+                    "ssh_enabled": False,  # Would need separate API call
+                    "is_exit_node": api_device.get("isExitNode", False),
+                    "is_subnet_router": len(api_device.get("routes", [])) > 0,
+                    "advertised_routes": api_device.get("routes", []),
+                    "client_version": api_device.get("clientVersion", "unknown"),
+                    "user": api_device.get("user", ""),
+                    "machine_key": api_device.get("machineKey", ""),
+                    "update_available": api_device.get("updateAvailable", False),
+                }
+                devices_list.append(device_data)
+
+            logger.info(
+                "Devices listed from real API",
+                total_devices=len(devices_list),
+                online_only=online_only,
+                filter_tags=filter_tags or [],
+            )
+
+            return devices_list
+
+        except Exception as e:
+            logger.error("Error listing devices from API", error=str(e))
+            raise TailscaleMCPError(f"Failed to list devices: {e}") from e
 
     async def list_devices_by_tag(self, tag: str) -> list[dict[str, Any]]:
         """List devices with a specific tag.

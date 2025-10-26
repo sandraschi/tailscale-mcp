@@ -97,6 +97,53 @@ services:
       - prometheus
       - loki
 
+  # RebootX On-Prem - Mobile infrastructure monitoring
+  rebootx-on-prem:
+    image: golang:1.22
+    container_name: tailscale-rebootx-on-prem
+    ports:
+      - "9001:9001"
+    environment:
+      - RBTX_API_KEY=${REBOOTX_API_KEY:-tailscale-mcp-rebootx-key-2024}
+      - RBTX_PATH_PREFIX=${REBOOTX_PATH_PREFIX:-tailscale-mcp}
+      - RBTX_DASHBOARD_SERVICE_FILE_JSON_FILE_PATH=/data/dashboards.json
+      - RBTX_DASHBOARD_SERVICE_IMPL=fileJson
+      - RBTX_PORT=9001
+      - RBTX_RUNNABLE_SERVICE_FILE_JSON_FILE_PATH=/data/servers.json
+      - RBTX_RUNNABLE_SERVICE_IMPL=fileJson
+      - RBTX_BIND=0.0.0.0
+      - RBTX_PROTOCOL=http
+    volumes:
+      - ./monitoring/rebootx-on-prem/data:/data
+      - ./monitoring/rebootx-on-prem/impl:/app
+    working_dir: "/app"
+    command: bash -c "cd /app/http-server-go && go fmt && go build -o /build/rebootx-on-prem -v && /build/rebootx-on-prem"
+    networks:
+      - monitoring
+    restart: unless-stopped
+    depends_on:
+      - tailscale-mcp
+      - grafana
+      - prometheus
+      - loki
+
+  # RebootX Swagger UI - API documentation
+  rebootx-swagger-ui:
+    image: swaggerapi/swagger-ui:v5.12.0
+    container_name: tailscale-rebootx-swagger-ui
+    ports:
+      - "9002:9002"
+    environment:
+      - PORT=9002
+      - SWAGGER_JSON=/spec/swagger.json
+    volumes:
+      - ./monitoring/rebootx-on-prem/spec:/spec
+    networks:
+      - monitoring
+    restart: unless-stopped
+    depends_on:
+      - rebootx-on-prem
+
 volumes:
   prometheus_data:
   loki_data:

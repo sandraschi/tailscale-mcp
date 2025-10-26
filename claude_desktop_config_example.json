@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "tailscale-mcp": {
+      "command": "python",
+      "args": ["-m", "tailscalemcp"],
+      "env": {
+        "PYTHONPATH": "src",
+        "TAILSCALE_API_KEY": "tskey-api-kUiqc8eyxE11CNTRL-HBMwr1cQpUFUAyF4Jjd9VFd1CJdCxJCE",
+        "TAILSCALE_TAILNET": "TkEvDCMcjR11CNTRL",
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  }
+}
+
