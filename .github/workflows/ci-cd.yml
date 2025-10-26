@@ -97,13 +97,14 @@ jobs:
       - name: Run Safety check
         run: uv run safety check --json --output safety-report.json || true
 
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          format: 'table'
-          exit-code: '0'
+      # Temporarily disabled Trivy to avoid permission issues
+      # - name: Run Trivy vulnerability scanner
+      #   uses: aquasecurity/trivy-action@master
+      #   with:
+      #     scan-type: 'fs'
+      #     scan-ref: '.'
+      #     format: 'table'
+      #     exit-code: '0'
 
   build:
     name: Build Package
