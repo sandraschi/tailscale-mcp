@@ -8,11 +8,10 @@ import argparse
 import logging
 import os
 import sys
-import time
 from pathlib import Path
 
 import structlog
-from prometheus_client import start_http_server, Counter, Histogram, Gauge, Info
+from prometheus_client import Info, start_http_server
 
 from . import TailscaleMCPServer, __version__
 from .exceptions import ConfigurationError
@@ -109,7 +108,7 @@ def setup_structured_logging(log_level: str, log_file: str) -> None:
     """Setup structured logging with file output for Loki integration."""
     # Create logs directory if it doesn't exist
     Path(log_file).parent.mkdir(parents=True, exist_ok=True)
-    
+
     # Configure structlog for JSON output to file
     structlog.configure(
         processors=[
@@ -129,17 +128,17 @@ def setup_structured_logging(log_level: str, log_file: str) -> None:
         logger_factory=structlog.stdlib.LoggerFactory(),
         cache_logger_on_first_use=True,
     )
-    
+
     # Setup file handler for structured logs
     file_handler = logging.FileHandler(log_file)
-    file_handler.setFormatter(logging.Formatter('%(message)s'))
-    
+    file_handler.setFormatter(logging.Formatter("%(message)s"))
+
     # Setup console handler for human-readable logs
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(
-        logging.Formatter('%(asctime)s [%(levelname)s] %(name)s: %(message)s')
+        logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s")
     )
-    
+
     # Configure root logger
     root_logger = logging.getLogger()
     root_logger.setLevel(getattr(logging, log_level.upper()))
@@ -151,12 +150,12 @@ def setup_prometheus_metrics(port: int) -> None:
     """Setup Prometheus metrics."""
     # Start Prometheus metrics server
     start_http_server(port)
-    
+
     # Create application info metric
-    app_info = Info('tailscale_mcp_info', 'Application information')
+    app_info = Info("tailscale_mcp_info", "Application information")
     app_info.info({
-        'version': __version__,
-        'name': 'tailscale-mcp-server'
+        "version": __version__,
+        "name": "tailscale-mcp-server"
     })
 
 
@@ -166,7 +165,7 @@ def run_server() -> None:
 
     # Setup structured logging
     setup_structured_logging(args.log_level, args.log_file)
-    
+
     # Setup Prometheus metrics
     setup_prometheus_metrics(args.prometheus_port)
 
@@ -183,8 +182,8 @@ def run_server() -> None:
     # Start the server directly with FastMCP
     try:
         logger.info("Starting Tailscale MCP Server", version=__version__)
-        logger.info("Server configuration", 
-                   host=args.host, 
+        logger.info("Server configuration",
+                   host=args.host,
                    port=args.port,
                    tailnet=args.tailnet,
                    prometheus_port=args.prometheus_port,

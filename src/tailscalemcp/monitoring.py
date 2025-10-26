@@ -289,26 +289,26 @@ class TailscaleMonitor:
         """
         try:
             metrics = await self.collect_metrics()
-            
+
             # Calculate real metrics from API data
             latency_sum = 0.0
             latency_count = 0
             total_bandwidth = 0
-            
+
             # Get devices from API to calculate real metrics
             from .api_client import TailscaleAPIClient
             api_client = TailscaleAPIClient(api_key=self.api_key, tailnet=self.tailnet)
             devices = await api_client.list_devices()
-            
+
             # Calculate actual metrics from device data
             for device in devices:
                 # Calculate latency if we have lastSeen data
                 if device.get("lastSeen"):
                     latency_count += 1
-                
+
                 # Sum bandwidth (would need actual traffic data from API)
                 # This is a placeholder until we have real bandwidth data
-            
+
             network_metrics = {
                 "average_latency": f"{latency_sum/latency_count:.2f}ms" if latency_count > 0 else "N/A",
                 "total_bandwidth": f"{total_bandwidth} Mbps",
@@ -384,10 +384,10 @@ class TailscaleMonitor:
         """Get devices data from real Tailscale API."""
         try:
             from .api_client import TailscaleAPIClient
-            
+
             api_client = TailscaleAPIClient(api_key=self.api_key, tailnet=self.tailnet)
             devices = await api_client.list_devices()
-            
+
             # Map API response to expected format
             formatted_devices = []
             for device in devices:
@@ -403,10 +403,10 @@ class TailscaleMonitor:
                     "tags": device.get("tags", []),
                 }
                 formatted_devices.append(formatted_device)
-            
+
             logger.info("Device data retrieved from real API", count=len(formatted_devices))
             return formatted_devices
-            
+
         except Exception as e:
             logger.error("Failed to get devices data from API", error=str(e))
             # Return empty list on error rather than mock data

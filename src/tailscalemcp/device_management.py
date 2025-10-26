@@ -77,10 +77,10 @@ class AdvancedDeviceManager:
         self.ssh_keys: dict[str, SSHKey] = {}
         self.device_tags: dict[str, DeviceTag] = {}
         self.device_groups: dict[str, list[str]] = {}
-        
+
         # Initialize API client for real Tailscale API calls
         self.api_client = TailscaleAPIClient(api_key=api_key, tailnet=tailnet)
-        
+
         # Configurable timeout for determining if a device is online
         # Default: 1 hour - balances catching offline devices with reasonable active time
         self.online_timeout_seconds = os.getenv("TAILSCALE_ONLINE_TIMEOUT_SECONDS", "3600")
@@ -369,46 +369,46 @@ class AdvancedDeviceManager:
         try:
             # Make real API call to Tailscale
             api_devices = await self.api_client.list_devices()
-            
+
             devices_list = []
             current_time = time.time()
 
             for api_device in api_devices:
                 # Map API response to our format
                 device_id = api_device.get("id", "")
-                
+
                 # Parse lastSeen timestamp
                 last_seen_raw = api_device.get("lastSeen")
                 if isinstance(last_seen_raw, str):
                     from datetime import datetime
                     try:
-                        last_seen_ts = datetime.fromisoformat(last_seen_raw.replace('Z', '+00:00')).timestamp()
-                    except:
+                        last_seen_ts = datetime.fromisoformat(last_seen_raw.replace("Z", "+00:00")).timestamp()
+                    except Exception:
                         last_seen_ts = current_time
                 else:
                     last_seen_ts = last_seen_raw if last_seen_raw else current_time
-                
+
                 # Determine online status based on connectedToControl and lastSeen
                 # This is a compromise: connectedToControl is known to be unreliable for iOS devices
                 # that remain "connected" in the background even when off
                 connected_to_control = api_device.get("connectedToControl", False)
-                
+
                 # Calculate time since last seen
-                time_since_seen = current_time - last_seen_ts if last_seen_ts else float('inf')
-                
+                time_since_seen = current_time - last_seen_ts if last_seen_ts else float("inf")
+
                 # Use configurable timeout (default: 1 hour)
                 # Devices that haven't been seen within this timeframe are considered offline
-                # regardless of connectedToControl status. This helps with iOS devices that 
+                # regardless of connectedToControl status. This helps with iOS devices that
                 # report connectedToControl=True when off
                 recently_active = time_since_seen < self.online_timeout_seconds
-                
+
                 # Device is online if connected AND recently active
                 is_online = connected_to_control and recently_active
-                
+
                 # Apply online filter
                 if online_only and not is_online:
                     continue
-                
+
                 # Apply tag filtering
                 if filter_tags:
                     device_tags = api_device.get("tags", [])
@@ -418,7 +418,7 @@ class AdvancedDeviceManager:
 
                 # Extract device information from API response
                 addresses = api_device.get("addresses", [])
-                
+
                 device_data = {
                     "device_id": device_id,
                     "name": api_device.get("name", "unknown"),

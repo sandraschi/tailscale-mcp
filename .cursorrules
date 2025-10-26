@@ -237,6 +237,24 @@ async def tool_name(
 - **Log**: Use logger.info/error for operations
 - **Error Handling**: Return error dict, don't raise unless critical
 
+## Pre-commit Requirements
+
+### Ruff Linting
+**CRITICAL**: ALL commits MUST have zero ruff errors before pushing.
+
+```powershell
+# Before committing, always run:
+uv run ruff check .
+uv run ruff check --fix .  # Auto-fix what can be fixed
+
+# Verify zero errors before:
+git add .
+git commit -m "your message"
+git push
+```
+
+**Ruff errors will cause CI to fail**. Always fix linting errors before pushing to remote.
+
 ## Build System
 
 ### UV-Based Dependency Management
