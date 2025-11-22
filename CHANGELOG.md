@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **FastMCP Runtime Prompts and Resources**: Successfully implemented and verified working
+  - 6 runtime prompts registered via `@mcp.prompt()` decorators
+  - 7 runtime resources registered via `@mcp.resource()` decorators
+  - All prompts and resources visible in MCP server UI (Cursor, Windsurf, etc.)
+  - Note: Log shows "10 0 0" but this is a red herring - check MCP server UI for accurate counts
+- **Comprehensive Docstring Standards**: Enhanced all portmanteau tool docstrings
+  - Added PORTMANTEAU PATTERN RATIONALE to all 10 portmanteau tools
+  - Reformatted Args sections to be concise but descriptive (2-3 lines for complex parameters)
+  - Removed duplication between Args and Parameters sections
+  - Flexible formatting: one line for simple params, 2-3 lines for enums/complex structures
+  - All docstrings now properly formatted for Claude to understand portmanteau tool usage
+- **Status Tool Enhancement**: Extended `tailscale_status` to show MCP server capabilities
+  - Shows tool, prompt, and resource counts at basic level
+  - Shows names/URIs at intermediate level
+  - Shows full details at advanced/diagnostic levels
+  - Helps verify prompt and resource registration
 - **RebootX On-Prem Integration**: Complete mobile infrastructure monitoring setup
   - RebootX On-Prem server configuration for Tailscale MCP monitoring
   - Mobile app integration with fixed IP address (213.47.34.131)
