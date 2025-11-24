@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "tailscalemcp"
 version = "2.0.0"
-description = "FastMCP 2.12 compliant Tailscale network controller"
+description = "FastMCP 2.13+ compliant Tailscale network controller with persistent storage"
 readme = "README.md"
 authors = [
     { name = "Your Name", email = "your.email@example.com" },
@@ -25,8 +25,10 @@ classifiers = [
     "Topic :: System :: Systems Administration",
 ]
 dependencies = [
-    "fastmcp>=2.12.0",
+    "fastmcp>=2.13.0,<2.14.0",
+    "py-key-value-aio[disk]>=0.2.8,<0.3.0",  # Compatible with FastMCP 2.13.x
     "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
     "httpx>=0.25.0",
     "python-dotenv>=1.0.0",
     "structlog>=23.0.0",
@@ -166,7 +168,7 @@ output = "coverage.xml"
 [tool.mcpb]
 name = "tailscalemcp"
 version = "2.0.0"
-description = "FastMCP 2.12 compliant Tailscale network controller"
+description = "FastMCP 2.13+ compliant Tailscale network controller with persistent storage"
 author = "Your Name"
 author_email = "your.email@example.com"
 license = "MIT"

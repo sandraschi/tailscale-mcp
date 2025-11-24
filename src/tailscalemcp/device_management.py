@@ -13,7 +13,10 @@ import structlog
 from pydantic import BaseModel, Field
 
 from .api_client import TailscaleAPIClient
+from .config import TailscaleConfig
 from .exceptions import TailscaleMCPError
+from .models.device import DeviceStatus
+from .operations.devices import DeviceOperations
 
 logger = structlog.get_logger(__name__)
 
@@ -78,12 +81,21 @@ class AdvancedDeviceManager:
         self.device_tags: dict[str, DeviceTag] = {}
         self.device_groups: dict[str, list[str]] = {}
 
-        # Initialize API client for real Tailscale API calls
+        # Initialize operations layer for real Tailscale API calls
+        config = TailscaleConfig(
+            tailscale_api_key=api_key or "",
+            tailscale_tailnet=tailnet or "",
+        )
+        self.device_operations = DeviceOperations(config=config)
+
+        # Keep API client for backward compatibility (will be removed gradually)
         self.api_client = TailscaleAPIClient(api_key=api_key, tailnet=tailnet)
 
         # Configurable timeout for determining if a device is online
         # Default: 1 hour - balances catching offline devices with reasonable active time
-        self.online_timeout_seconds = os.getenv("TAILSCALE_ONLINE_TIMEOUT_SECONDS", "3600")
+        self.online_timeout_seconds = os.getenv(
+            "TAILSCALE_ONLINE_TIMEOUT_SECONDS", "3600"
+        )
         try:
             self.online_timeout_seconds = int(self.online_timeout_seconds)
         except ValueError:
@@ -91,6 +103,185 @@ class AdvancedDeviceManager:
 
         logger.info("Advanced device manager initialized", tailnet=tailnet)
 
+    # -----------------------
+    # Unsupported Admin API endpoints (explicit)
+    # -----------------------
+    async def list_users(self) -> list[dict[str, Any]]:
+        """List users in the tailnet (not supported via Admin API).
+
+        Raises:
+            TailscaleMCPError: Always; not supported.
+        """
+        raise TailscaleMCPError(
+            "Listing users is not supported via the Tailscale Admin API."
+        )
+
+    async def create_user(
+        self,
+        user_email: str,
+        user_role: str | None = None,
+        user_permissions: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Create user (not supported via Admin API)."""
+        raise TailscaleMCPError(
+            "Creating users is not supported via the Tailscale Admin API."
+        )
+
+    async def update_user(
+        self,
+        user_email: str,
+        user_role: str | None = None,
+        user_permissions: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Update user (not supported via Admin API)."""
+        raise TailscaleMCPError(
+            "Updating users is not supported via the Tailscale Admin API."
+        )
+
+    async def delete_user(self, user_email: str) -> dict[str, Any]:
+        """Delete user (not supported via Admin API)."""
+        raise TailscaleMCPError(
+            "Deleting users is not supported via the Tailscale Admin API."
+        )
+
+    async def get_user_details(self, user_email: str) -> dict[str, Any]:
+        """Get user details (not supported via Admin API)."""
+        raise TailscaleMCPError(
+            "Getting user details is not supported via the Tailscale Admin API."
+        )
+
+    async def auth_key_list(self) -> list[dict[str, Any]]:
+        """List auth keys (not supported via Admin API)."""
+        raise TailscaleMCPError(
+            "Listing authentication keys is not supported via the Tailscale Admin API."
+        )
+
+    async def auth_key_create(
+        self,
+        auth_key_name: str | None = None,
+        auth_key_expiry: str | None = None,
+        auth_key_reusable: bool | None = None,
+        auth_key_ephemeral: bool | None = None,
+        auth_key_preauthorized: bool | None = None,
+        auth_key_tags: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Create auth key (not supported via Admin API)."""
+        raise TailscaleMCPError(
+            "Creating authentication keys is not supported via the Tailscale Admin API."
+        )
+
+    async def auth_key_revoke(self, auth_key_name: str) -> dict[str, Any]:
+        """Revoke auth key (not supported via Admin API)."""
+        raise TailscaleMCPError(
+            "Revoking authentication keys is not supported via the Tailscale Admin API."
+        )
+
+    async def auth_key_rotate(self) -> dict[str, Any]:
+        """Rotate expired keys (not supported via Admin API)."""
+        raise TailscaleMCPError(
+            "Rotating authentication keys is not supported via the Tailscale Admin API."
+        )
+
+    async def get_device(self, device_id: str) -> dict[str, Any]:
+        """Get device details using real Tailscale API.
+
+        Args:
+            device_id: Device ID
+
+        Returns:
+            Device information dictionary
+        """
+        try:
+            # Use operations layer
+            device = await self.device_operations.get_device(device_id)
+
+            # Convert to dict format expected by tools
+            return {
+                "device_id": device.id,
+                "name": device.name,
+                "hostname": device.hostname,
+                "os": device.os,
+                "ip_addresses": [device.ipv4] if device.ipv4 else [],
+                "authorized": device.authorized,
+                "tags": device.tags,
+                "is_exit_node": False,  # Extract from API if available
+                "routes": [],  # Extract from API if available
+                "client_version": device.client_version or "unknown",
+                "user": "",  # Not available in Device model
+                "status": device.status.value,
+            }
+        except Exception as e:
+            logger.error("Error getting device", device_id=device_id, error=str(e))
+            raise TailscaleMCPError(f"Failed to get device: {e}") from e
+
+    async def update_device_authorization(
+        self, device_id: str, authorize: bool, reason: str | None = None
+    ) -> dict[str, Any]:
+        """Alias for authorize_device for compatibility with tools."""
+        return await self.authorize_device(device_id, authorize, reason)
+
+    async def enable_exit_node(
+        self, device_id: str, advertise_routes: list[str] | None = None
+    ) -> dict[str, Any]:
+        """Enable exit node on a device (best-effort via Admin API).
+
+        Args:
+            device_id: Device ID
+            advertise_routes: Routes to advertise (e.g., ["0.0.0.0/0"])
+
+        Returns:
+            Update result
+        """
+        try:
+            payload: dict[str, Any] = {"isExitNode": True}
+            if advertise_routes is not None:
+                payload["routes"] = advertise_routes
+            result = await self.api_client.update_device(device_id, payload)
+            logger.info(
+                "Exit node enabled", device_id=device_id, routes=advertise_routes
+            )
+            return {"device_id": device_id, "result": result}
+        except Exception as e:
+            logger.error("Error enabling exit node", device_id=device_id, error=str(e))
+            raise TailscaleMCPError(f"Failed to enable exit node: {e}") from e
+
+    async def disable_exit_node(self, device_id: str) -> dict[str, Any]:
+        """Disable exit node on a device."""
+        try:
+            result = await self.api_client.update_device(
+                device_id, {"isExitNode": False}
+            )
+            logger.info("Exit node disabled", device_id=device_id)
+            return {"device_id": device_id, "result": result}
+        except Exception as e:
+            logger.error("Error disabling exit node", device_id=device_id, error=str(e))
+            raise TailscaleMCPError(f"Failed to disable exit node: {e}") from e
+
+    async def enable_subnet_router(
+        self, device_id: str, subnets: list[str]
+    ) -> dict[str, Any]:
+        """Enable subnet routing by advertising routes on a device."""
+        try:
+            result = await self.api_client.update_device(device_id, {"routes": subnets})
+            logger.info("Subnet router enabled", device_id=device_id, subnets=subnets)
+            return {"device_id": device_id, "result": result}
+        except Exception as e:
+            logger.error(
+                "Error enabling subnet router", device_id=device_id, error=str(e)
+            )
+            raise TailscaleMCPError(f"Failed to enable subnet router: {e}") from e
+
+    async def disable_subnet_router(self, device_id: str) -> dict[str, Any]:
+        """Disable subnet routing by clearing advertised routes."""
+        try:
+            result = await self.api_client.update_device(device_id, {"routes": []})
+            logger.info("Subnet router disabled", device_id=device_id)
+            return {"device_id": device_id, "result": result}
+        except Exception as e:
+            logger.error(
+                "Error disabling subnet router", device_id=device_id, error=str(e)
+            )
+            raise TailscaleMCPError(f"Failed to disable subnet router: {e}") from e
 
     async def authorize_device(
         self, device_id: str, authorize: bool = True, reason: str | None = None
@@ -106,32 +297,31 @@ class AdvancedDeviceManager:
             Authorization result
         """
         try:
-            if device_id not in self.devices:
-                raise ValueError(f"Device not found: {device_id}")
-
-            device = self.devices[device_id]
-            device.authorized = authorize
+            # Use operations layer
+            device = await self.device_operations.authorize_device(
+                device_id, authorize, reason
+            )
 
             logger.info(
                 "Device authorization updated",
                 device_id=device_id,
-                device_name=device.name,
                 authorized=authorize,
                 reason=reason,
             )
 
             return {
                 "device_id": device_id,
-                "device_name": device.name,
-                "authorized": authorize,
+                "authorized": device.authorized,
                 "reason": reason,
                 "timestamp": time.time(),
-                "message": f"Device {device.name} {'authorized' if authorize else 'revoked'}",
+                "result": device.to_dict(),
             }
 
         except Exception as e:
             logger.error("Error updating device authorization", error=str(e))
-            raise TailscaleMCPError(f"Failed to update device authorization: {e}") from e
+            raise TailscaleMCPError(
+                f"Failed to update device authorization: {e}"
+            ) from e
 
     async def rename_device(
         self, device_id: str, new_name: str, update_hostname: bool = False
@@ -147,30 +337,22 @@ class AdvancedDeviceManager:
             Rename result
         """
         try:
-            if device_id not in self.devices:
-                raise ValueError(f"Device not found: {device_id}")
-
-            device = self.devices[device_id]
-            old_name = device.name
-            device.name = new_name
-
-            if update_hostname:
-                device.hostname = new_name
+            # Use operations layer
+            device = await self.device_operations.rename_device(device_id, new_name)
 
             logger.info(
                 "Device renamed",
                 device_id=device_id,
-                old_name=old_name,
                 new_name=new_name,
+                update_hostname=update_hostname,
             )
 
             return {
                 "device_id": device_id,
-                "old_name": old_name,
-                "new_name": new_name,
+                "new_name": device.name,
                 "hostname_updated": update_hostname,
                 "timestamp": time.time(),
-                "message": f"Device renamed from {old_name} to {new_name}",
+                "result": device.to_dict(),
             }
 
         except Exception as e:
@@ -191,68 +373,22 @@ class AdvancedDeviceManager:
             Tagging result
         """
         try:
-            if device_id not in self.devices:
-                raise ValueError(f"Device not found: {device_id}")
-
-            device = self.devices[device_id]
-            old_tags = device.tags.copy()
-
-            if operation == "add":
-                for tag in tags:
-                    if tag not in device.tags:
-                        device.tags.append(tag)
-                        # Update tag registry
-                        if tag not in self.device_tags:
-                            self.device_tags[tag] = DeviceTag(
-                                tag=tag, devices=[device_id], created_at=time.time()
-                            )
-                        else:
-                            if device_id not in self.device_tags[tag].devices:
-                                self.device_tags[tag].devices.append(device_id)
-
-            elif operation == "remove":
-                for tag in tags:
-                    if tag in device.tags:
-                        device.tags.remove(tag)
-                        # Update tag registry
-                        if tag in self.device_tags and device_id in self.device_tags[tag].devices:
-                            self.device_tags[tag].devices.remove(device_id)
-
-            elif operation == "replace":
-                device.tags = tags
-                # Update all tag registries
-                for tag in old_tags:
-                    if (
-                        tag in self.device_tags
-                        and device_id in self.device_tags[tag].devices
-                    ):
-                        self.device_tags[tag].devices.remove(device_id)
-                for tag in tags:
-                    if tag not in self.device_tags:
-                        self.device_tags[tag] = DeviceTag(
-                            tag=tag, devices=[device_id], created_at=time.time()
-                        )
-                    else:
-                        if device_id not in self.device_tags[tag].devices:
-                            self.device_tags[tag].devices.append(device_id)
+            # Use operations layer
+            device = await self.device_operations.tag_device(device_id, tags, operation)
 
             logger.info(
                 "Device tags updated",
                 device_id=device_id,
-                device_name=device.name,
                 operation=operation,
-                old_tags=old_tags,
-                new_tags=device.tags,
+                tags=device.tags,
             )
 
             return {
                 "device_id": device_id,
-                "device_name": device.name,
+                "tags": device.tags,
                 "operation": operation,
-                "old_tags": old_tags,
-                "new_tags": device.tags,
                 "timestamp": time.time(),
-                "message": f"Tags {operation}ed for device {device.name}",
+                "result": device.to_dict(),
             }
 
         except Exception as e:
@@ -262,95 +398,20 @@ class AdvancedDeviceManager:
     async def enable_ssh_access(
         self, device_id: str, public_key: str, key_name: str | None = None
     ) -> dict[str, Any]:
-        """Enable SSH access for a device.
+        """Enable SSH access for a device (not supported via Admin API).
 
-        Args:
-            device_id: Device ID to enable SSH for
-            public_key: SSH public key
-            key_name: Optional name for the key
-
-        Returns:
-            SSH access result
+        Raises:
+            TailscaleMCPError: Always; not supported by public Admin API.
         """
-        try:
-            if device_id not in self.devices:
-                raise ValueError(f"Device not found: {device_id}")
-
-            device = self.devices[device_id]
-            device.ssh_enabled = True
-
-            # Create SSH key record
-            key_id = f"{device_id}_{int(time.time())}"
-            ssh_key = SSHKey(
-                key_id=key_id,
-                public_key=public_key,
-                device_id=device_id,
-                created_at=time.time(),
-            )
-
-            self.ssh_keys[key_id] = ssh_key
-
-            logger.info(
-                "SSH access enabled",
-                device_id=device_id,
-                device_name=device.name,
-                key_id=key_id,
-            )
-
-            return {
-                "device_id": device_id,
-                "device_name": device.name,
-                "ssh_enabled": True,
-                "key_id": key_id,
-                "timestamp": time.time(),
-                "message": f"SSH access enabled for device {device.name}",
-            }
-
-        except Exception as e:
-            logger.error("Error enabling SSH access", error=str(e))
-            raise TailscaleMCPError(f"Failed to enable SSH access: {e}") from e
+        raise TailscaleMCPError(
+            "Enabling SSH access is not supported via the Tailscale Admin API."
+        )
 
     async def disable_ssh_access(self, device_id: str) -> dict[str, Any]:
-        """Disable SSH access for a device.
-
-        Args:
-            device_id: Device ID to disable SSH for
-
-        Returns:
-            SSH disable result
-        """
-        try:
-            if device_id not in self.devices:
-                raise ValueError(f"Device not found: {device_id}")
-
-            device = self.devices[device_id]
-            device.ssh_enabled = False
-
-            # Remove SSH keys for this device
-            keys_to_remove = [
-                key_id
-                for key_id, key in self.ssh_keys.items()
-                if key.device_id == device_id
-            ]
-            for key_id in keys_to_remove:
-                del self.ssh_keys[key_id]
-
-            logger.info(
-                "SSH access disabled", device_id=device_id, device_name=device.name
-            )
-
-            return {
-                "device_id": device_id,
-                "device_name": device.name,
-                "ssh_enabled": False,
-                "removed_keys": len(keys_to_remove),
-                "timestamp": time.time(),
-                "message": f"SSH access disabled for device {device.name}",
-            }
-
-        except Exception as e:
-            logger.error("Error disabling SSH access", error=str(e))
-            raise TailscaleMCPError(f"Failed to disable SSH access: {e}") from e
+        """Disable SSH access (not supported via Admin API)."""
+        raise TailscaleMCPError(
+            "Disabling SSH access is not supported via the Tailscale Admin API."
+        )
 
     async def list_devices(
         self,
@@ -367,78 +428,45 @@ class AdvancedDeviceManager:
             List of device information from real Tailscale API
         """
         try:
-            # Make real API call to Tailscale
-            api_devices = await self.api_client.list_devices()
+            # Use operations layer
+            devices = await self.device_operations.list_devices(
+                online_only=online_only,
+                filter_tags=filter_tags or [],
+            )
 
+            # Convert Device models to dict format expected by tools
             devices_list = []
             current_time = time.time()
 
-            for api_device in api_devices:
-                # Map API response to our format
-                device_id = api_device.get("id", "")
-
-                # Parse lastSeen timestamp
-                last_seen_raw = api_device.get("lastSeen")
-                if isinstance(last_seen_raw, str):
-                    from datetime import datetime
-                    try:
-                        last_seen_ts = datetime.fromisoformat(last_seen_raw.replace("Z", "+00:00")).timestamp()
-                    except Exception:
-                        last_seen_ts = current_time
-                else:
-                    last_seen_ts = last_seen_raw if last_seen_raw else current_time
-
-                # Determine online status based on connectedToControl and lastSeen
-                # This is a compromise: connectedToControl is known to be unreliable for iOS devices
-                # that remain "connected" in the background even when off
-                connected_to_control = api_device.get("connectedToControl", False)
-
-                # Calculate time since last seen
-                time_since_seen = current_time - last_seen_ts if last_seen_ts else float("inf")
-
-                # Use configurable timeout (default: 1 hour)
-                # Devices that haven't been seen within this timeframe are considered offline
-                # regardless of connectedToControl status. This helps with iOS devices that
-                # report connectedToControl=True when off
-                recently_active = time_since_seen < self.online_timeout_seconds
-
-                # Device is online if connected AND recently active
-                is_online = connected_to_control and recently_active
-
-                # Apply online filter
-                if online_only and not is_online:
-                    continue
-
-                # Apply tag filtering
-                if filter_tags:
-                    device_tags = api_device.get("tags", [])
-                    matching_tags = [tag for tag in filter_tags if tag in device_tags]
-                    if not matching_tags:
-                        continue
-
-                # Extract device information from API response
-                addresses = api_device.get("addresses", [])
+            for device in devices:
+                # Convert Device model to dict
+                last_seen_ts = (
+                    device.last_seen.timestamp() if device.last_seen else current_time
+                )
+                is_online = device.status == DeviceStatus.ONLINE
 
                 device_data = {
-                    "device_id": device_id,
-                    "name": api_device.get("name", "unknown"),
-                    "hostname": api_device.get("hostname", "unknown"),
-                    "os": api_device.get("os", "unknown"),
-                    "ip_addresses": addresses,
-                    "status": "online" if is_online else "offline",
+                    "device_id": device.id,
+                    "name": device.name,
+                    "hostname": device.hostname,
+                    "os": device.os,
+                    "ip_addresses": [device.ipv4] if device.ipv4 else [],
+                    "status": device.status.value,
                     "online": is_online,
                     "last_seen": last_seen_ts,
-                    "time_since_seen": current_time - last_seen_ts if last_seen_ts else None,
-                    "authorized": api_device.get("authorized", True),
-                    "tags": api_device.get("tags", []),
+                    "time_since_seen": current_time - last_seen_ts
+                    if device.last_seen
+                    else None,
+                    "authorized": device.authorized,
+                    "tags": device.tags,
                     "ssh_enabled": False,  # Would need separate API call
-                    "is_exit_node": api_device.get("isExitNode", False),
-                    "is_subnet_router": len(api_device.get("routes", [])) > 0,
-                    "advertised_routes": api_device.get("routes", []),
-                    "client_version": api_device.get("clientVersion", "unknown"),
-                    "user": api_device.get("user", ""),
-                    "machine_key": api_device.get("machineKey", ""),
-                    "update_available": api_device.get("updateAvailable", False),
+                    "is_exit_node": False,  # Extract from API if available
+                    "is_subnet_router": False,  # Extract from API if available
+                    "advertised_routes": [],  # Extract from API if available
+                    "client_version": device.client_version or "unknown",
+                    "user": "",  # Not available in Device model
+                    "machine_key": device.machine_key or "",
+                    "update_available": False,  # Would need separate API call
                 }
                 devices_list.append(device_data)
 
@@ -456,7 +484,7 @@ class AdvancedDeviceManager:
             raise TailscaleMCPError(f"Failed to list devices: {e}") from e
 
     async def list_devices_by_tag(self, tag: str) -> list[dict[str, Any]]:
-        """List devices with a specific tag.
+        """List devices with a specific tag using live API filter.
 
         Args:
             tag: Tag to filter by
@@ -465,30 +493,9 @@ class AdvancedDeviceManager:
             List of devices with the tag
         """
         try:
-            if tag not in self.device_tags:
-                return []
-
-            tagged_devices = []
-            for device_id in self.device_tags[tag].devices:
-                if device_id in self.devices:
-                    device = self.devices[device_id]
-                    tagged_devices.append(
-                        {
-                            "device_id": device.device_id,
-                            "name": device.name,
-                            "hostname": device.hostname,
-                            "status": device.status,
-                            "authorized": device.authorized,
-                            "tags": device.tags,
-                            "last_seen": device.last_seen,
-                        }
-                    )
-
-            logger.info(
-                "Devices listed by tag", tag=tag, device_count=len(tagged_devices)
-            )
-
-            return tagged_devices
+            devices = await self.list_devices(online_only=False, filter_tags=[tag])
+            logger.info("Devices listed by tag", tag=tag, device_count=len(devices))
+            return devices
 
         except Exception as e:
             logger.error("Error listing devices by tag", error=str(e))
@@ -545,51 +552,51 @@ class AdvancedDeviceManager:
             Device statistics summary
         """
         try:
-            total_devices = len(self.devices)
-            authorized_devices = sum(1 for d in self.devices.values() if d.authorized)
-            online_devices = sum(
-                1 for d in self.devices.values() if d.status == "online"
+            api_devices = await self.api_client.list_devices()
+            total_devices = len(api_devices)
+
+            authorized_devices = sum(
+                1 for d in api_devices if d.get("authorized", True)
             )
-            ssh_enabled_devices = sum(1 for d in self.devices.values() if d.ssh_enabled)
-            exit_nodes = sum(1 for d in self.devices.values() if d.is_exit_node)
-            subnet_routers = sum(1 for d in self.devices.values() if d.is_subnet_router)
+            connected = sum(
+                1 for d in api_devices if d.get("connectedToControl", False)
+            )
+            exit_nodes = sum(1 for d in api_devices if d.get("isExitNode", False))
+            subnet_routers = sum(1 for d in api_devices if len(d.get("routes", [])) > 0)
 
             # OS distribution
-            os_distribution = {}
-            for device in self.devices.values():
-                os_distribution[device.os] = os_distribution.get(device.os, 0) + 1
+            os_distribution: dict[str, int] = {}
+            for d in api_devices:
+                os_name = d.get("os", "unknown")
+                os_distribution[os_name] = os_distribution.get(os_name, 0) + 1
 
             # Tag usage
-            tag_usage = {}
-            for device in self.devices.values():
-                for tag in device.tags:
+            tag_usage: dict[str, int] = {}
+            for d in api_devices:
+                for tag in d.get("tags", []) or []:
                     tag_usage[tag] = tag_usage.get(tag, 0) + 1
 
             # Client version distribution
-            version_distribution = {}
-            for device in self.devices.values():
-                version_distribution[device.client_version] = (
-                    version_distribution.get(device.client_version, 0) + 1
-                )
+            version_distribution: dict[str, int] = {}
+            for d in api_devices:
+                ver = d.get("clientVersion", "unknown")
+                version_distribution[ver] = version_distribution.get(ver, 0) + 1
 
             return {
                 "total_devices": total_devices,
                 "authorized_devices": authorized_devices,
-                "online_devices": online_devices,
-                "ssh_enabled_devices": ssh_enabled_devices,
+                "online_devices": connected,
                 "exit_nodes": exit_nodes,
                 "subnet_routers": subnet_routers,
                 "authorization_rate": (authorized_devices / total_devices * 100)
-                if total_devices > 0
+                if total_devices
                 else 0,
-                "uptime_percentage": (online_devices / total_devices * 100)
-                if total_devices > 0
+                "uptime_percentage": (connected / total_devices * 100)
+                if total_devices
                 else 0,
                 "os_distribution": os_distribution,
                 "tag_usage": tag_usage,
                 "version_distribution": version_distribution,
-                "device_groups": len(self.device_groups),
-                "ssh_keys": len(self.ssh_keys),
             }
 
         except Exception as e:
@@ -599,7 +606,7 @@ class AdvancedDeviceManager:
     async def search_devices(
         self, query: str, search_fields: list[str] | None = None
     ) -> list[dict[str, Any]]:
-        """Search devices by various fields.
+        """Search devices by various fields using live API list + filter.
 
         Args:
             query: Search query
@@ -609,56 +616,42 @@ class AdvancedDeviceManager:
             List of matching devices
         """
         try:
-            if not search_fields:
-                search_fields = ["name", "hostname", "tags"]
+            # Use operations layer
+            devices = await self.device_operations.search_devices(query, search_fields)
 
-            matching_devices = []
-            query_lower = query.lower()
+            # Convert Device models to dict format
+            results: list[dict[str, Any]] = []
+            current_time = time.time()
 
-            for device in self.devices.values():
-                match = False
+            for device in devices:
+                last_seen_ts = (
+                    device.last_seen.timestamp() if device.last_seen else current_time
+                )
+                is_online = device.status == DeviceStatus.ONLINE
 
-                if (
-                    ("name" in search_fields and query_lower in device.name.lower())
-                    or (
-                        "hostname" in search_fields
-                        and query_lower in device.hostname.lower()
-                    )
-                    or (
-                        "tags" in search_fields
-                        and any(query_lower in tag.lower() for tag in device.tags)
-                    )
-                    or ("os" in search_fields and query_lower in device.os.lower())
-                    or (
-                        "status" in search_fields
-                        and query_lower in device.status.lower()
-                    )
-                ):
-                    match = True
-
-                if match:
-                    matching_devices.append(
-                        {
-                            "device_id": device.device_id,
-                            "name": device.name,
-                            "hostname": device.hostname,
-                            "os": device.os,
-                            "status": device.status,
-                            "authorized": device.authorized,
-                            "tags": device.tags,
-                            "last_seen": device.last_seen,
-                        }
-                    )
+                device_dict = {
+                    "device_id": device.id,
+                    "name": device.name,
+                    "hostname": device.hostname,
+                    "os": device.os,
+                    "tags": device.tags,
+                    "status": device.status.value,
+                    "online": is_online,
+                    "last_seen": last_seen_ts,
+                    "authorized": device.authorized,
+                    "ip_addresses": [device.ipv4] if device.ipv4 else [],
+                }
+                results.append(device_dict)
 
             logger.info(
-                "Device search completed",
+                "Devices searched",
                 query=query,
                 search_fields=search_fields,
-                results_count=len(matching_devices),
+                matches=len(results),
             )
 
-            return matching_devices
+            return results
 
         except Exception as e:
-            logger.error("Error searching devices", error=str(e))
+            logger.error("Error searching devices", query=query, error=str(e))
             raise TailscaleMCPError(f"Failed to search devices: {e}") from e

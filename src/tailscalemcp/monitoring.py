@@ -12,20 +12,25 @@ import structlog
 from prometheus_client import Counter, Gauge, Histogram, Info, generate_latest
 from pydantic import BaseModel, Field
 
+from .config import TailscaleConfig
 from .exceptions import TailscaleMCPError
 
 logger = structlog.get_logger(__name__)
 
 # Prometheus Metrics - Prevent duplicate registration
 try:
-    DEVICE_COUNT = Gauge("tailscale_devices_total", "Total number of devices", ["status"])
+    DEVICE_COUNT = Gauge(
+        "tailscale_devices_total", "Total number of devices", ["status"]
+    )
     DEVICE_ONLINE = Gauge("tailscale_devices_online", "Number of online devices")
     NETWORK_LATENCY = Histogram(
         "tailscale_network_latency_seconds",
         "Network latency between devices",
         ["from_device", "to_device"],
     )
-    BYTES_SENT = Counter("tailscale_bytes_sent_total", "Total bytes sent", ["device_id"])
+    BYTES_SENT = Counter(
+        "tailscale_bytes_sent_total", "Total bytes sent", ["device_id"]
+    )
     BYTES_RECEIVED = Counter(
         "tailscale_bytes_received_total", "Total bytes received", ["device_id"]
     )
@@ -251,13 +256,19 @@ class TailscaleMonitor:
             online_devices = [d for d in devices if d.get("status") == "online"]
 
             status = {
-                "status": "operational" if metrics.network_health_score > 70 else "degraded",
+                "status": "operational"
+                if metrics.network_health_score > 70
+                else "degraded",
                 "health_score": metrics.network_health_score,
                 "devices": {
                     "total": metrics.devices_total,
                     "online": metrics.devices_online,
                     "offline": metrics.devices_offline,
-                    "online_percentage": round((metrics.devices_online / metrics.devices_total * 100), 2) if metrics.devices_total > 0 else 0,
+                    "online_percentage": round(
+                        (metrics.devices_online / metrics.devices_total * 100), 2
+                    )
+                    if metrics.devices_total > 0
+                    else 0,
                 },
                 "network": {
                     "exit_nodes": metrics.exit_nodes,
@@ -290,28 +301,8 @@ class TailscaleMonitor:
         try:
             metrics = await self.collect_metrics()
 
-            # Calculate real metrics from API data
-            latency_sum = 0.0
-            latency_count = 0
-            total_bandwidth = 0
-
-            # Get devices from API to calculate real metrics
-            from .api_client import TailscaleAPIClient
-            api_client = TailscaleAPIClient(api_key=self.api_key, tailnet=self.tailnet)
-            devices = await api_client.list_devices()
-
-            # Calculate actual metrics from device data
-            for device in devices:
-                # Calculate latency if we have lastSeen data
-                if device.get("lastSeen"):
-                    latency_count += 1
-
-                # Sum bandwidth (would need actual traffic data from API)
-                # This is a placeholder until we have real bandwidth data
-
+            # Limit metrics to what Admin API exposes reliably
             network_metrics = {
-                "average_latency": f"{latency_sum/latency_count:.2f}ms" if latency_count > 0 else "N/A",
-                "total_bandwidth": f"{total_bandwidth} Mbps",
                 "health_score": metrics.network_health_score,
                 "devices_total": metrics.devices_total,
                 "devices_online": metrics.devices_online,
@@ -319,7 +310,11 @@ class TailscaleMonitor:
                 "exit_nodes": metrics.exit_nodes,
                 "subnet_routes": metrics.subnet_routes,
                 "acl_rules": metrics.acl_rules,
-                "uptime_percentage": round((metrics.devices_online / metrics.devices_total * 100), 2) if metrics.devices_total > 0 else 0,
+                "uptime_percentage": round(
+                    (metrics.devices_online / metrics.devices_total * 100), 2
+                )
+                if metrics.devices_total > 0
+                else 0,
                 "timestamp": metrics.timestamp,
             }
 
@@ -383,10 +378,21 @@ class TailscaleMonitor:
     async def _get_devices_data(self) -> list[dict[str, Any]]:
         """Get devices data from real Tailscale API."""
         try:
-            from .api_client import TailscaleAPIClient
+            from .operations.devices import DeviceOperations
 
-            api_client = TailscaleAPIClient(api_key=self.api_key, tailnet=self.tailnet)
-            devices = await api_client.list_devices()
+            # Use operations layer for real API calls
+            config = TailscaleConfig(
+                tailscale_api_key=self.api_key or "",
+                tailscale_tailnet=self.tailnet or "",
+            )
+            device_ops = DeviceOperations(config=config)
+            devices_model = await device_ops.list_devices()
+
+            # Convert Device models to dict format for backward compatibility
+            devices = [
+                d.to_dict() if hasattr(d, "to_dict") else d.model_dump()
+                for d in devices_model
+            ]
 
             # Map API response to expected format
             formatted_devices = []
@@ -394,7 +400,9 @@ class TailscaleMonitor:
                 formatted_device = {
                     "id": device.get("id", ""),
                     "name": device.get("name", "unknown"),
-                    "status": "online" if device.get("online", False) else "offline",
+                    "status": "online"
+                    if device.get("connectedToControl", False)
+                    else "offline",
                     "is_exit_node": device.get("isExitNode", False),
                     "advertised_routes": device.get("routes", []),
                     "authorized": device.get("authorized", True),
@@ -404,7 +412,9 @@ class TailscaleMonitor:
                 }
                 formatted_devices.append(formatted_device)
 
-            logger.info("Device data retrieved from real API", count=len(formatted_devices))
+            logger.info(
+                "Device data retrieved from real API", count=len(formatted_devices)
+            )
             return formatted_devices
 
         except Exception as e:
@@ -442,12 +452,7 @@ class TailscaleMonitor:
         if ACL_RULES is not None:
             ACL_RULES.set(metrics.acl_rules)
 
-        # Update device-specific metrics
-        for device in devices:
-            if BYTES_SENT is not None:
-                BYTES_SENT.labels(device_id=device["id"]).inc(1000000)  # Simulated data
-            if BYTES_RECEIVED is not None:
-                BYTES_RECEIVED.labels(device_id=device["id"]).inc(800000)  # Simulated data
+        # No simulated per-device counters; real traffic metrics not available via Admin API
 
     async def _create_dashboard_panels(self) -> list[dict[str, Any]]:
         """Create Grafana dashboard panels."""

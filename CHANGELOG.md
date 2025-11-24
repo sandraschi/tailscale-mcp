@@ -8,6 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Tailscale Funnel Support**: Complete Funnel integration for exposing local services to public internet
+  - New `tailscale_funnel` portmanteau tool with 5 operations (enable, disable, status, list, certificate_info)
+  - Automatic TLS certificate management via Tailscale Funnel
+  - Secure HTTPS access to local services without complex configuration
+  - Full integration with Tailscale CLI for Funnel operations
+  - Comprehensive error handling and status reporting
+- **Enhanced Taildrop Integration**: Real CLI integration for Taildrop file sharing
+  - TaildropManager now uses real Tailscale CLI commands for file transfers
+  - Automatic fallback to simulated transfers if CLI not available
+  - Improved file transfer progress tracking and status reporting
+  - Support for receiving all pending files via CLI
+  - Better error handling with actual Tailscale CLI error messages
+- **Tailscale CLI Utility**: New utility module for CLI integration
+  - Async wrapper for Tailscale CLI commands
+  - Automatic binary detection across platforms (Windows, macOS, Linux)
+  - Comprehensive error handling and timeout management
+  - Support for Taildrop and Funnel CLI operations
+  - Proper command execution with output parsing
 - **FastMCP Runtime Prompts and Resources**: Successfully implemented and verified working
   - 6 runtime prompts registered via `@mcp.prompt()` decorators
   - 7 runtime resources registered via `@mcp.resource()` decorators

@@ -37,8 +37,7 @@ class TestMonitoringIntegration:
             log_file = Path(temp_dir) / "test.log"
 
             # Setup both logging and metrics
-            with patch("src.tailscalemcp.__main__.start_http_server"):
-                with patch("src.tailscalemcp.__main__.Info"):
+            with patch("src.tailscalemcp.__main__.start_http_server"), patch("src.tailscalemcp.__main__.Info"):
                     setup_prometheus_metrics(9091)
 
             setup_structured_logging("INFO", str(log_file))
@@ -64,8 +63,7 @@ class TestMonitoringIntegration:
             log_file = Path(temp_dir) / "test.log"
 
             # Setup monitoring stack
-            with patch("src.tailscalemcp.__main__.start_http_server") as mock_server:
-                with patch("src.tailscalemcp.__main__.Info") as mock_info:
+            with patch("src.tailscalemcp.__main__.start_http_server") as mock_server, patch("src.tailscalemcp.__main__.Info") as mock_info:
                     mock_info_instance = MagicMock()
                     mock_info.return_value = mock_info_instance
 
@@ -84,7 +82,7 @@ class TestMonitoringIntegration:
             log_file = Path(temp_dir) / "test.log"
 
             # Setup monitoring stack
-            with patch("src.tailscalemcp.__main__.start_http_server"):
+            with patch("src.tailscalemcp.__main__.start_http_server"):  # noqa: SIM117
                 with patch("src.tailscalemcp.__main__.Info"):
                     setup_prometheus_metrics(9091)
 
@@ -125,7 +123,7 @@ class TestMonitoringIntegration:
             log_file = Path(temp_dir) / "test.log"
 
             # Setup monitoring stack
-            with patch("src.tailscalemcp.__main__.start_http_server"):
+            with patch("src.tailscalemcp.__main__.start_http_server"):  # noqa: SIM117
                 with patch("src.tailscalemcp.__main__.Info"):
                     setup_prometheus_metrics(9091)
 
@@ -159,7 +157,7 @@ class TestMonitoringIntegration:
             log_file = Path(temp_dir) / "test.log"
 
             # Setup monitoring stack
-            with patch("src.tailscalemcp.__main__.start_http_server"):
+            with patch("src.tailscalemcp.__main__.start_http_server"):  # noqa: SIM117
                 with patch("src.tailscalemcp.__main__.Info"):
                     setup_prometheus_metrics(9091)
 
@@ -207,7 +205,7 @@ class TestMonitoringIntegration:
             log_file = Path(temp_dir) / "test.log"
 
             # Setup monitoring stack
-            with patch("src.tailscalemcp.__main__.start_http_server"):
+            with patch("src.tailscalemcp.__main__.start_http_server"):  # noqa: SIM117
                 with patch("src.tailscalemcp.__main__.Info"):
                     setup_prometheus_metrics(9091)
 
@@ -252,7 +250,7 @@ class TestMonitoringIntegration:
             log_file = Path(temp_dir) / "test.log"
 
             # Setup monitoring stack
-            with patch("src.tailscalemcp.__main__.start_http_server"):
+            with patch("src.tailscalemcp.__main__.start_http_server"):  # noqa: SIM117
                 with patch("src.tailscalemcp.__main__.Info"):
                     setup_prometheus_metrics(9091)
 
@@ -297,7 +295,7 @@ class TestMonitoringIntegration:
             log_file = Path(temp_dir) / "test.log"
 
             # Setup monitoring stack
-            with patch("src.tailscalemcp.__main__.start_http_server"):
+            with patch("src.tailscalemcp.__main__.start_http_server"):  # noqa: SIM117
                 with patch("src.tailscalemcp.__main__.Info"):
                     setup_prometheus_metrics(9091)
 
@@ -329,7 +327,7 @@ class TestMonitoringIntegration:
             log_file = Path(temp_dir) / "test.log"
 
             # Setup monitoring stack
-            with patch("src.tailscalemcp.__main__.start_http_server"):
+            with patch("src.tailscalemcp.__main__.start_http_server"):  # noqa: SIM117
                 with patch("src.tailscalemcp.__main__.Info"):
                     setup_prometheus_metrics(9091)
 

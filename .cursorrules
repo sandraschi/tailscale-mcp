@@ -246,14 +246,21 @@ async def tool_name(
 # Before committing, always run:
 uv run ruff check .
 uv run ruff check --fix .  # Auto-fix what can be fixed
+uv run ruff check --fix --unsafe-fixes .  # Apply all fixes including unsafe ones
 
-# Verify zero errors before:
+# Verify ZERO errors before:
 git add .
 git commit -m "your message"
 git push
 ```
 
-**Ruff errors will cause CI to fail**. Always fix linting errors before pushing to remote.
+**IMPORTANT**: 
+- Even a single remaining ruff error will make the workflow fail
+- Do NOT declare ruff errors as "cosmetic" or "minor"
+- Ruff does not have a telepathic connection - all errors must be fixed or skipped
+- **NOQA IS NOT ALLOWED** - All ruff errors must be properly fixed, no exceptions
+- If you absolutely cannot fix an error, it must be explicitly skipped with a comment explaining why
+- Zero ruff errors = CI will pass
 
 ## Build System
 

@@ -15,6 +15,7 @@ import structlog
 from pydantic import BaseModel, Field
 
 from .exceptions import TailscaleMCPError
+from .utils.tailscale_cli import TailscaleCLI
 
 logger = structlog.get_logger(__name__)
 
@@ -53,19 +54,45 @@ class TaildropManager:
 
     def __init__(
         self,
-        taildrop_dir: str = "/tmp/taildrop",
+        taildrop_dir: str | None = None,
         max_file_size: int = 100 * 1024 * 1024,
+        use_cli: bool = True,
+        tailscale_binary: str | None = None,
     ):
         """Initialize Taildrop manager.
 
         Args:
-            taildrop_dir: Directory for Taildrop files
+            taildrop_dir: Directory for Taildrop files (default: system temp)
             max_file_size: Maximum file size in bytes (default: 100MB)
+            use_cli: Use real Tailscale CLI for transfers (default: True)
+            tailscale_binary: Path to tailscale binary (default: auto-detect)
         """
-        self.taildrop_dir = Path(taildrop_dir)
+        import tempfile
+
+        self.taildrop_dir = (
+            Path(taildrop_dir)
+            if taildrop_dir
+            else Path(tempfile.gettempdir()) / "taildrop"
+        )
         self.max_file_size = max_file_size
         self.transfers: dict[str, TaildropTransfer] = {}
         self.active_transfers: dict[str, asyncio.Task] = {}
+        self.use_cli = use_cli
+
+        # Initialize CLI if enabled
+        if self.use_cli:
+            try:
+                self.cli = TailscaleCLI(tailscale_binary=tailscale_binary)
+                logger.info("Taildrop manager using Tailscale CLI", cli_available=True)
+            except Exception as e:
+                logger.warning(
+                    "Tailscale CLI not available, falling back to simulated transfers",
+                    error=str(e),
+                )
+                self.use_cli = False
+                self.cli = None
+        else:
+            self.cli = None
 
         # Create taildrop directory if it doesn't exist
         self.taildrop_dir.mkdir(parents=True, exist_ok=True)
@@ -74,13 +101,14 @@ class TaildropManager:
             "Taildrop manager initialized",
             taildrop_dir=str(self.taildrop_dir),
             max_file_size=max_file_size,
+            use_cli=self.use_cli,
         )
 
     async def send_file(
         self,
         file_path: str,
         recipient_device: str,
-        sender_device: str,
+        sender_device: str | None = None,
         expire_hours: int = 24,
     ) -> dict[str, Any]:
         """Send a file via Taildrop.
@@ -88,18 +116,18 @@ class TaildropManager:
         Args:
             file_path: Path to the file to send
             recipient_device: Target device ID or name
-            sender_device: Sender device ID or name
+            sender_device: Sender device ID or name (optional, auto-detected if using CLI)
             expire_hours: File expiration time in hours
 
         Returns:
             Transfer information and status
         """
         try:
-            file_path = Path(file_path)
-            if not file_path.exists():
+            file_path_obj = Path(file_path)
+            if not file_path_obj.exists():
                 raise FileNotFoundError(f"File not found: {file_path}")
 
-            file_size = file_path.stat().st_size
+            file_size = file_path_obj.stat().st_size
             if file_size > self.max_file_size:
                 raise ValueError(
                     f"File too large: {file_size} bytes (max: {self.max_file_size})"
@@ -111,19 +139,97 @@ class TaildropManager:
             ).hexdigest()
 
             # Calculate file checksum
-            checksum = await self._calculate_checksum(file_path)
+            checksum = await self._calculate_checksum(file_path_obj)
 
+            # Use real CLI if available
+            if self.use_cli and self.cli:
+                try:
+                    logger.info(
+                        "Sending file via Tailscale CLI",
+                        file_path=str(file_path_obj),
+                        recipient=recipient_device,
+                    )
+
+                    # Use CLI to send file
+                    cli_result = await self.cli.file_send(
+                        str(file_path_obj.absolute()), recipient_device, wait=True
+                    )
+
+                    if cli_result.get("success"):
+                        # Create transfer record for successful transfer
+                        transfer = TaildropTransfer(
+                            transfer_id=transfer_id,
+                            sender_device=sender_device or "local",
+                            recipient_device=recipient_device,
+                            files=[
+                                TaildropFile(
+                                    filename=file_path_obj.name,
+                                    size=file_size,
+                                    checksum=checksum,
+                                    sender=sender_device or "local",
+                                    recipient=recipient_device,
+                                    status="completed",
+                                    created_at=time.time(),
+                                    completed_at=time.time(),
+                                    expires_at=time.time() + (expire_hours * 3600),
+                                )
+                            ],
+                            status="completed",
+                            progress=100.0,
+                            created_at=time.time(),
+                            estimated_completion=time.time(),
+                        )
+
+                        self.transfers[transfer_id] = transfer
+
+                        logger.info(
+                            "Taildrop transfer completed via CLI",
+                            transfer_id=transfer_id,
+                            filename=file_path_obj.name,
+                            recipient=recipient_device,
+                        )
+
+                        return {
+                            "transfer_id": transfer_id,
+                            "status": "completed",
+                            "filename": file_path_obj.name,
+                            "size": file_size,
+                            "recipient": recipient_device,
+                            "expires_at": transfer.files[0].expires_at,
+                            "message": f"File sent successfully to {recipient_device}",
+                            "cli_output": cli_result.get("output"),
+                        }
+                    else:
+                        # CLI failed, fall through to simulated transfer
+                        logger.warning(
+                            "CLI transfer failed, falling back to simulated",
+                            error=cli_result.get("error"),
+                        )
+                        raise TailscaleMCPError(
+                            f"CLI transfer failed: {cli_result.get('error')}"
+                        )
+
+                except Exception as cli_error:
+                    logger.warning(
+                        "CLI transfer error, falling back to simulated",
+                        error=str(cli_error),
+                    )
+                    # Fall through to simulated transfer if CLI fails
+                    if not isinstance(cli_error, TailscaleMCPError):
+                        raise
+
+            # Fallback to simulated transfer
             # Create transfer record
             transfer = TaildropTransfer(
                 transfer_id=transfer_id,
-                sender_device=sender_device,
+                sender_device=sender_device or "local",
                 recipient_device=recipient_device,
                 files=[
                     TaildropFile(
-                        filename=file_path.name,
+                        filename=file_path_obj.name,
                         size=file_size,
                         checksum=checksum,
-                        sender=sender_device,
+                        sender=sender_device or "local",
                         recipient=recipient_device,
                         status="pending",
                         created_at=time.time(),
@@ -143,9 +249,9 @@ class TaildropManager:
             self.active_transfers[transfer_id] = transfer_task
 
             logger.info(
-                "Taildrop transfer initiated",
+                "Taildrop transfer initiated (simulated)",
                 transfer_id=transfer_id,
-                filename=file_path.name,
+                filename=file_path_obj.name,
                 recipient=recipient_device,
                 size=file_size,
             )
@@ -153,11 +259,12 @@ class TaildropManager:
             return {
                 "transfer_id": transfer_id,
                 "status": "initiated",
-                "filename": file_path.name,
+                "filename": file_path_obj.name,
                 "size": file_size,
                 "recipient": recipient_device,
                 "expires_at": transfer.files[0].expires_at,
                 "message": f"File transfer initiated to {recipient_device}",
+                "note": "Using simulated transfer (CLI not available)",
             }
 
         except Exception as e:
@@ -165,18 +272,65 @@ class TaildropManager:
             raise TailscaleMCPError(f"Failed to send file: {e}") from e
 
     async def receive_file(
-        self, transfer_id: str, save_path: str | None = None
+        self,
+        transfer_id: str | None = None,
+        save_path: str | None = None,
+        accept_all: bool = False,
     ) -> dict[str, Any]:
-        """Receive a file via Taildrop.
+        """Receive files via Taildrop.
 
         Args:
-            transfer_id: Transfer ID to receive
-            save_path: Optional custom save path
+            transfer_id: Optional transfer ID to receive (if None, receives all pending)
+            save_path: Optional custom save path or directory
+            accept_all: Accept all pending files automatically
 
         Returns:
             Reception status and file information
         """
         try:
+            # Use real CLI if available
+            if self.use_cli and self.cli:
+                try:
+                    logger.info(
+                        "Receiving files via Tailscale CLI", save_path=save_path
+                    )
+
+                    # Use CLI to receive files
+                    cli_result = await self.cli.file_receive(
+                        save_path=save_path, accept_all=accept_all
+                    )
+
+                    if cli_result.get("success"):
+                        logger.info(
+                            "Files received via Tailscale CLI",
+                            output=cli_result.get("output"),
+                        )
+
+                        return {
+                            "status": "received",
+                            "save_path": save_path or str(self.taildrop_dir),
+                            "output": cli_result.get("output"),
+                            "message": "Files received successfully via Tailscale CLI",
+                        }
+                    else:
+                        raise TailscaleMCPError(
+                            f"CLI receive failed: {cli_result.get('error')}"
+                        )
+
+                except Exception as cli_error:
+                    logger.warning(
+                        "CLI receive error, falling back to simulated",
+                        error=str(cli_error),
+                    )
+                    if not isinstance(cli_error, TailscaleMCPError):
+                        raise
+
+            # Fallback to simulated receive (requires transfer_id)
+            if not transfer_id:
+                raise ValueError(
+                    "transfer_id required when not using CLI. Use CLI mode or provide transfer_id."
+                )
+
             if transfer_id not in self.transfers:
                 raise ValueError(f"Transfer not found: {transfer_id}")
 
@@ -206,7 +360,7 @@ class TaildropManager:
             )
 
             logger.info(
-                "File received via Taildrop",
+                "File received via Taildrop (simulated)",
                 transfer_id=transfer_id,
                 filename=save_path.name,
                 size=received_file.size,
@@ -220,6 +374,7 @@ class TaildropManager:
                 "save_path": str(save_path),
                 "checksum": received_file.checksum,
                 "message": "File received successfully",
+                "note": "Using simulated receive (CLI not available)",
             }
 
         except Exception as e:

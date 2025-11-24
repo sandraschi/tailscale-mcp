@@ -142,6 +142,72 @@ await tailscale_network(operation="stats")
 await tailscale_network(operation="cache")
 ```
 
+#### Services (TailVIPs) — Fall Update
+
+Manage logical services with virtual TailVIPs and MagicDNS, grantable as policy units and automatable via API.
+
+Operations:
+- `services_list` → List all services
+- `services_get` → Get a service by ID
+- `services_create` → Create a new service
+- `services_update` → Update an existing service
+- `services_delete` → Delete a service
+
+Parameters:
+- `service_id: str` (required for get/update/delete)
+- `service_payload: dict` (required for create/update)
+  - Common keys:
+    - `name: str` (required for create)
+    - `tailvipIPv4: str`, `tailvipIPv6: str`
+    - `magicDNS: str`
+    - `endpoints: list[{deviceId: str, port: int, protocol: str}]`
+    - `tags: list[str]`
+
+Returns (shapes):
+- `services_list`: `{ count: int, services: [Service] }`
+- `services_get`: `{ service_id: str, service: Service }`
+- `services_create`: `{ service: Service }`
+- `services_update`: `{ service_id: str, service: Service }`
+- `services_delete`: `{ service_id: str, deleted: true }`
+
+Service model fields:
+- `id, name, tailvipIPv4, tailvipIPv6, magicDNS, tags, endpoints[]`
+- Endpoint: `{ deviceId, ip?, port, protocol }`
+
+Examples:
+
+```python
+# List services
+await tailscale_network(operation="services_list")
+
+# Get a service
+await tailscale_network(operation="services_get", service_id="svc-123")
+
+# Create a service
+await tailscale_network(
+  operation="services_create",
+  service_payload={
+    "name": "api-service",
+    "tailvipIPv4": "100.101.102.103",
+    "magicDNS": "api.tail",
+    "endpoints": [
+      {"deviceId": "device123", "port": 8080, "protocol": "tcp"}
+    ],
+    "tags": ["prod", "api"]
+  }
+)
+
+# Update a service
+await tailscale_network(
+  operation="services_update",
+  service_id="svc-123",
+  service_payload={"tags": ["prod", "critical"]}
+)
+
+# Delete a service
+await tailscale_network(operation="services_delete", service_id="svc-123")
+```
+
 ---
 
 ### 3. `tailscale_monitor` - Monitoring & Metrics

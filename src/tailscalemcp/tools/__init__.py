@@ -1,8 +1,8 @@
 """
-Tailscale MCP Tools Package
+Tailscale Portmanteau Tools
 
-Portmanteau tools following the database-mcp pattern to avoid tool explosion.
-Each tool combines multiple related operations into a single, powerful interface.
+Modular tool registration system for Tailscale MCP server.
+Each tool is in its own module for better maintainability.
 """
 
 from .portmanteau_tools import TailscalePortmanteauTools

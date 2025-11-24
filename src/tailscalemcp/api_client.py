@@ -42,9 +42,7 @@ class TailscaleAPIClient:
 
         logger.info("Tailscale API client initialized", tailnet=self.tailnet)
 
-    async def _request(
-        self, method: str, endpoint: str, **kwargs
-    ) -> dict[str, Any]:
+    async def _request(self, method: str, endpoint: str, **kwargs) -> dict[str, Any]:
         """Make an authenticated request to the Tailscale API.
 
         Args:

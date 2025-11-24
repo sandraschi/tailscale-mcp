@@ -105,11 +105,15 @@ def validate_config(args: argparse.Namespace) -> None:
 
 
 def setup_structured_logging(log_level: str, log_file: str) -> None:
-    """Setup structured logging with file output for Loki integration."""
+    """Setup structured logging with file and stderr output.
+
+    IMPORTANT: stdout is reserved for MCP protocol! stderr is allowed for server logs.
+    All logging uses structured logging (structlog) - no emojis in log messages!
+    """
     # Create logs directory if it doesn't exist
     Path(log_file).parent.mkdir(parents=True, exist_ok=True)
 
-    # Configure structlog for JSON output to file
+    # Configure structlog for JSON output
     structlog.configure(
         processors=[
             structlog.stdlib.filter_by_level,
@@ -120,7 +124,7 @@ def setup_structured_logging(log_level: str, log_file: str) -> None:
             structlog.processors.StackInfoRenderer(),
             structlog.processors.format_exc_info,
             structlog.processors.UnicodeDecoder(),
-            structlog.processors.JSONRenderer()
+            structlog.processors.JSONRenderer(),
         ],
         wrapper_class=structlog.make_filtering_bound_logger(
             getattr(logging, log_level.upper())
@@ -133,17 +137,15 @@ def setup_structured_logging(log_level: str, log_file: str) -> None:
     file_handler = logging.FileHandler(log_file)
     file_handler.setFormatter(logging.Formatter("%(message)s"))
 
-    # Setup console handler for human-readable logs
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(
-        logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s")
-    )
+    # Setup stderr handler for MCP server logs (stdout is reserved for MCP protocol)
+    stderr_handler = logging.StreamHandler(sys.stderr)
+    stderr_handler.setFormatter(logging.Formatter("%(message)s"))
 
-    # Configure root logger
+    # Configure root logger - file and stderr output
     root_logger = logging.getLogger()
     root_logger.setLevel(getattr(logging, log_level.upper()))
     root_logger.addHandler(file_handler)
-    root_logger.addHandler(console_handler)
+    root_logger.addHandler(stderr_handler)
 
 
 def setup_prometheus_metrics(port: int) -> None:
@@ -153,10 +155,7 @@ def setup_prometheus_metrics(port: int) -> None:
 
     # Create application info metric
     app_info = Info("tailscale_mcp_info", "Application information")
-    app_info.info({
-        "version": __version__,
-        "name": "tailscale-mcp-server"
-    })
+    app_info.info({"version": __version__, "name": "tailscale-mcp-server"})
 
 
 def run_server() -> None:
@@ -182,12 +181,14 @@ def run_server() -> None:
     # Start the server directly with FastMCP
     try:
         logger.info("Starting Tailscale MCP Server", version=__version__)
-        logger.info("Server configuration",
-                   host=args.host,
-                   port=args.port,
-                   tailnet=args.tailnet,
-                   prometheus_port=args.prometheus_port,
-                   log_file=args.log_file)
+        logger.info(
+            "Server configuration",
+            host=args.host,
+            port=args.port,
+            tailnet=args.tailnet,
+            prometheus_port=args.prometheus_port,
+            log_file=args.log_file,
+        )
 
         # Run the FastMCP server directly (it handles its own event loop)
         server.mcp.run()

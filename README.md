@@ -1,12 +1,15 @@
 # TailscaleMCP
 
-A FastMCP 2.12 compliant server for managing Tailscale networks with modern Python tooling and comprehensive CI/CD.
+A FastMCP 2.13+ compliant server for managing Tailscale networks with persistent storage, modern Python tooling, and comprehensive CI/CD.
 
 [![CI/CD Pipeline](https://github.com/yourusername/tailscalemcp/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/yourusername/tailscalemcp/actions)
 [![codecov](https://codecov.io/gh/yourusername/tailscalemcp/branch/main/graph/badge.svg)](https://codecov.io/gh/yourusername/tailscalemcp)
 [![PyPI version](https://badge.fury.io/py/tailscalemcp.svg)](https://badge.fury.io/py/tailscalemcp)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![FastMCP 2.13+](https://img.shields.io/badge/FastMCP-2.13+-green.svg)](https://github.com/pydantic/fastmcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Persistent Storage](https://img.shields.io/badge/storage-DiskStore-brightgreen.svg)](docs/STORAGE_BACKENDS.md)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 ## 🚀 Features
 
@@ -14,7 +17,8 @@ A FastMCP 2.12 compliant server for managing Tailscale networks with modern Pyth
   - `tailscale_device`: Comprehensive device management (list, authorize, rename, tag, SSH, search, stats, exit nodes, subnet routing, user management, auth keys)
   - `tailscale_network`: DNS and network management (MagicDNS, DNS records, resolution, policies, statistics)
   - `tailscale_monitor`: Monitoring and metrics (status, Prometheus metrics, topology, health reports, Grafana dashboards)
-  - `tailscale_file`: File sharing via Taildrop (send, receive, transfer management, statistics)
+  - `tailscale_file`: File sharing via Taildrop (send, receive, transfer management, statistics) - **Enhanced with real CLI integration**
+  - `tailscale_funnel`: Funnel operations for exposing local services to public internet (enable, disable, status, list, certificate info) - **NEW**
   - `tailscale_security`: Security and compliance (scanning, auditing, threat detection, policy management, alerting)
   - `tailscale_automation`: Workflow automation (workflows, scripts, batch operations, scheduling)
   - `tailscale_backup`: Backup and disaster recovery (backup creation, restoration, scheduling, testing)
@@ -36,7 +40,11 @@ A FastMCP 2.12 compliant server for managing Tailscale networks with modern Pyth
 - **⚡ Prometheus Metrics**: Export metrics for monitoring systems with custom metrics
 - **🏥 Health Reports**: Automated health analysis and recommendations
 - **📝 Structured Logging**: JSON-formatted logs with rich context for Loki integration
-- **Modern Tooling**: FastMCP 2.12, Ruff, Pytest, structured logging
+- **Modern Tooling**: FastMCP 2.13+ with persistent storage, Ruff, Pytest, structured logging
+- **💾 Persistent Storage**: FastMCP 2.13+ DiskStore backend for funnels, transfers, and preferences (survives Claude Desktop and OS restarts)
+  - Platform-aware storage locations (Windows: `%APPDATA%`, macOS: `~/Library/Application Support`, Linux: `~/.local/share`)
+  - Encrypted by default with FernetEncryptionWrapper
+  - See [Storage Backends Documentation](docs/STORAGE_BACKENDS.md) for details
 - **Container Ready**: Docker support with development and production images
 - **CI/CD**: Comprehensive GitHub Actions pipeline with security scanning
 
@@ -94,6 +102,37 @@ await tailscale_network(operation="search_domain", domain="internal", enabled=Tr
 
 # Create network policy
 await tailscale_network(operation="policy", policy_name="restrict-api", rules=[{"action": "accept", "src": ["engineering"], "dst": ["api:*"]}])
+
+# Tailscale Services (TailVIPs) — Fall Update
+# List services
+await tailscale_network(operation="services_list")
+
+# Get a service
+await tailscale_network(operation="services_get", service_id="svc-123")
+
+# Create a service
+await tailscale_network(
+    operation="services_create",
+    service_payload={
+        "name": "api-service",
+        "tailvipIPv4": "100.101.102.103",
+        "magicDNS": "api.tail",
+        "endpoints": [
+            {"deviceId": "device123", "port": 8080, "protocol": "tcp"}
+        ],
+        "tags": ["prod", "api"]
+    }
+)
+
+# Update a service
+await tailscale_network(
+    operation="services_update",
+    service_id="svc-123",
+    service_payload={"tags": ["prod", "critical"]}
+)
+
+# Delete a service
+await tailscale_network(operation="services_delete", service_id="svc-123")
 ```
 
 #### Monitoring (`tailscale_monitor`)
@@ -141,6 +180,26 @@ await tailscale_file(operation="status", transfer_id="transfer123")
 
 # Get Taildrop statistics
 await tailscale_file(operation="stats")
+```
+
+#### Funnel Operations (`tailscale_funnel`) - NEW
+
+```python
+# Enable Funnel for port 8080
+await tailscale_funnel(operation="funnel_enable", port=8080)
+# Returns public URL: https://your-device.tailnet-name.ts.net:8080
+
+# Disable Funnel for port 8080
+await tailscale_funnel(operation="funnel_disable", port=8080)
+
+# Get Funnel status
+await tailscale_funnel(operation="funnel_status")
+
+# List all active Funnels
+await tailscale_funnel(operation="funnel_list")
+
+# Get certificate information
+await tailscale_funnel(operation="funnel_certificate_info", port=8080)
 ```
 
 #### Security Management (`tailscale_security`)
@@ -427,6 +486,21 @@ export TAILSCALE_API_KEY="tskey-api-xxxxxxxxxxxxxxxxx"
 export TAILSCALE_TAILNET="your-org.tailnet.ts.net"
 export LOG_LEVEL="INFO"
 ```
+
+### Persistent Storage Configuration
+
+TailscaleMCP uses **DiskStore** for persistent storage by default. Data is automatically stored in platform-appropriate directories:
+
+- **Windows**: `%APPDATA%\Tailscale Network Controller MCP\`
+- **macOS**: `~/Library/Application Support/Tailscale Network Controller MCP/`
+- **Linux**: `~/.local/share/Tailscale Network Controller MCP/`
+
+Storage is encrypted by default and persists across:
+- ✅ Claude Desktop restarts
+- ✅ Operating system reboots
+- ✅ Server restarts
+
+For more information about storage backends and configuration options, see [Storage Backends Documentation](docs/STORAGE_BACKENDS.md).
 
 ## 📊 Grafana Dashboard Integration
 
@@ -744,13 +818,28 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Issues**: [GitHub Issues](https://github.com/yourusername/tailscalemcp/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/yourusername/tailscalemcp/discussions)
 
+## 📚 Additional Documentation
+
+- [Storage Backends Guide](docs/STORAGE_BACKENDS.md) - Complete guide to FastMCP 2.13+ storage backends (DiskStore, Redis, MongoDB, etc.)
+- [Mermaid Diagram Guide](docs/VIEW_MERMAID_DIAGRAMS.md) - How to view network topology diagrams
+- [Status Tool Usage](docs/STATUS_TOOL_USAGE.md) - Comprehensive guide to the status tool
+- [Funnel Operations](docs/FUNNEL_AND_TAILDROP_IMPLEMENTATION_PLAN.md) - Tailscale Funnel implementation details
+- [Expansion Plan](docs/TAILSCALE_MCP_EXPANSION_PLAN.md) - Future features and roadmap
+
 ## 🙏 Acknowledgments
 
-- [FastMCP](https://github.com/pydantic/fastmcp) for the excellent MCP framework
+- [FastMCP](https://github.com/pydantic/fastmcp) for the excellent MCP framework with persistent storage support
 - [Tailscale](https://tailscale.com/) for the amazing networking platform
 - [Ruff](https://github.com/astral-sh/ruff) for fast Python tooling
+- [py-key-value-aio](https://github.com/pydantic/py-key-value-aio) for flexible storage backends
 - All contributors and users of this project
 
 ---
 
 **Made with ❤️ by the TailscaleMCP team**
+
+---
+
+### Further Reading
+- Expansion Plan: `docs/TAILSCALE_MCP_EXPANSION_PLAN.md` (includes Phase 6.5: Services)
+- Implementation Status: `docs/IMPLEMENTATION_STATUS.md`

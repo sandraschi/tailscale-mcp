@@ -24,12 +24,12 @@ class TestPrometheusMetrics:
             for collector in list(REGISTRY._collector_to_names.keys()):
                 with contextlib.suppress(builtins.BaseException):
                     REGISTRY.unregister(collector)
-        except:
+        except Exception:
             pass
 
     def test_prometheus_metrics_server_startup(self):
         """Test that Prometheus metrics server starts correctly."""
-        with patch("src.tailscalemcp.__main__.start_http_server") as mock_start_server:
+        with patch("src.tailscalemcp.__main__.start_http_server") as mock_start_server:  # noqa: SIM117
             with patch("src.tailscalemcp.__main__.Info") as mock_info:
                 mock_info_instance = MagicMock()
                 mock_info.return_value = mock_info_instance
@@ -44,7 +44,7 @@ class TestPrometheusMetrics:
 
     def test_info_metrics_functionality(self):
         """Test that info metrics work correctly."""
-        with patch("src.tailscalemcp.__main__.start_http_server"):
+        with patch("src.tailscalemcp.__main__.start_http_server"):  # noqa: SIM117
             with patch("src.tailscalemcp.__main__.Info") as mock_info:
                 mock_info_instance = MagicMock()
                 mock_info.return_value = mock_info_instance
