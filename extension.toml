@@ -1,0 +1,10 @@
+id = "tailscale-mcp"
+name = "TailscaleNetworkManagement"
+version = "0.1.0"
+schema_version = 1
+authors = ["Sandra <sandraschipal@hotmail.com>"]
+description = "Zero-trust networking and VPN management"
+repository = "https://github.com/sandraschi/tailscale-mcp"
+
+[context_servers.tailscale-mcp]
+name = "Tailscale Network Tools"

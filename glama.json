@@ -1,0 +1,48 @@
+{
+  "$schema": "https://glama.ai/mcp/schemas/server.json",
+  "maintainers": ["sandraschi"],
+  "name": "tailscale-mcp",
+  "description": "FastMCP 2.13+ Tailscale network controller with persistent storage. 11 portmanteau tools for network management, monitoring, and automation. Beta status.",
+  "type": "mcp_server",
+  "status": "beta",
+  "framework": "FastMCP 2.13+",
+  "tools": 11,
+  "transport": ["stdio"],
+  "keywords": [
+    "tailscale",
+    "vpn",
+    "networking",
+    "mesh-network",
+    "mcp-server",
+    "fastmcp",
+    "network-management",
+    "monitoring",
+    "automation"
+  ],
+  "features": {
+    "device_management": {
+      "enabled": true
+    },
+    "network_management": {
+      "enabled": true,
+      "features": ["DNS", "MagicDNS", "policies"]
+    },
+    "monitoring": {
+      "enabled": true,
+      "stack": ["Grafana", "Prometheus", "Loki"]
+    },
+    "file_sharing": {
+      "enabled": true,
+      "method": "Taildrop"
+    },
+    "funnel": {
+      "enabled": true,
+      "note": "Expose local services to public internet"
+    },
+    "persistent_storage": {
+      "enabled": true,
+      "backend": "DiskStore"
+    }
+  }
+}
+
