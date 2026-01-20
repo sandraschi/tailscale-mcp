@@ -1,0 +1,22 @@
+{
+  "mcp": {
+    "servers": {
+      "tailscale": {
+        "command": "python",
+        "args": ["-m", "tailscalemcp"],
+        "env": {
+          "TAILSCALE_API_KEY": "${env:TAILSCALE_API_KEY}",
+          "TAILSCALE_TAILNET": "${env:TAILSCALE_TAILNET}"
+        },
+        "timeout": 300
+      }
+    }
+  },
+  "assistant": {
+    "default_model": {
+      "provider": "anthropic",
+      "model": "claude-3-5-sonnet-20241022"
+    },
+    "version_control": "git"
+  }
+}

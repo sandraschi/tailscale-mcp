@@ -1,15 +1,16 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
-name = "tailscalemcp"
+name = "tailscale-mcp"
 version = "2.0.0"
-description = "FastMCP 2.13+ compliant Tailscale network controller with persistent storage"
+description = "FastMCP 2.14.3+ compliant Tailscale network controller with persistent storage"
 readme = "README.md"
 authors = [
-    { name = "Your Name", email = "your.email@example.com" },
+    { name = "Sandra", email = "sandra@example.com" },
 ]
+license = {text = "MIT"}
 requires-python = ">=3.10"
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -25,7 +26,7 @@ classifiers = [
     "Topic :: System :: Systems Administration",
 ]
 dependencies = [
-    "fastmcp>=2.14.0,<3.0.0",
+    "fastmcp>=2.14.3,<3.0.0",
     "py-key-value-aio[disk]>=0.2.8,<0.3.0",  # Compatible with FastMCP 2.13.x
     "pydantic>=2.0.0",
     "pydantic-settings>=2.0.0",
@@ -61,7 +62,9 @@ Source = "https://github.com/yourusername/tailscalemcp"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["tailscalemcp*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.txt", "*.md", "*.json", "*.yaml", "*.yml"]
 
 [tool.ruff]
 target-version = "py311"
@@ -168,7 +171,7 @@ output = "coverage.xml"
 [tool.mcpb]
 name = "tailscalemcp"
 version = "2.0.0"
-description = "FastMCP 2.13+ compliant Tailscale network controller with persistent storage"
+description = "FastMCP 2.14.3+ compliant Tailscale network controller with persistent storage"
 author = "Your Name"
 author_email = "your.email@example.com"
 license = "MIT"

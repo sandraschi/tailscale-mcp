@@ -52,15 +52,37 @@ def register_device_tool(ctx: ToolContext) -> None:
                 devices = await ctx.device_manager.list_devices(
                     online_only=online_only, filter_tags=filter_tags or []
                 )
-                return {
+
+                # Conversational response with context
+                online_count = sum(1 for d in devices if d.get("online", False))
+                filter_desc = []
+                if online_only:
+                    filter_desc.append("online only")
+                if filter_tags:
+                    filter_desc.append(f"with tags: {', '.join(filter_tags)}")
+
+                response = {
                     "operation": "list",
                     "devices": devices,
                     "count": len(devices),
-                    "filters": {
+                    "summary": f"Found {len(devices)} device{'s' if len(devices) != 1 else ''} "
+                              f"({online_count} online, {len(devices) - online_count} offline)"
+                              f"{f' filtered by {', '.join(filter_desc)}' if filter_desc else ''}",
+                    "filters_applied": {
                         "online_only": online_only,
                         "filter_tags": filter_tags or [],
                     },
                 }
+
+                # Add conversational suggestions
+                if len(devices) == 0:
+                    response["suggestion"] = "No devices found. Try removing filters or check your Tailscale API credentials."
+                elif online_count == 0:
+                    response["suggestion"] = "All devices are offline. Check network connectivity or use tailscale_status for more details."
+                elif len(devices) > 10:
+                    response["suggestion"] = f"That's a large tailnet! Consider using filter_tags or search_query to narrow results. Try: tailscale_device(operation='list', filter_tags=['tag:name'])"
+
+                return response
 
             elif operation == "get":
                 if not device_id:

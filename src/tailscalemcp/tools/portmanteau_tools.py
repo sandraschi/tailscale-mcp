@@ -37,6 +37,7 @@ from .monitor_tool import register_monitor_tool
 from .network_tool import register_network_tool
 from .performance_tool import register_performance_tool
 from .reporting_tool import register_reporting_tool
+from .sampling_tool import register_sampling_tool
 from .security_tool import register_security_tool
 from .status_tool import register_status_tool
 
@@ -131,6 +132,7 @@ class TailscalePortmanteauTools:
         register_backup_tool(self.ctx)
         register_performance_tool(self.ctx)
         register_reporting_tool(self.ctx)
+        register_sampling_tool(self.ctx)
         register_integration_tool(self.ctx)
         register_help_tool(self.ctx)
         register_status_tool(self.ctx)

@@ -114,12 +114,49 @@ def register_status_tool(ctx: ToolContext) -> None:
                 include_mermaid=include_mermaid_diagram,
                 funnel_manager=ctx.funnel_manager,
             )
-            return {
+
+            # Build conversational response
+            response = {
                 "component": component or "overview",
                 "detail_level": detail_level,
                 "timestamp": time.time(),
                 "status": status_info,
             }
+
+            # Add conversational summary and suggestions
+            if component == "overview" or component is None:
+                # Extract key metrics for conversational summary
+                devices_total = status_info.get("devices", {}).get("total", 0)
+                devices_online = status_info.get("devices", {}).get("online", 0)
+                alerts_count = len(status_info.get("alerts", []))
+
+                response["summary"] = f"Your Tailscale network has {devices_total} device{'s' if devices_total != 1 else ''} " \
+                                    f"({devices_online} online, {devices_total - devices_online} offline)"
+
+                if alerts_count > 0:
+                    response["summary"] += f" with {alerts_count} alert{'s' if alerts_count != 1 else ''} that need attention"
+
+                # Add contextual suggestions
+                if devices_online == 0:
+                    response["suggestion"] = "All devices are offline. Check network connectivity or run diagnostics with: tailscale_status(component='network', detail_level='advanced')"
+                elif alerts_count > 0:
+                    response["suggestion"] = f"There are {alerts_count} alerts. Get details with: tailscale_status(component='alerts', detail_level='advanced')"
+                elif devices_total > 20:
+                    response["suggestion"] = "That's a large tailnet! Consider monitoring with: tailscale_monitor(operation='dashboard_create', dashboard_type='network_overview')"
+
+            elif component == "devices":
+                device_count = status_info.get("count", 0)
+                response["summary"] = f"Device status check complete: {device_count} device{'s' if device_count != 1 else ''} found"
+                if device_count == 0:
+                    response["suggestion"] = "No devices found. Check API credentials or try: tailscale_status(component='network') for connectivity issues"
+
+            elif component == "network":
+                health_status = status_info.get("health", "unknown")
+                response["summary"] = f"Network status: {health_status.title()}"
+                if health_status.lower() == "degraded":
+                    response["suggestion"] = "Network issues detected. Run diagnostics with: tailscale_performance(operation='analyze', analyze_type='network')"
+
+            return response
 
         except Exception as e:
             logger.error(
