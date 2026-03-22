@@ -105,7 +105,7 @@ Ensure these are optimized for discovery:
 
 1. **Repository Description**:
    ```
-   FastMCP 2.12 compatible MCP server for Notepad++ automation - Gold Status Certified
+   FastMCP 3.1 compatible MCP server for Notepad++ automation - Gold Status Certified
    ```
 
 2. **Topics/Tags**:

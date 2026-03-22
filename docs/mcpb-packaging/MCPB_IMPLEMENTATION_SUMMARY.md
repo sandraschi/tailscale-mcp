@@ -1,14 +1,16 @@
 # MCPB Implementation Summary
 
 **Date**: October 8, 2025  
-**Version**: 1.2.0  
+**Version**: 1.2.0 (historical header; see note below)  
 **Status**: ✅ **COMPLETED**
+
+> **2026-03-22 (Tailscale MCP):** Canonical MCPB inputs are **`manifest.json`** (version **2.0.1**), **`[tool.mcpb]`** in `pyproject.toml`, and runtime **`src/tailscalemcp/version.py`**. CI runs `uv run mcpb pack --output dist/tailscale-mcp.mcpb`. Tables below may show older numbers from an initial template — use the repo files above before publishing.
 
 ---
 
 ## 🎯 Implementation Overview
 
-Successfully implemented complete MCPB (MCP Bundle) packaging for the Notepad++ MCP Server according to the comprehensive MCPB Building Guide.
+MCPB (MCP Bundle) packaging for **Tailscale MCP** follows the MCPB Building Guide; the project ships **`dist/tailscale-mcp.mcpb`** from CI.
 
 ### ✅ Completed Tasks
 
@@ -33,7 +35,7 @@ Successfully implemented complete MCPB (MCP Bundle) packaging for the Notepad++ 
 | **Format** | .mcpb (MCP Bundle) |
 | **Platform** | Windows (win32) |
 | **Python** | >=3.10 |
-| **FastMCP** | >=2.12.0 |
+| **FastMCP** | >=3.1.0 |
 
 ### Package Contents
 
@@ -69,7 +71,7 @@ Successfully implemented complete MCPB (MCP Bundle) packaging for the Notepad++ 
   },
   "dependencies": {
     "python": ">=3.10.0",
-    "fastmcp": ">=2.12.0"
+    "fastmcp": ">=3.1.0"
   }
 }
 ```

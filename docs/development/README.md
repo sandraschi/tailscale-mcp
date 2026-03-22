@@ -115,7 +115,7 @@ This directory contains **development-focused documentation** including:
 - Code review with AI
 
 ### **Python & FastMCP**
-- FastMCP 2.12+ patterns
+- FastMCP 3.1+ patterns
 - Windows API integration
 - Async/await best practices
 - Error handling decorators

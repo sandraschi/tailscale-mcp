@@ -1,7 +1,7 @@
 """
 Tailscale MCP Server
 
-A FastMCP 2.13+ compliant server for managing Tailscale networks with comprehensive features.
+A FastMCP 3.1+ compliant server for managing Tailscale networks with comprehensive features.
 Organized in a modular structure with tools separated by category.
 Features persistent storage for funnels, transfers, and user preferences.
 """
@@ -31,8 +31,16 @@ from .funnel import FunnelManager
 from .grafana_dashboard import TailscaleGrafanaDashboard
 from .magic_dns import MagicDNSManager
 from .monitoring import TailscaleMonitor
+from .sampling import TailscaleSamplingHandler
 from .taildrop import TaildropManager
 from .tools import TailscalePortmanteauTools
+from .transport import run_server_async
+
+_USE_CLIENT_SAMPLING = os.getenv("TAILSCALE_SAMPLING_USE_CLIENT_LLM", "").lower() in (
+    "1",
+    "true",
+    "yes",
+)
 
 # Load .env file if it exists (after imports to avoid E402)
 env_path = Path(__file__).parent.parent.parent / ".env"
@@ -65,7 +73,7 @@ logger = structlog.get_logger(__name__)
 
 
 def create_server_lifespan(_api_key: str | None, tailnet: str | None):
-    """Create server lifespan for FastMCP 2.13+.
+    """Create server lifespan for FastMCP 3.1+.
 
     Args:
         api_key: Tailscale API key
@@ -82,7 +90,7 @@ def create_server_lifespan(_api_key: str | None, tailnet: str | None):
         logger.info("Tailscale MCP Server starting up", tailnet=tailnet)
 
         # Store startup time (if storage is available)
-        # Note: FastMCP 2.13+ storage may not be available in all contexts
+        # Note: FastMCP 3.1+ storage may not be available in all contexts
         # We make it optional to allow the server to run without persistence
         try:
             storage = getattr(mcp_instance, "storage", None)
@@ -133,7 +141,7 @@ def create_server_lifespan(_api_key: str | None, tailnet: str | None):
 
 
 class TailscaleMCPServer:
-    """FastMCP 2.13+ compliant Tailscale network controller server with persistent storage."""
+    """FastMCP 3.1+ compliant Tailscale network controller server with persistent storage."""
 
     def __init__(self, api_key: str | None = None, tailnet: str | None = None):
         """Initialize the Tailscale MCP server.
@@ -160,9 +168,17 @@ class TailscaleMCPServer:
                 "No API credentials found! Check user_config or environment variables"
             )
 
-        # Initialize FastMCP with server lifespan (2.13+ feature)
+        # Initialize FastMCP with server lifespan (3.1+ feature) and SEP-1577 sampling handler
         lifespan = create_server_lifespan(self.api_key, self.tailnet)
-        self.mcp = FastMCP("Tailscale Network Controller MCP", lifespan=lifespan)
+        self._sampling_handler = TailscaleSamplingHandler()
+        self.mcp = FastMCP(
+            "Tailscale Network Controller MCP",
+            lifespan=lifespan,
+            sampling_handler=self._sampling_handler,
+            sampling_handler_behavior="fallback" if _USE_CLIENT_SAMPLING else "always",
+            strict_input_validation=True,
+            on_duplicate="replace",
+        )
 
         # Configure DiskStore for persistent storage (if available)
         # FastMCP may provide its own storage, but we'll use DiskStore directly for guaranteed persistence
@@ -410,6 +426,23 @@ class TailscaleMCPServer:
                 indent=2,
             )
 
+        _repo_root = Path(__file__).resolve().parent.parent.parent
+        _skill_path = _repo_root / "skills" / "TAILSCALE_EXPERT.md"
+
+        @self.mcp.resource("resource://tailscale/skills")
+        def tailscale_skills_resource() -> str:
+            """Expert guidance for Tailscale MCP tools and SEP-1577 workflows."""
+            try:
+                if _skill_path.exists():
+                    return _skill_path.read_text(encoding="utf-8")
+            except OSError:
+                pass
+            return (
+                "# Tailscale MCP\n\n"
+                "Use tailscale_agentic_workflow for SEP-1577. "
+                "Configure TAILSCALE_SAMPLING_* or TAILSCALE_SAMPLING_USE_CLIENT_LLM=1.\n"
+            )
+
         # Store references to prevent garbage collection
         self._prompt_refs = [
             list_devices_prompt,
@@ -427,6 +460,7 @@ class TailscaleMCPServer:
             security_report_resource,
             metrics_resource,
             health_resource,
+            tailscale_skills_resource,
         ]
 
         # Verify actual registration by checking FastMCP's internal state
@@ -441,12 +475,11 @@ class TailscaleMCPServer:
     async def start(self) -> None:
         """Start the MCP server."""
         logger.info("Starting Tailscale MCP server")
-        await self.mcp.run()
 
     async def stop(self) -> None:
         """Stop the MCP server."""
         logger.info("Stopping Tailscale MCP server")
-        # FastMCP 2.12 handles shutdown automatically
+        # FastMCP 3.1+ handles shutdown automatically
 
     async def __aenter__(self):
         """Async context manager entry."""
@@ -472,4 +505,6 @@ async def main():
 if __name__ == "__main__":
     import asyncio
 
-    asyncio.run(main())
+    asyncio.run(
+        run_server_async(server.mcp, server_name="Tailscale Network Controller MCP")
+    )

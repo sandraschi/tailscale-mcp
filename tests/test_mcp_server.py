@@ -22,7 +22,7 @@ async def mcp_server():
     """Create a test instance of the TailscaleMCPServer."""
     server = TailscaleMCPServer(api_key="test_key", tailnet="test_tailnet")
     yield server
-    # FastMCP 2.12 handles cleanup automatically
+    # FastMCP 3.1+ handles cleanup automatically
 
 
 @pytest.mark.asyncio
@@ -107,10 +107,10 @@ async def test_tailscale_mcp_error():
 @pytest.mark.asyncio
 async def test_server_environment_variables():
     """Test server initialization with environment variables."""
-    with patch.dict("os.environ", {
-        "TAILSCALE_API_KEY": "env_api_key",
-        "TAILSCALE_TAILNET": "env_tailnet"
-    }):
+    with patch.dict(
+        "os.environ",
+        {"TAILSCALE_API_KEY": "env_api_key", "TAILSCALE_TAILNET": "env_tailnet"},
+    ):
         server = TailscaleMCPServer()
         assert server.api_key == "env_api_key"
         assert server.tailnet == "env_tailnet"
@@ -119,10 +119,10 @@ async def test_server_environment_variables():
 @pytest.mark.asyncio
 async def test_server_parameter_override():
     """Test that parameters override environment variables."""
-    with patch.dict("os.environ", {
-        "TAILSCALE_API_KEY": "env_api_key",
-        "TAILSCALE_TAILNET": "env_tailnet"
-    }):
+    with patch.dict(
+        "os.environ",
+        {"TAILSCALE_API_KEY": "env_api_key", "TAILSCALE_TAILNET": "env_tailnet"},
+    ):
         server = TailscaleMCPServer(api_key="param_api_key", tailnet="param_tailnet")
         assert server.api_key == "param_api_key"
         assert server.tailnet == "param_tailnet"
@@ -141,6 +141,7 @@ async def test_server_no_parameters():
 async def test_server_main_function():
     """Test the main function exists and is callable."""
     from tailscalemcp.mcp_server import main
+
     assert callable(main)
 
 
@@ -148,6 +149,7 @@ async def test_server_main_function():
 async def test_server_instance():
     """Test that the server instance is created correctly."""
     from tailscalemcp.mcp_server import server
+
     assert isinstance(server, TailscaleMCPServer)
 
 

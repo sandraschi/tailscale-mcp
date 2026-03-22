@@ -8,9 +8,9 @@
 ## ✅ **Current Architecture Analysis**
 
 ### **FastMCP Usage**
-- ✅ **FastMCP 2.12** - Correct version
+- ✅ **FastMCP 3.1** - Correct version
 - ✅ **Tool Registration** - Using `@self.mcp.tool()` decorator (correct)
-- ✅ **No description parameter** - Following FastMCP 2.12+ best practices
+- ✅ **No description parameter** - Following FastMCP 3.1+ best practices
 - ✅ **Comprehensive docstrings** - 200+ line docstrings with examples
 - ✅ **Async functions** - All tools are async
 - ✅ **Type hints** - Full type annotations
@@ -88,7 +88,7 @@
 
 **FastMCP Best Practice:**
 ```python
-@mcp.tool()  # ✅ No description parameter (FastMCP 2.12+)
+@mcp.tool()  # ✅ No description parameter (FastMCP 3.1+)
 async def tool_name(param: str) -> dict[str, Any]:
     '''Comprehensive docstring with full documentation.'''
     # Implementation
@@ -377,7 +377,7 @@ class AdvancedDeviceManager:
 ---
 
 **Last Updated:** 2025-01-15  
-**Reviewed Against:** FastMCP 2.12 documentation, architectural best practices
+**Reviewed Against:** FastMCP 3.1 documentation, architectural best practices
 
 
 

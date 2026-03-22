@@ -282,7 +282,7 @@ All documentation related to:
 | Documentation | 9/10 | Complete, professional |
 | Infrastructure | 9/10 | Full CI/CD pipeline |
 | Packaging | 8/10 | Valid builds |
-| MCP Compliance | 9/10 | FastMCP 2.12+ |
+| MCP Compliance | 9/10 | FastMCP 3.1+ |
 | **TOTAL** | **85/100** | **GOLD** 🏆 |
 
 ---
@@ -386,7 +386,7 @@ All documentation related to:
 - MCPB packaging (bonus)
 
 ✅ **MCP Compliance** (9/10)
-- FastMCP 2.12+
+- FastMCP 3.1+
 - Tool registration
 - stdio protocol
 - Proper configuration
@@ -520,7 +520,7 @@ Use: [GLAMA_RESCAN_EMAIL.txt](GLAMA_RESCAN_EMAIL.txt)
 - [x] One-click installation
 
 ### **MCP Compliance** ✅
-- [x] FastMCP 2.12+
+- [x] FastMCP 3.1+
 - [x] stdio protocol
 - [x] Tool registration
 - [x] Proper configuration

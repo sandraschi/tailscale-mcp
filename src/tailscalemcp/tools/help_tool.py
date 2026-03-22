@@ -28,6 +28,7 @@ def register_help_tool(ctx: ToolContext) -> None:
         operation: str | None = None,
         include_examples: bool = True,
     ) -> dict[str, Any]:
+        """Return structured help. Topics include overview, examples, funnel, sampling (SEP-1577, .env), troubleshooting."""
         try:
             help_content = await generate_help_content(
                 topic, level, category, operation, include_examples

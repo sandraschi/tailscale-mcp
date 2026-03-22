@@ -25,6 +25,7 @@ class TestMonitoringIntegration:
 
         # Clean up logging handlers
         import logging
+
         root_logger = logging.getLogger()
         for handler in root_logger.handlers[:]:
             with contextlib.suppress(builtins.BaseException):
@@ -37,8 +38,11 @@ class TestMonitoringIntegration:
             log_file = Path(temp_dir) / "test.log"
 
             # Setup both logging and metrics
-            with patch("src.tailscalemcp.__main__.start_http_server"), patch("src.tailscalemcp.__main__.Info"):
-                    setup_prometheus_metrics(9091)
+            with (
+                patch("src.tailscalemcp.__main__.start_http_server"),
+                patch("src.tailscalemcp.__main__.Info"),
+            ):
+                setup_prometheus_metrics(9091)
 
             setup_structured_logging("INFO", str(log_file))
 
@@ -63,18 +67,21 @@ class TestMonitoringIntegration:
             log_file = Path(temp_dir) / "test.log"
 
             # Setup monitoring stack
-            with patch("src.tailscalemcp.__main__.start_http_server") as mock_server, patch("src.tailscalemcp.__main__.Info") as mock_info:
-                    mock_info_instance = MagicMock()
-                    mock_info.return_value = mock_info_instance
+            with (
+                patch("src.tailscalemcp.__main__.start_http_server") as mock_server,
+                patch("src.tailscalemcp.__main__.Info") as mock_info,
+            ):
+                mock_info_instance = MagicMock()
+                mock_info.return_value = mock_info_instance
 
-                    setup_prometheus_metrics(9091)
-                    setup_structured_logging("INFO", str(log_file))
+                setup_prometheus_metrics(9091)
+                setup_structured_logging("INFO", str(log_file))
 
-                    # Verify metrics server started
-                    mock_server.assert_called_once_with(9091)
+                # Verify metrics server started
+                mock_server.assert_called_once_with(9091)
 
-                    # Verify structlog is configured
-                    assert structlog.is_configured()
+                # Verify structlog is configured
+                assert structlog.is_configured()
 
     def test_log_metrics_correlation(self):
         """Test that logs and metrics can be correlated."""
@@ -92,15 +99,19 @@ class TestMonitoringIntegration:
             logger = structlog.get_logger("test_logger")
             correlation_id = "test-correlation-123"
 
-            logger.info("Operation started",
-                       correlation_id=correlation_id,
-                       device_id="test-device",
-                       operation="start")
+            logger.info(
+                "Operation started",
+                correlation_id=correlation_id,
+                device_id="test-device",
+                operation="start",
+            )
 
-            logger.info("Operation completed",
-                       correlation_id=correlation_id,
-                       device_id="test-device",
-                       operation="complete")
+            logger.info(
+                "Operation completed",
+                correlation_id=correlation_id,
+                device_id="test-device",
+                operation="complete",
+            )
 
             # Wait for file to be written
             time.sleep(0.1)
@@ -135,9 +146,9 @@ class TestMonitoringIntegration:
             try:
                 raise ValueError("Test error")
             except ValueError:
-                logger.exception("Error occurred",
-                               device_id="test-device",
-                               operation="error_test")
+                logger.exception(
+                    "Error occurred", device_id="test-device", operation="error_test"
+                )
 
             # Wait for file to be written
             time.sleep(0.1)
@@ -149,7 +160,11 @@ class TestMonitoringIntegration:
 
                 assert log_data["event"] == "Error occurred"
                 assert log_data["device_id"] == "test-device"
-                assert "exception" in log_data or "exc_info" in log_data or "error" in log_data
+                assert (
+                    "exception" in log_data
+                    or "exc_info" in log_data
+                    or "error" in log_data
+                )
 
     def test_device_activity_monitoring(self):
         """Test monitoring of device activity."""
@@ -174,11 +189,13 @@ class TestMonitoringIntegration:
             ]
 
             for device_id, operation, status in activities:
-                logger.info("Device activity",
-                           device_id=device_id,
-                           operation=operation,
-                           status=status,
-                           timestamp=time.time())
+                logger.info(
+                    "Device activity",
+                    device_id=device_id,
+                    operation=operation,
+                    status=status,
+                    timestamp=time.time(),
+                )
 
             # Wait for file to be written
             time.sleep(0.1)
@@ -221,9 +238,7 @@ class TestMonitoringIntegration:
             ]
 
             for i, traffic in enumerate(traffic_events):
-                logger.info("Network traffic",
-                           device_id=f"device-{i+1}",
-                           **traffic)
+                logger.info("Network traffic", device_id=f"device-{i + 1}", **traffic)
 
             # Wait for file to be written
             time.sleep(0.1)
@@ -260,14 +275,28 @@ class TestMonitoringIntegration:
             logger = structlog.get_logger("api_monitor")
 
             api_requests = [
-                {"method": "GET", "endpoint": "/devices", "status_code": 200, "response_time": 0.1},
-                {"method": "POST", "endpoint": "/devices/authorize", "status_code": 201, "response_time": 0.2},
-                {"method": "DELETE", "endpoint": "/devices/revoke", "status_code": 204, "response_time": 0.15},
+                {
+                    "method": "GET",
+                    "endpoint": "/devices",
+                    "status_code": 200,
+                    "response_time": 0.1,
+                },
+                {
+                    "method": "POST",
+                    "endpoint": "/devices/authorize",
+                    "status_code": 201,
+                    "response_time": 0.2,
+                },
+                {
+                    "method": "DELETE",
+                    "endpoint": "/devices/revoke",
+                    "status_code": 204,
+                    "response_time": 0.15,
+                },
             ]
 
             for request in api_requests:
-                logger.info("API request",
-                           **request)
+                logger.info("API request", **request)
 
             # Wait for file to be written
             time.sleep(0.1)
@@ -304,10 +333,12 @@ class TestMonitoringIntegration:
             # Log health check
             logger = structlog.get_logger("health_monitor")
 
-            logger.info("Health check",
-                       component="monitoring_stack",
-                       status="healthy",
-                       timestamp=time.time())
+            logger.info(
+                "Health check",
+                component="monitoring_stack",
+                status="healthy",
+                timestamp=time.time(),
+            )
 
             # Wait for file to be written
             time.sleep(0.1)
@@ -336,15 +367,19 @@ class TestMonitoringIntegration:
             # Log error and recovery
             logger = structlog.get_logger("recovery_monitor")
 
-            logger.error("Component failed",
-                        component="test_component",
-                        error="Test error",
-                        timestamp=time.time())
+            logger.error(
+                "Component failed",
+                component="test_component",
+                error="Test error",
+                timestamp=time.time(),
+            )
 
-            logger.info("Component recovered",
-                       component="test_component",
-                       recovery_time=0.5,
-                       timestamp=time.time())
+            logger.info(
+                "Component recovered",
+                component="test_component",
+                recovery_time=0.5,
+                timestamp=time.time(),
+            )
 
             # Wait for file to be written
             time.sleep(0.1)

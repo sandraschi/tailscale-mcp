@@ -31,7 +31,7 @@
 
 ---
 
-### **3. FastMCP 2.12 Troubleshooting**
+### **3. FastMCP 3.1 Troubleshooting**
 📄 [TROUBLESHOOTING_FASTMCP_2.12.md](TROUBLESHOOTING_FASTMCP_2.12.md)
 
 **FastMCP-specific issues and solutions**
@@ -137,7 +137,7 @@ This directory contains **MCP server technical documentation** including:
 ## 🏆 **Production Readiness**
 
 **Our MCP server achieves**:
-- ✅ FastMCP 2.12+ compliance
+- ✅ FastMCP 3.1+ compliance
 - ✅ Zero print statements (stdio safe)
 - ✅ Structured logging
 - ✅ Comprehensive error handling
@@ -156,7 +156,7 @@ This directory contains **MCP server technical documentation** including:
 **Check**:
 1. Log files in `%APPDATA%\Claude\logs\`
 2. Python path configuration
-3. FastMCP version (must be >=2.12.0)
+3. FastMCP version (must be >=3.1.0)
 4. stdio protocol compliance
 
 **Document**: [Claude Desktop Debugging](CLAUDE_DESKTOP_DEBUGGING.md)
@@ -245,7 +245,7 @@ This directory contains **MCP server technical documentation** including:
 
 - ✅ Zero print() statements
 - ✅ Structured logging (stderr)
-- ✅ FastMCP 2.12+
+- ✅ FastMCP 3.1+
 - ✅ Comprehensive tests
 - ✅ Error handling
 - ✅ Type hints

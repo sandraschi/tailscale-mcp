@@ -15,7 +15,7 @@ try {
 # Check if .env file exists
 if (-not (Test-Path ".env")) {
     Write-Host "⚠️  .env file not found. Creating from template..." -ForegroundColor Yellow
-    Copy-Item "env.example" ".env"
+    Copy-Item ".env.example" ".env"
     Write-Host "📝 Please edit .env file with your Tailscale API credentials" -ForegroundColor Yellow
 }
 

@@ -2,9 +2,9 @@
 
 The Tailscale MCP Server has been optimized for use with the [Zed](https://zed.dev/) code editor, providing seamless network management capabilities directly within your development environment.
 
-## FastMCP 2.14.3 Features
+## FastMCP 3.1+ Features
 
-This integration leverages the latest FastMCP 2.14.3 features:
+This integration leverages FastMCP 3.1+ features:
 
 - **Conversational Tool Responses**: Tools provide natural language summaries and contextual suggestions
 - **Sampling with Tools**: Autonomous orchestration of complex network operations
@@ -57,24 +57,19 @@ All tools now provide conversational responses with:
 - `tailscale_funnel` - HTTPS tunnel management
 - `tailscale_file` - Secure file sharing via Taildrop
 - `tailscale_monitor` - Real-time metrics and alerting
-- `tailscale_sampling` - Autonomous workflow orchestration
+- `tailscale_agentic_workflow` - SEP-1577 multi-step orchestration (sampling with tools)
+- `tailscale_sampling` - Alias for `tailscale_agentic_workflow` (same parameters)
 
 ### Sampling with Tools
 
-The `tailscale_sampling` tool enables autonomous orchestration:
+Configure server-side LLM (`TAILSCALE_SAMPLING_BASE_URL`, `TAILSCALE_SAMPLING_MODEL`) or set
+`TAILSCALE_SAMPLING_USE_CLIENT_LLM=1` for host sampling. Then use:
 
 ```python
-# Network diagnostic workflow
-tailscale_sampling(
-    operation="network_diagnostic",
-    workflow_prompt="Check my entire network health and identify issues"
-)
-
-# Device onboarding automation
-tailscale_sampling(
-    operation="device_onboarding",
-    target_device="device-123",
-    workflow_prompt="Authorize and configure new device with security settings"
+tailscale_agentic_workflow(
+    workflow_prompt="List offline devices and summarize likely causes.",
+    available_tools=["tailscale_device", "tailscale_status"],
+    max_iterations=5,
 )
 ```
 

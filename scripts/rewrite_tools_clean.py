@@ -1,7 +1,7 @@
 """Rewrite all tool files from scratch with proper indentation."""
 
-from pathlib import Path
 import re
+from pathlib import Path
 
 # Read the backup file
 backup_file = Path("src/tailscalemcp/tools/portmanteau_tools.py.backup")
@@ -25,20 +25,21 @@ TOOL_RANGES = [
     ("tailscale_status", 4316, 4372),
 ]
 
+
 def extract_tool_function(lines, start_line, end_line):
     """Extract tool function and fix indentation."""
     tool_lines = lines[start_line - 1 : end_line]
-    
+
     # Find the async def line
     async_def_idx = None
     for i, line in enumerate(tool_lines):
         if "async def tailscale_" in line:
             async_def_idx = i
             break
-    
+
     if async_def_idx is None:
         return None
-    
+
     # Extract function signature (from async def to closing paren)
     func_sig_lines = []
     paren_count = 0
@@ -48,27 +49,27 @@ def extract_tool_function(lines, start_line, end_line):
         paren_count += line.count("(") - line.count(")")
         if "-> dict[str, Any]:" in line and paren_count == 0:
             break
-    
+
     # Find docstring end
     docstring_end = len(func_sig_lines)
     for i in range(len(func_sig_lines), len(tool_lines)):
         if tool_lines[i].strip() == '"""':
             docstring_end = i + 1
             break
-    
+
     # Extract function body
     body_lines = tool_lines[docstring_end:]
-    
+
     # Fix indentation: function body should be at 8 spaces (2 levels from async def at 4)
     fixed_body = []
     for line in body_lines:
         if not line.strip():
             fixed_body.append("")
             continue
-        
+
         # Count current indentation
         indent = len(line) - len(line.lstrip())
-        
+
         # Function body starts at 12 spaces in original (3 levels from async def)
         # Should be 8 spaces (2 levels)
         if indent >= 12:
@@ -77,10 +78,10 @@ def extract_tool_function(lines, start_line, end_line):
             fixed_body.append(" " * new_indent + line.lstrip())
         else:
             fixed_body.append(line)
-    
+
     # Combine
     result = func_sig_lines + fixed_body
-    
+
     # Replace self. with ctx.
     result_text = "\n".join(result)
     result_text = result_text.replace("self.mcp", "ctx.mcp")
@@ -99,30 +100,33 @@ def extract_tool_function(lines, start_line, end_line):
     result_text = result_text.replace("self.analytics_ops", "ctx.analytics_ops")
     result_text = result_text.replace("self.reporting_ops", "ctx.reporting_ops")
     result_text = result_text.replace("self.service_ops", "ctx.service_ops")
-    
+
     # Remove @self.mcp.tool() decorator
-    result_text = re.sub(r"^\s*@self\.mcp\.tool\(\)\s*$", "", result_text, flags=re.MULTILINE)
-    
+    result_text = re.sub(
+        r"^\s*@self\.mcp\.tool\(\)\s*$", "", result_text, flags=re.MULTILINE
+    )
+
     return result_text.split("\n")
+
 
 # Generate all tool files
 for tool_name, start_line, end_line in TOOL_RANGES:
     if tool_name == "tailscale_funnel":
         # Skip - already correct
         continue
-    
+
     module_name = tool_name.replace("tailscale_", "") + "_tool"
     tool_func = extract_tool_function(lines, start_line, end_line)
-    
+
     if tool_func is None:
         print(f"Failed to extract {tool_name}")
         continue
-    
+
     # Create module - properly indent the function
     # The tool_func lines need to be indented 4 spaces (under the decorator)
     # But the async def line should be at the same level as the decorator (4 spaces)
     indented_func = []
-    for i, line in enumerate(tool_func):
+    for _i, line in enumerate(tool_func):
         if not line.strip():
             indented_func.append("")
         elif line.strip().startswith("async def"):
@@ -131,7 +135,7 @@ for tool_name, start_line, end_line in TOOL_RANGES:
         else:
             # Other lines indented 4 spaces
             indented_func.append("    " + line)
-    
+
     module_content = f'''"""Tailscale {tool_name.replace("tailscale_", "").replace("_", " ").title()} tool module."""
 
 from typing import Any
@@ -154,10 +158,9 @@ def register_{tool_name.replace("tailscale_", "")}_tool(ctx: ToolContext) -> Non
     @ctx.mcp.tool()
 {chr(10).join(indented_func)}
 '''
-    
+
     output_file = Path(f"src/tailscalemcp/tools/{module_name}.py")
     output_file.write_text(module_content, encoding="utf-8")
     print(f"Generated {module_name}.py")
 
 print("Done rewriting all tool files")
-

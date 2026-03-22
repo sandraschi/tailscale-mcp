@@ -2,7 +2,7 @@
 
 **Status:** In Progress  
 **Priority:** Critical  
-**Issue:** All tool docstrings are too brief and missing required FastMCP 2.12 standards
+**Issue:** All tool docstrings are too brief and missing required FastMCP 3.1 standards
 
 ---
 
@@ -19,7 +19,7 @@
 
 ---
 
-## Required Sections (FastMCP 2.12 Standard)
+## Required Sections (FastMCP 3.1 Standard)
 
 Each tool docstring MUST include:
 

@@ -168,7 +168,9 @@ async def test_authorize_device(operations):
         mock_response_obj.raise_for_status = AsyncMock()
         mock_request.return_value = mock_response_obj
 
-        device = await operations.authorize_device("device1", True, "Test authorization")
+        device = await operations.authorize_device(
+            "device1", True, "Test authorization"
+        )
         assert device.authorized is True
 
 
@@ -240,10 +242,3 @@ async def test_search_devices(operations):
         devices = await operations.search_devices("engineering", ["name", "tags"])
         assert len(devices) == 1
         assert devices[0].name == "engineering-laptop"
-
-
-
-
-
-
-

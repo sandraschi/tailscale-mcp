@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document defines the standards for FastMCP 2.12+ MCP servers, covering comprehensive docstrings, prompt registration, and resource implementation. These standards ensure AI assistants (Claude, etc.) can properly understand and use portmanteau tools without confusion.
+This document defines the standards for FastMCP 3.1+ MCP servers, covering comprehensive docstrings, prompt registration, and resource implementation. These standards ensure AI assistants (Claude, etc.) can properly understand and use portmanteau tools without confusion.
 
 ## Docstring Standards
 
@@ -18,7 +18,7 @@ operations into a single interface. This design:
 - Improves discoverability by grouping related operations together
 - Reduces cognitive load when working with related tasks
 - Enables atomic batch operations across multiple actions
-- Follows FastMCP 2.12+ best practices for feature-rich MCP servers
+- Follows FastMCP 3.1+ best practices for feature-rich MCP servers
 ```
 
 ### Args Section Formatting
@@ -226,7 +226,7 @@ result = await tailscale_status(
 
 ## Related Documentation
 
-- FastMCP 2.12+ Documentation
+- FastMCP 3.1+ Documentation
 - MCP Protocol Specification
 - Portmanteau Pattern Best Practices
 - FastMCP Prompt/Resource Registration Guide

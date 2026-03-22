@@ -1,6 +1,6 @@
-# FastMCP 2.13+ Storage Backends
+# FastMCP 3.1+ Storage Backends
 
-FastMCP 2.13+ uses the `py-key-value-aio` library for storage, which provides multiple pluggable storage backends.
+FastMCP 3.1+ uses the `py-key-value-aio` library for storage, which provides multiple pluggable storage backends.
 
 ## Available Storage Backends
 
@@ -232,7 +232,7 @@ keys = await mcp.storage.keys()
 
 - **py-key-value-aio**: [PyPI Package](https://pypi.org/project/py-key-value-aio/)
 - **FastMCP Documentation**: [FastMCP Docs](https://gofastmcp.com/docs)
-- **Storage Pattern Guide**: `docs/patterns/FASTMCP_2.13_PERSISTENT_STORAGE_PATTERN.md`
+- **Storage Pattern Guide**: `docs/patterns/FASTMCP_2.13_PERSISTENT_STORAGE_PATTERN.md` (filename may still say 2.13; behavior applies to 3.1+)
 
 ---
 

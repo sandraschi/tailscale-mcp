@@ -1,4 +1,4 @@
-# 🎓 FastMCP 2.12 Debugging: Lessons Learned
+# 🎓 FastMCP 3.1 Debugging: Lessons Learned
 
 **Real-World Experience Report**  
 **Project**: nest-protect MCP Server  
@@ -401,7 +401,7 @@ async def device_tool(device_id: str) -> dict:
    - Reality: Your server is crashing during tool discovery
 
 2. **"The framework is buggy"**
-   - Reality: FastMCP 2.12 is very stable, it's usually your implementation
+   - Reality: FastMCP 3.1 is very stable, it's usually your implementation
 
 3. **"It worked yesterday"**
    - Reality: Some change (dependency, environment, code) broke something specific
@@ -602,7 +602,7 @@ if __name__ == "__main__":
 ## 📚 Resources for Continued Success
 
 ### **Documentation to Bookmark**
-- FastMCP 2.12 Official Docs
+- FastMCP 3.1 Official Docs
 - Pydantic V2 Migration Guide  
 - aiohttp Best Practices
 - Python asyncio Documentation
@@ -623,7 +623,7 @@ if __name__ == "__main__":
 
 ## 🎉 Final Words
 
-**The biggest lesson**: FastMCP 2.12 debugging is **systematic, not mysterious**. Once you understand the patterns, you can fix most issues in minutes rather than hours.
+**The biggest lesson**: FastMCP 3.1 debugging is **systematic, not mysterious**. Once you understand the patterns, you can fix most issues in minutes rather than hours.
 
 **For other projects**: Use this guide as a template. The same patterns that broke nest-protect will break avatarmcp, local llms, and tapo. But now you have the tools to fix them quickly.
 

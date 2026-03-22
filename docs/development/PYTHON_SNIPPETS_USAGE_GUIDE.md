@@ -358,12 +358,12 @@ PORT = find_free_port()
 app = FastMCP("my-server", port=PORT)
 ```
 
-### **Issue 3: "Import errors with FastMCP 2.12"**
+### **Issue 3: "Import errors with FastMCP 3.1"**
 ```python
 # ❌ Wrong imports (FastMCP 1.x)
 from fastmcp import Tool, Client
 
-# ✅ Correct imports (FastMCP 2.12)
+# ✅ Correct imports (FastMCP 3.1)
 from fastmcp import FastMCP
 
 app = FastMCP("my-server")

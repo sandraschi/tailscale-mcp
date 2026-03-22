@@ -1,9 +1,9 @@
 {
   "manifest_version": "0.2",
   "name": "tailscale-mcp",
-  "version": "2.0.0",
-  "description": "Comprehensive Tailscale MCP server with 12 portmanteau tools and 91+ operations",
-  "long_description": "Professional Tailscale MCP server providing comprehensive network management, monitoring, and automation capabilities. Features 12 portmanteau tools covering device management, network operations, monitoring, file sharing, security, automation, backup, performance, reporting, integrations, help system, and status monitoring.",
+  "version": "2.0.2",
+  "description": "Comprehensive Tailscale MCP server with portmanteau tools, SEP-1577 agentic workflows, and optional SOTA web UI",
+  "long_description": "Professional Tailscale MCP server for the Tailscale Admin API: network management, monitoring, Funnel, Taildrop, and automation. Includes FastMCP 3.1+ prompts/resources, tailscale_agentic_workflow (sampling with tools), and an optional React/Vite dashboard (web_sota) with a My tailnet page: Mermaid topology from tailscale_status(include_mermaid_diagram=True) and a decorative CSS 3D orbit view. Runtime requires TAILSCALE_API_KEY and TAILSCALE_TAILNET.",
   "author": {
     "name": "Sandra Schi",
     "email": "sandra@sandraschi.dev",
@@ -110,7 +110,11 @@
     },
     {
       "name": "tailscale_status",
-      "description": "System status and health monitoring (7 components): overview, devices, network, services, metrics, alerts, health with basic/intermediate/advanced/diagnostic levels"
+      "description": "System status and health monitoring (7 components): overview, devices, network, services, metrics, alerts, health with basic/intermediate/advanced/diagnostic levels; optional Mermaid tailnet diagram when include_mermaid_diagram=True"
+    },
+    {
+      "name": "tailscale_partner_tailnets",
+      "description": "People and tailnet sharing: summary (members vs shared users, devices-by-login), users_list, user_get, devices_by_login — uses Admin API GET /users plus device grouping"
     }
   ],
   "prompts": [

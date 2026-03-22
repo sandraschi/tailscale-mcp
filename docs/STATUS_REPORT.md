@@ -9,12 +9,12 @@
 
 ## 🎯 Executive Summary
 
-Tailscale-MCP is a comprehensive FastMCP 2.12 compliant server for managing Tailscale networks. The project is in active development with a robust foundation including 12 portmanteau tools, comprehensive monitoring stack, and extensive documentation. Current focus areas include resolving code quality issues (ruff errors) and fixing test collection problems.
+Tailscale-MCP is a comprehensive FastMCP 3.1 compliant server for managing Tailscale networks. The project is in active development with a robust foundation including 12 portmanteau tools, comprehensive monitoring stack, and extensive documentation. Current focus areas include resolving code quality issues (ruff errors) and fixing test collection problems.
 
 ### Key Highlights
 - ✅ **12 Portmanteau Tools** - Comprehensive tool coverage with 91+ operations
 - ✅ **Monitoring Stack** - Complete Grafana, Prometheus, Loki integration
-- ✅ **FastMCP 2.12** - Modern MCP framework compliance
+- ✅ **FastMCP 3.1** - Modern MCP framework compliance
 - ✅ **Comprehensive Documentation** - Extensive docs coverage
 - ⚠️ **Code Quality** - 20 ruff errors (13 fixable)
 - ⚠️ **Test Status** - 5 collection errors need attention

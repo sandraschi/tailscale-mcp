@@ -106,15 +106,32 @@ class AdvancedDeviceManager:
     # -----------------------
     # Unsupported Admin API endpoints (explicit)
     # -----------------------
-    async def list_users(self) -> list[dict[str, Any]]:
-        """List users in the tailnet (not supported via Admin API).
+    async def list_users(
+        self,
+        user_type: str | None = None,
+        role: str | None = None,
+    ) -> list[dict[str, Any]]:
+        """List users in the tailnet (Tailscale Admin API v2: GET .../users).
 
-        Raises:
-            TailscaleMCPError: Always; not supported.
+        Args:
+            user_type: Optional filter: ``member`` or ``shared`` (tailnet-shared users).
+            role: Optional filter: ``owner``, ``member``, ``admin``, ``it-admin``, etc.
+
+        Returns:
+            List of user objects from the API.
         """
-        raise TailscaleMCPError(
-            "Listing users is not supported via the Tailscale Admin API."
-        )
+        try:
+            users = await self.api_client.list_users(user_type=user_type, role=role)
+            logger.info(
+                "Users listed from API",
+                count=len(users),
+                user_type=user_type,
+                role=role,
+            )
+            return users
+        except Exception as e:
+            logger.error("Error listing users", error=str(e))
+            raise TailscaleMCPError(f"Failed to list users: {e}") from e
 
     async def create_user(
         self,
@@ -144,11 +161,13 @@ class AdvancedDeviceManager:
             "Deleting users is not supported via the Tailscale Admin API."
         )
 
-    async def get_user_details(self, user_email: str) -> dict[str, Any]:
-        """Get user details (not supported via Admin API)."""
-        raise TailscaleMCPError(
-            "Getting user details is not supported via the Tailscale Admin API."
-        )
+    async def get_user_details(self, user_id: str) -> dict[str, Any]:
+        """Get one user by ID (from ``list_users`` ``id`` field)."""
+        try:
+            return await self.api_client.get_user(user_id)
+        except Exception as e:
+            logger.error("Error getting user", user_id=user_id, error=str(e))
+            raise TailscaleMCPError(f"Failed to get user: {e}") from e
 
     async def auth_key_list(self) -> list[dict[str, Any]]:
         """List auth keys (not supported via Admin API)."""
@@ -445,12 +464,15 @@ class AdvancedDeviceManager:
                 )
                 is_online = device.status == DeviceStatus.ONLINE
 
+                addrs = [a for a in (device.ipv4, device.ipv6) if a]
                 device_data = {
+                    "id": device.id,
                     "device_id": device.id,
                     "name": device.name,
                     "hostname": device.hostname,
                     "os": device.os,
-                    "ip_addresses": [device.ipv4] if device.ipv4 else [],
+                    "ip_addresses": addrs,
+                    "addresses": addrs,
                     "status": device.status.value,
                     "online": is_online,
                     "last_seen": last_seen_ts,
@@ -464,7 +486,7 @@ class AdvancedDeviceManager:
                     "is_subnet_router": False,  # Extract from API if available
                     "advertised_routes": [],  # Extract from API if available
                     "client_version": device.client_version or "unknown",
-                    "user": "",  # Not available in Device model
+                    "user": device.user or "",
                     "machine_key": device.machine_key or "",
                     "update_available": False,  # Would need separate API call
                 }

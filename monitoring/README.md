@@ -32,7 +32,7 @@ This directory contains the complete monitoring stack for the Tailscale MCP serv
 
 1. **Copy environment file:**
    ```powershell
-   Copy-Item env.example .env
+   Copy-Item .env.example .env
    ```
 
 2. **Edit `.env` with your Tailscale credentials:**

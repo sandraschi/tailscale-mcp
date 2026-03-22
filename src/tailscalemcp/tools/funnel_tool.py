@@ -39,7 +39,7 @@ def register_funnel_tool(ctx: ToolContext) -> None:
         - Improves discoverability by grouping related operations together
         - Reduces cognitive load when working with Funnel tasks
         - Enables atomic batch operations across multiple Funnel actions
-        - Follows FastMCP 2.12+ best practices for feature-rich MCP servers
+        - Follows FastMCP 3.1+ best practices for feature-rich MCP servers
 
         The 'operation' parameter determines which specific action to perform, while other parameters
         are operation-specific. This pattern is used throughout the Tailscale MCP server for all
@@ -118,7 +118,7 @@ def register_funnel_tool(ctx: ToolContext) -> None:
                     "Funnel manager not initialized. Funnel support requires Tailscale CLI."
                 )
 
-            # Set storage on manager if available (FastMCP 2.13+)
+            # Set storage on manager if available (FastMCP 3.1+)
             if hasattr(ctx.mcp, "storage") and ctx.mcp.storage:
                 ctx.funnel_manager.mcp_storage = ctx.mcp.storage
 

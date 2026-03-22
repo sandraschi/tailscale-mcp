@@ -62,7 +62,7 @@ Automatic notifications for repository updates:
 ## 📈 Optimization for Better Rankings
 
 ### Repository Settings
-1. **Description**: "FastMCP 2.12 compatible MCP server for Notepad++ automation - Gold Status Certified"
+1. **Description**: "FastMCP 3.1 compatible MCP server for Notepad++ automation - Gold Status Certified"
 2. **Topics**: `mcp-server`, `notepadpp`, `windows-automation`, `fastmcp`, `gold-status`, `production-ready`
 3. **Badges**: Gold Status badge prominently displayed
 

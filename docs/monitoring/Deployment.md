@@ -21,7 +21,7 @@ The monitoring stack can be deployed in various environments, from local develop
    ```powershell
    git clone <repository>
    cd tailscale-mcp
-   Copy-Item env.example .env
+   Copy-Item .env.example .env
    ```
 
 2. **Configure environment:**

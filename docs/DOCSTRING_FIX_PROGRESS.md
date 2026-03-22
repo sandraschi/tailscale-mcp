@@ -53,7 +53,7 @@ Each fixed docstring includes:
 ## Impact
 
 **Before:** Brief 50-100 line docstrings missing critical information  
-**After:** Comprehensive 200+ line docstrings with all required FastMCP 2.12 standards
+**After:** Comprehensive 200+ line docstrings with all required FastMCP 3.1 standards
 
 This enables AI assistants (Claude, etc.) to properly understand and use the portmanteau tools without guessing.
 

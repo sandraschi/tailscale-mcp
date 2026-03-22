@@ -39,6 +39,24 @@ def test_device_from_api_response():
     assert device.status == DeviceStatus.ONLINE
 
 
+def test_device_from_api_string_addresses():
+    """Tailscale API returns addresses as string list (common in v2)."""
+    api_data = {
+        "id": "n123",
+        "name": "laptop",
+        "hostname": "laptop",
+        "os": "windows",
+        "addresses": ["100.64.1.2", "fd7a:115c:a1e0::123"],
+        "tags": [],
+        "authorized": True,
+        "connectedToControl": True,
+        "lastSeen": "2024-01-15T12:00:00Z",
+    }
+    device = Device.from_api_response(api_data)
+    assert device.ipv4 == "100.64.1.2"
+    assert device.ipv6 == "fd7a:115c:a1e0::123"
+
+
 def test_device_status_offline():
     """Test device status calculation for offline device."""
     api_data = {
@@ -127,9 +145,7 @@ def test_service_to_dict():
         tailvip_ipv4="100.101.102.103",
         magicdns_name="api.tail",
         tags=["prod"],
-        endpoints=[
-            ServiceEndpoint(device_id="device123", port=8080, protocol="tcp")
-        ],
+        endpoints=[ServiceEndpoint(device_id="device123", port=8080, protocol="tcp")],
     )
 
     service_dict = service.to_dict()
@@ -138,10 +154,3 @@ def test_service_to_dict():
     assert service_dict["tailvipIPv4"] == "100.101.102.103"
     assert service_dict["magicDNS"] == "api.tail"
     assert len(service_dict["endpoints"]) == 1
-
-
-
-
-
-
-

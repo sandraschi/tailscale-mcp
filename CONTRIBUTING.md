@@ -1,93 +1,67 @@
 # Contributing to Tailscale MCP
 
-Thank you for your interest in contributing to the Tailscale MCP project! We appreciate your time and effort in helping us improve this project.
+Thank you for your interest in contributing.
 
 ## Code of Conduct
 
-This project adheres to the Contributor Covenant [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
+This project adheres to the Contributor Covenant [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## How to Contribute
 
-### Reporting Bugs
+### Reporting bugs / enhancements
 
-1. Check if the bug has already been reported in the [issue tracker](https://github.com/yourusername/tailscalemcp/issues).
-2. If not, create a new issue with a clear title and description, including steps to reproduce the bug.
+Use the [issue tracker](https://github.com/sandraschi/tailscale-mcp/issues).
 
-### Suggesting Enhancements
+### Making changes
 
-1. Check if the enhancement has already been suggested in the [issue tracker](https://github.com/yourusername/tailscalemcp/issues).
-2. If not, create a new issue describing the enhancement and why it would be valuable.
+1. Fork and branch.
+2. Follow the style and testing steps below.
+3. Open a PR with a clear description.
 
-### Making Changes
-
-1. Fork the repository and create a new branch for your changes.
-2. Make your changes following the coding style and guidelines below.
-3. Add tests for your changes.
-4. Run the test suite to ensure all tests pass.
-5. Submit a pull request with a clear description of your changes.
-
-## Development Setup
+## Development setup
 
 ### Prerequisites
 
-- Python 3.8 or higher
-- [Poetry](https://python-poetry.org/) for dependency management
+- Python **3.12+**
+- [uv](https://docs.astral.sh/uv/)
 
-### Setting Up the Development Environment
-
-1. Fork and clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/tailscalemcp.git
-   cd tailscalemcp
-   ```
-
-2. Install dependencies:
-   ```bash
-   poetry install
-   ```
-
-3. Activate the virtual environment:
-   ```bash
-   poetry shell
-   ```
-
-4. Install pre-commit hooks:
-   ```bash
-   pre-commit install
-   ```
-
-### Running Tests
-
-Run the test suite with:
+### Environment
 
 ```bash
-pytest
+git clone https://github.com/sandraschi/tailscale-mcp.git
+cd tailscale-mcp
+uv sync
 ```
 
-### Code Style
-
-This project uses:
-
-- [Black](https://github.com/psf/black) for code formatting
-- [isort](https://github.com/timothycrosley/isort) for import sorting
-- [mypy](http://mypy-lang.org/) for static type checking
-
-Format and check the code with:
+Install hooks:
 
 ```bash
-black .
-isort .
-mypy .
+uv run pre-commit install
 ```
 
-## Pull Request Process
+### Tests
 
-1. Ensure your code follows the project's style guidelines.
-2. Update the documentation if necessary.
-3. Add tests for your changes.
-4. Ensure all tests pass.
-5. Submit a pull request with a clear description of your changes.
+```bash
+uv run pytest
+```
+
+### Code style
+
+- [Ruff](https://github.com/astral-sh/ruff) — lint, import sort, format
+- [mypy](https://mypy-lang.org/) — types (also via pre-commit)
+
+```bash
+uv run ruff check .
+uv run ruff format .
+uv run mypy src/
+```
+
+## Pull request process
+
+1. Run tests and linters.
+2. Update docs if behavior or public surfaces change.
+3. Submit the PR with a clear description.
 
 ## License
 
-By contributing to this project, you agree that your contributions will be licensed under the [MIT License](LICENSE).
+Contributions are licensed under the [MIT License](LICENSE).

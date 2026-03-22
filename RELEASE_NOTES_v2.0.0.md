@@ -90,7 +90,7 @@ This is a complete rewrite and modernization of the Tailscale MCP server, bringi
 
 ### 🛠️ **Development & Architecture**
 
-- **FastMCP 2.12**: Full compliance with the latest FastMCP framework
+- **FastMCP 3.1**: Full compliance with the latest FastMCP framework
 - **Modular Architecture**: Clean separation of concerns with tools/ directory
 - **Portmanteau Pattern**: Consolidated tools following database-mcp pattern
 - **Structured Logging**: Comprehensive logging with `structlog`
@@ -227,7 +227,7 @@ ruff check
 - **Third-party Integrations**: Webhook and platform integrations
 
 ### Improvements
-- **Modern Architecture**: FastMCP 2.12 compliance
+- **Modern Architecture**: FastMCP 3.1 compliance
 - **Better Error Handling**: Comprehensive error handling and reporting
 - **Enhanced Logging**: Structured logging with context
 - **Type Safety**: Full Python typing support

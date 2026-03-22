@@ -74,7 +74,7 @@ from fastmcp import MCPServer  # WRONG - This doesn't exist
 self.mcp = MCPServer(...)      # WRONG - Old pattern
 ```
 
-**Required FastMCP 2.10 Pattern:**
+**Required FastMCP 3.1 Pattern:**
 ```python
 from fastmcp import FastMCP
 
@@ -117,11 +117,11 @@ async def run_server():
     await server.start()             # WRONG METHOD
 ```
 
-**Required FastMCP 2.10 Main:**
+**Required FastMCP 3.1 Main:**
 ```python
 def main():
     """Main entry point for STDIO transport."""
-    # FastMCP 2.10 handles STDIO automatically
+    # FastMCP 3.1 handles STDIO automatically
     mcp.run()  # This starts STDIO by default
 
 if __name__ == "__main__":
@@ -182,7 +182,7 @@ async def get_device(device_id: str, ctx: Context = None) -> Dict[str, Any]:
 {
   "name": "tailscale-mcp",
   "version": "1.0.0",
-  "description": "FastMCP 2.10 compliant Tailscale network controller",
+  "description": "FastMCP 3.1 compliant Tailscale network controller",
   "author": "Sandra Schi <sandra@example.com>",
   "license": "MIT",
   "mcp_version": "2025-01-15",
@@ -218,7 +218,7 @@ async def get_device(device_id: str, ctx: Context = None) -> Dict[str, Any]:
    - ❌ ADD: Context-aware logging
 
 2. **`src/tailscalemcp/__main__.py`**
-   - ❌ REPLACE: Entire file with FastMCP 2.10 patterns
+   - ❌ REPLACE: Entire file with FastMCP 3.1 patterns
    - ❌ REMOVE: Signal handling (FastMCP handles this)
    - ❌ SIMPLIFY: To just `mcp.run()`
 
@@ -347,4 +347,4 @@ dxt publish
 4. **TODAY:** Replace at least one mock function with real API call
 5. **TODAY:** Add Context parameter to tools for proper logging
 
-**BOTTOM LINE:** This needs a complete rewrite, not patches. Start fresh with FastMCP 2.10 patterns and real API integration.
+**BOTTOM LINE:** This needs a complete rewrite, not patches. Start fresh with FastMCP 3.1 patterns and real API integration.

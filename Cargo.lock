@@ -3,13 +3,6 @@
 version = 4
 
 [[package]]
-name = "TailscaleNetworkManagement"
-version = "0.1.0"
-dependencies = [
- "zed_extension_api",
-]
-
-[[package]]
 name = "anyhow"
 version = "1.0.100"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -175,6 +168,13 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
+]
+
+[[package]]
+name = "tailscale_network_management"
+version = "0.1.0"
+dependencies = [
+ "zed_extension_api",
 ]
 
 [[package]]

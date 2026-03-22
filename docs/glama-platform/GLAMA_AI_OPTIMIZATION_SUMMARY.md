@@ -14,7 +14,7 @@ The **notepadpp-mcp** repository has been successfully optimized for the Glama.a
 - ✅ **Documentation**: 9/10 (Complete professional documentation)
 - ✅ **Infrastructure**: 9/10 (Enterprise CI/CD pipeline)
 - ✅ **Packaging**: 8/10 (MCPB validation passing)
-- ✅ **MCP Compliance**: 9/10 (FastMCP 2.12 compatible)
+- ✅ **MCP Compliance**: 9/10 (FastMCP 3.1 compatible)
 
 ### Platform Integration
 - 🚀 **Automatic Discovery**: Optimized for Glama.ai search algorithms

@@ -2,6 +2,8 @@
 
 **Complete guide to packaging and distributing MCP servers with MCPB**
 
+**This repo (Tailscale MCP):** Build output is **`dist/tailscale-mcp.mcpb`**. Align **`manifest.json`**, **`pyproject.toml`** (`[tool.mcpb]` + project version), and **`src/tailscalemcp/version.py`** per release — see [CHANGELOG](../../CHANGELOG.md) **[2.0.1]**.
+
 ---
 
 ## 📚 **Documentation Index**
@@ -173,7 +175,7 @@ When users install our MCPB package, they're prompted for:
   },
   "dependencies": {
     "python": ">=3.10.0",
-    "fastmcp": ">=2.12.0"
+    "fastmcp": ">=3.1.0"
   }
 }
 ```
@@ -240,11 +242,11 @@ When users install our MCPB package, they're prompted for:
 ### **FastMCP Issues**
 
 **Common Issues**:
-- Version < 2.12.0 (incompatible)
+- `fastmcp` **< 3.1.0** (incompatible with this repo’s standard)
 - Tool registration errors
 - stdio protocol violations
 
-**Solution**: See [FastMCP Troubleshooting](TROUBLESHOOTING_FASTMCP_2.12.md)
+**Solution**: See [FastMCP troubleshooting (archived filename)](TROUBLESHOOTING_FASTMCP_2.12.md) — document title may still say 2.12; prefer `pyproject.toml` for the current pin.
 
 ---
 

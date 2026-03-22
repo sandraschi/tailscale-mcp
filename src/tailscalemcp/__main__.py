@@ -22,7 +22,7 @@ logger = structlog.get_logger(__name__)
 def parse_args() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        description="Tailscale MCP Server - FastMCP 2.12 compliant Tailscale controller"
+        description="Tailscale MCP Server - FastMCP 3.1+ Tailscale controller"
     )
 
     # Server configuration

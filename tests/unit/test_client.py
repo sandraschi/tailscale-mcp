@@ -135,10 +135,3 @@ async def test_context_manager(api_client):
 
     # Client should be closed after context
     await api_client.close()
-
-
-
-
-
-
-

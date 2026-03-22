@@ -1,6 +1,6 @@
 # 🤖 AI Development Tools: Real-World Comparison
 
-**Based on FastMCP 2.12 Debugging Experience**  
+**Based on FastMCP 3.1 Debugging Experience**  
 **Project**: nest-protect MCP Server Development  
 **Timeline**: September 2025  
 **Update**: September 19, 2025 - Claude Desktop Pro rate limiting issues
@@ -30,7 +30,7 @@ During our intensive 3-day FastMCP debugging session, we observed significant di
 
 **Debugging Excellence**:
 - ✅ **Systematic approach** - Follows logical debugging progressions
-- ✅ **Pattern recognition** - Identifies FastMCP 2.12 migration patterns
+- ✅ **Pattern recognition** - Identifies FastMCP 3.1 migration patterns
 - ✅ **Root cause analysis** - Distinguishes between symptoms and actual problems
 - ✅ **Error correlation** - Connects seemingly unrelated errors to common causes
 
@@ -69,7 +69,7 @@ python -m nest_protect_mcp
 **Debugging Limitations**:
 - ❌ **Surface-level analysis** - Focuses on symptoms, not root causes
 - ❌ **Generic solutions** - Copy-paste answers without context adaptation
-- ❌ **Pattern blindness** - Misses FastMCP 2.12 specific issues
+- ❌ **Pattern blindness** - Misses FastMCP 3.1 specific issues
 - ❌ **Inconsistent approach** - Jumps between different debugging strategies
 
 **Code Quality Issues**:
@@ -91,11 +91,11 @@ rm -rf __pycache__ && pip install -e . && python test.py
 
 ## 📊 Performance Comparison
 
-### **Complex Debugging Task: FastMCP 2.12 Migration**
+### **Complex Debugging Task: FastMCP 3.1 Migration**
 
 | Aspect | Cursor + Sonnet | Windsurf + Free LLM | Winner |
 |--------|-----------------|---------------------|---------|
-| **Problem Identification** | Immediate FastMCP 2.12 pattern recognition | Generic "try this" suggestions | 🏆 Cursor |
+| **Problem Identification** | Immediate FastMCP 3.1 pattern recognition | Generic "try this" suggestions | 🏆 Cursor |
 | **Solution Accuracy** | 90%+ first-try success | 30% success, lots of iteration | 🏆 Cursor |
 | **Platform Awareness** | Perfect PowerShell syntax | Constant Linux syntax mistakes | 🏆 Cursor |
 | **Context Retention** | Remembers rules and previous fixes | Repeats same mistakes | 🏆 Cursor |
@@ -106,7 +106,7 @@ rm -rf __pycache__ && pip install -e . && python test.py
 
 **Cursor + Sonnet Response**:
 ```python
-# Immediately identified FastMCP 2.12 pattern change
+# Immediately identified FastMCP 3.1 pattern change
 from fastmcp import FastMCP
 from fastmcp.tools import Tool  # ✅ Correct import location
 
@@ -119,7 +119,7 @@ async def my_tool() -> Dict[str, Any]:
 
 **Windsurf + Free LLM Response**:
 ```python
-# Generic response that doesn't address FastMCP 2.12 specifics
+# Generic response that doesn't address FastMCP 3.1 specifics
 from fastmcp import FastMCP, Tool  # ❌ Old import pattern
 
 app = FastMCP("server", description="...")  # ❌ Old parameter name
@@ -155,7 +155,7 @@ def my_tool():  # ❌ Missing async, return type
 
 ### **What We Accomplished with Cursor + Sonnet**
 
-**Day 1**: FastMCP 2.12 import issues → Working server startup  
+**Day 1**: FastMCP 3.1 import issues → Working server startup  
 **Day 2**: Tool registration problems → All 24 tools loading  
 **Day 3**: Mock data → Real API integration with comprehensive error handling  
 
@@ -289,7 +289,7 @@ ls -la | grep .py
 
 ## 🏆 Conclusion
 
-Our FastMCP 2.12 debugging experience clearly demonstrates that **premium AI tools like Claude Sonnet provide dramatically better results** for complex development tasks. However, the **practical landscape has shifted significantly**:
+Our FastMCP 3.1 debugging experience clearly demonstrates that **premium AI tools like Claude Sonnet provide dramatically better results** for complex development tasks. However, the **practical landscape has shifted significantly**:
 
 **September 2025 Reality**: 
 - ✅ **Cursor IDE + Sonnet**: Still the gold standard for complex development
@@ -300,7 +300,7 @@ The combination of:
 
 - ✅ **Proper platform awareness** (PowerShell vs. bash syntax)
 - ✅ **Context retention** (following user rules and guidelines)  
-- ✅ **Pattern recognition** (FastMCP 2.12 specific issues)
+- ✅ **Pattern recognition** (FastMCP 3.1 specific issues)
 - ✅ **Production-quality output** (comprehensive error handling, type safety)
 
 Makes the difference between **3 days to production** vs. **weeks of frustration**.
@@ -360,4 +360,4 @@ Step 3: Full testing manually
 - ❌ Don't expect free tools to handle PowerShell syntax correctly
 - ❌ Don't rely on context retention in free LLMs
 
-This constrained landscape makes our FastMCP 2.12 debugging success with Cursor + Sonnet even more valuable - it's likely the ONLY way to achieve such results efficiently today!
+This constrained landscape makes our FastMCP 3.1 debugging success with Cursor + Sonnet even more valuable - it's likely the ONLY way to achieve such results efficiently today!

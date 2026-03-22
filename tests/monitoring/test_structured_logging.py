@@ -66,6 +66,7 @@ class TestStructuredLogging:
 
             # Wait a moment for file to be written
             import time
+
             time.sleep(0.1)
 
             # Read the log file and verify JSON format
@@ -96,6 +97,7 @@ class TestStructuredLogging:
 
             # Wait a moment for file to be written
             import time
+
             time.sleep(0.1)
 
             if log_file.exists():
@@ -123,6 +125,7 @@ class TestStructuredLogging:
 
             # Wait a moment for file to be written
             import time
+
             time.sleep(0.1)
 
             if log_file.exists():
@@ -150,6 +153,7 @@ class TestStructuredLogging:
 
             # Wait a moment for file to be written
             import time
+
             time.sleep(0.1)
 
             if log_file.exists():
@@ -162,7 +166,11 @@ class TestStructuredLogging:
                 assert log_data["event"] == "Exception occurred"
                 assert log_data["device_id"] == "test-device"
                 # Exception info might be in different fields depending on configuration
-                assert "exception" in log_data or "exc_info" in log_data or "error" in log_data
+                assert (
+                    "exception" in log_data
+                    or "exc_info" in log_data
+                    or "error" in log_data
+                )
 
     def test_structured_logging_multiple_handlers(self):
         """Test that structured logging sets up both file and console handlers."""
@@ -198,6 +206,7 @@ class TestStructuredLogging:
 
             # Wait a moment for file to be written
             import time
+
             time.sleep(0.1)
 
             if log_file.exists():
@@ -263,17 +272,20 @@ class TestStructuredLogging:
             logger = structlog.get_logger("test_logger")
 
             # Log message with typical Loki fields
-            logger.info("Device operation",
-                       device_id="test-device",
-                       device_name="test-server",
-                       operation="authorize",
-                       status="success",
-                       duration=0.5,
-                       bytes_sent=1024,
-                       bytes_received=2048)
+            logger.info(
+                "Device operation",
+                device_id="test-device",
+                device_name="test-server",
+                operation="authorize",
+                status="success",
+                duration=0.5,
+                bytes_sent=1024,
+                bytes_received=2048,
+            )
 
             # Wait a moment for file to be written
             import time
+
             time.sleep(0.1)
 
             if log_file.exists():
@@ -282,9 +294,17 @@ class TestStructuredLogging:
 
                 # Verify all fields that Promtail expects
                 expected_fields = [
-                    "timestamp", "level", "logger", "event",
-                    "device_id", "device_name", "operation", "status",
-                    "duration", "bytes_sent", "bytes_received"
+                    "timestamp",
+                    "level",
+                    "logger",
+                    "event",
+                    "device_id",
+                    "device_name",
+                    "operation",
+                    "status",
+                    "duration",
+                    "bytes_sent",
+                    "bytes_received",
                 ]
 
                 for field in expected_fields:

@@ -1,12 +1,13 @@
 """
-TailscaleMCP - A FastMCP 2.12 compliant Tailscale controller
+TailscaleMCP - A FastMCP 3.1+ Tailscale controller
 
 This module provides an MCP server for managing Tailscale networks,
 including device management, access control, and network monitoring.
 """
 
-__version__ = "2.0.0"
-__author__ = "Your Name <your.email@example.com>"
+from .version import __version__
+
+__author__ = "Sandra Schi <sandra@sandraschi.dev>"
 __license__ = "MIT"
 
 from .exceptions import TailscaleMCPError
@@ -24,6 +25,7 @@ def get_server() -> TailscaleMCPServer:
 __all__ = [
     "TailscaleMCPError",
     "TailscaleMCPServer",
+    "__version__",
     "get_server",
     "server",
 ]

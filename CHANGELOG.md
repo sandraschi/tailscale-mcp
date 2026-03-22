@@ -7,7 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Documentation:** Root [README.md](README.md) is a short entry with a **doc map**; detailed install is [docs/INSTALL.md](docs/INSTALL.md); [docs/WHAT_IS_TAILSCALE.md](docs/WHAT_IS_TAILSCALE.md) explains Tailscale vs Admin API. [docs/DOCUMENTATION_INDEX.md](docs/DOCUMENTATION_INDEX.md) updated. [CONTRIBUTING.md](CONTRIBUTING.md) aligned with **uv** (Poetry removed). [pyproject.toml](pyproject.toml) `project.urls` point to **sandraschi/tailscale-mcp**.
+- **Documentation:** README stack tightened again — compact tables, shorter [INSTALL](docs/INSTALL.md) / [WHAT_IS_TAILSCALE](docs/WHAT_IS_TAILSCALE.md), leaner [DOCUMENTATION_INDEX](docs/DOCUMENTATION_INDEX.md) top + dev/MCP sections. MCP Central Docs `projects/tailscale-mcp/README.md` mirror reduced to one table + ports.
+
 ### Added
+- **SEP-1577 sampling with tools**: `tailscale_agentic_workflow` runs multi-step flows via `context.sample_step` (FastMCP 3.1+). `tailscale_sampling` is a deprecated alias with the same parameters. Replaces the previous mock-only sampling paths.
+- **Server-side sampling handler**: `TailscaleSamplingHandler` — OpenAI-compatible `chat/completions` (default Ollama at `TAILSCALE_SAMPLING_BASE_URL`). Optional `TAILSCALE_SAMPLING_USE_CLIENT_LLM=1` uses host sampling with the handler as fallback.
+- **MCP resource `resource://tailscale/skills`**: Loads `skills/TAILSCALE_EXPERT.md` when present (agent guidance for tools and sampling).
+- **Help page** on the Webapp (`/help`): Credentials, `.env`, and sampling environment variables; links from the sidebar and header.
+- **`tailscale_help` topic `sampling`**: Structured help for agentic workflows and env vars (see also `tailscale_help(topic="sampling")`).
 - **Tailscale Funnel Support**: Complete Funnel integration for exposing local services to public internet
   - New `tailscale_funnel` portmanteau tool with 5 operations (enable, disable, status, list, certificate_info)
   - Automatic TLS certificate management via Tailscale Funnel
@@ -75,7 +84,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Mobile Monitoring Integration**: Mobile infrastructure monitoring with RebootX app for iPad
 
 ### Changed
-- **Upgraded to FastMCP 2.12**: Latest version with improved performance and features
+- **Contributor docs**: [CONTRIBUTING.md](CONTRIBUTING.md) — code style is **Ruff** (`ruff check`, `ruff format`) and **mypy**; **Black** and **isort** removed from [`.pre-commit-config.yaml`](.pre-commit-config.yaml) (Ruff handles lint, import sorting, and format).
+- **`.env.example`**: Documented sampling variables and clarified that copying to **`.env`** (gitignored) is the supported way to supply credentials for real API testing. (Renamed from `env.example` to match common convention.)
+- **`tailscale_help` / `_helpers`**: Overview and new **`topic=sampling`** content for SEP-1577, env vars, and `resource://tailscale/skills`.
+- **Dependencies**: PEP 735 `[dependency-groups] dev` + `[tool.uv] default-groups = ["dev"]` so `uv sync` installs pytest/ruff/mypy; Ruff/mypy targets **3.12**.
+- **README**: Badges and copy aligned with the repo (FastMCP **3.1+**, Python **3.12+**); added **Tailscale API (upstream)** with links to the interactive API docs and trust credentials.
+- **Device model + webapp**: Fixed `Device.from_api_response` parsing of `addresses` when the API returns a **list of IP strings** (real v2 shape); Devices page now shows API error **detail/hint**, optional **credential banner** via `GET /api/v1/status`, and maps `id` / `addresses`. Settings links to **tailscale.com/api** and Keys; CORS extended for Vite default port.
+- **Upgraded to FastMCP 3.1+**: Current supported line (see `pyproject.toml`); older 2.x references removed from docs and source comments.
 - **Enhanced Logging**: Structured logging with JSON format for better analysis
 - **Improved Documentation**: Added comprehensive monitoring documentation
 - **Updated Dependencies**: Latest versions of all monitoring components
@@ -85,6 +100,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Metrics Collection**: Improved Prometheus metrics collection and export
 - **Dashboard Configuration**: Fixed dashboard provisioning and data source configuration
 - **Docker Configuration**: Improved Docker Compose setup and configuration
+
+## [2.0.2] - 2026-03-22
+
+### Added
+- **`tailscale_partner_tailnets`** MCP tool: `summary` (members vs `type=shared` users, devices-by-login, hints), `users_list`, `user_get`, `devices_by_login`.
+- **Admin API `GET /users`**: `TailscaleAPIClient.list_users` / `get_user`; **`Device`** parses node owner `user`; **`device_management.list_users`** / **`get_user_details`** implemented. **`tailscale_device`** `user_list` accepts optional `user_type` and `user_role_filter`.
+- **Web** `/partner-tailnets`: counts, Mermaid overview, JSON panels.
+- **Tests**: `tests/unit/test_partner_grouping.py`.
+
+### Changed
+- **Version** metadata to **2.0.2** (package, manifest, extension, User-Agent).
+
+## [2.0.1] - 2026-03-22
+
+### Added
+- **My tailnet** (`/my-tailnet`, `Webapp`): Visual tailnet view with two modes — **Mermaid** diagram from `tailscale_status` with `include_mermaid_diagram: true` (or a flowchart fallback from `tailscale_device` list), and **Orbit (CSS 3D)** — decorative rotating device ring (not geographic). Route is lazy-loaded; **mermaid** is a dependency of the web app.
+- **Documentation**: [docs/PRD.md](docs/PRD.md) (product requirements), [docs/WEBAPP.md](docs/WEBAPP.md) (SOTA dashboard routes and behavior).
+- **MCPB manifest**: Version **2.0.1** with updated descriptions (SOTA UI, `tailscale_status` Mermaid); **[tool.mcpb]** in `pyproject.toml` aligned with repository author/URLs.
+
+### Changed
+- **Version**: Python package, MCP server, User-Agent, and bundled **`manifest.json`** / **`extension.toml`** set to **2.0.1**.
+- **`tailscale_status` helpers**: Reported `system.version` reads from **`tailscalemcp.version`** (same value as `__version__`), avoiding a hardcoded string and import cycles.
 
 ## [2.0.0] - 2024-01-01
 
@@ -119,6 +156,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Initial release of Tailscale MCP
-- FastMCP 2.10 compliant server implementation
+- FastMCP 3.1+ compliant server implementation (historical releases used FastMCP 2.x)
 - Support for basic Tailscale device management
 - Comprehensive documentation and examples

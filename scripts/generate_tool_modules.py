@@ -31,14 +31,18 @@ for tool_name, start_line, end_line in tools_to_extract:
     # Extract tool function (0-indexed)
     tool_lines = lines[start_line - 1 : end_line]
     tool_content = "\n".join(tool_lines)
-    
+
     # Replace self. with ctx.
     tool_content = tool_content.replace("self.mcp", "ctx.mcp")
     tool_content = tool_content.replace("self.device_manager", "ctx.device_manager")
     tool_content = tool_content.replace("self.monitor", "ctx.monitor")
-    tool_content = tool_content.replace("self.grafana_dashboard", "ctx.grafana_dashboard")
+    tool_content = tool_content.replace(
+        "self.grafana_dashboard", "ctx.grafana_dashboard"
+    )
     tool_content = tool_content.replace("self.taildrop_manager", "ctx.taildrop_manager")
-    tool_content = tool_content.replace("self.magic_dns_manager", "ctx.magic_dns_manager")
+    tool_content = tool_content.replace(
+        "self.magic_dns_manager", "ctx.magic_dns_manager"
+    )
     tool_content = tool_content.replace("self.funnel_manager", "ctx.funnel_manager")
     tool_content = tool_content.replace("self.network_ops", "ctx.network_ops")
     tool_content = tool_content.replace("self.policy_ops", "ctx.policy_ops")
@@ -49,13 +53,15 @@ for tool_name, start_line, end_line in tools_to_extract:
     tool_content = tool_content.replace("self.analytics_ops", "ctx.analytics_ops")
     tool_content = tool_content.replace("self.reporting_ops", "ctx.reporting_ops")
     tool_content = tool_content.replace("self.service_ops", "ctx.service_ops")
-    
+
     # Remove the @self.mcp.tool() decorator (will be added in register function)
-    tool_content = re.sub(r"^\s*@self\.mcp\.tool\(\)\s*$", "", tool_content, flags=re.MULTILINE)
-    
+    tool_content = re.sub(
+        r"^\s*@self\.mcp\.tool\(\)\s*$", "", tool_content, flags=re.MULTILINE
+    )
+
     # Create module name
     module_name = tool_name.replace("tailscale_", "") + "_tool"
-    
+
     # Generate module content
     module_template = f'''"""Tailscale {tool_name.replace("tailscale_", "").replace("_", " ").title()} tool module."""
 
@@ -79,12 +85,10 @@ def register_{tool_name.replace("tailscale_", "")}_tool(ctx: ToolContext) -> Non
     @ctx.mcp.tool()
 {tool_content}
 '''
-    
+
     # Write module file
     output_file = Path(f"src/tailscalemcp/tools/{module_name}.py")
     output_file.write_text(module_template, encoding="utf-8")
     print(f"Generated {output_file}")
 
 print(f"\nExtracted {len(tools_to_extract)} tool modules")
-
-

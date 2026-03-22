@@ -9,7 +9,7 @@
 
 ## 📊 Executive Summary
 
-Tailscale-MCP is a **well-architected FastMCP 2.12 compliant server** with a solid foundation in place. The repository demonstrates **strong engineering practices** with portmanteau tool patterns, comprehensive monitoring infrastructure, and modern Python tooling. However, it's in a **transitional state** - moving from mock implementations to real API integration, with **significant expansion opportunities** identified.
+Tailscale-MCP is a **well-architected FastMCP 3.1 compliant server** with a solid foundation in place. The repository demonstrates **strong engineering practices** with portmanteau tool patterns, comprehensive monitoring infrastructure, and modern Python tooling. However, it's in a **transitional state** - moving from mock implementations to real API integration, with **significant expansion opportunities** identified.
 
 ### Key Metrics
 - **Tool Count:** 12 portmanteau tools with 91+ operations
@@ -52,7 +52,7 @@ Tailscale-MCP is a **well-architected FastMCP 2.12 compliant server** with a sol
 - **Structured Logging:** JSON-formatted logs with structlog
 - **Type Hints:** Comprehensive type annotations throughout
 
-#### ✅ FastMCP 2.12 Compliance
+#### ✅ FastMCP 3.1 Compliance
 - **Correct tool decoration:** `@mcp.tool()` without description parameter
 - **Comprehensive docstrings:** 200+ line docstrings with examples
 - **Literal types:** Proper use for operation parameters

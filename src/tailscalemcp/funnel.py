@@ -161,7 +161,7 @@ class FunnelManager:
 
                 self.services[port] = service
 
-                # Save to persistent storage if available (FastMCP 2.13+)
+                # Save to persistent storage if available (FastMCP 3.1+)
                 if self.mcp_storage:
                     try:
                         await self._save_services_to_storage()
@@ -227,7 +227,7 @@ class FunnelManager:
                     for service in self.services.values():
                         service.status = "disabled"
 
-                # Save to persistent storage if available (FastMCP 2.13+)
+                # Save to persistent storage if available (FastMCP 3.1+)
                 if self.mcp_storage:
                     try:
                         await self._save_services_to_storage()

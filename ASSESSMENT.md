@@ -45,7 +45,7 @@
 ## 📚 **References**
 
 - [MCP Central Documentation Standards](../STANDARDS.md)
-- [FastMCP 2.12 Migration Guide](../FASTMCP_2.12_MIGRATION.md)
+- FastMCP 3.1+ (see `pyproject.toml`); legacy migration notes may reference older filenames under `docs/mcp-technical/`.
 - [MCPB Packaging Standards](../MCPB_PACKAGING_STANDARDS.md)
 - [Monitoring Standards](../monitoring/README.md)
 

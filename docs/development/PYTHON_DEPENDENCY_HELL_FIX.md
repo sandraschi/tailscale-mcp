@@ -5,6 +5,8 @@
 **Status**: RESOLVED  
 **Lesson**: Dependency hell was not invented on a whim!
 
+**Note (2026):** This postmortem references **FastMCP 2.12.x** pins from 2025. Repositories in this workspace that have migrated should use **FastMCP 3.1+** per their `pyproject.toml`; the sections below remain **historical** debugging context.
+
 ---
 
 ## 🚨 **The Disaster**

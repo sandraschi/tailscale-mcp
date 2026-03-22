@@ -1,9 +1,9 @@
-# 🔧 FastMCP 2.12 Troubleshooting Guide
+# 🔧 FastMCP 3.1 Troubleshooting Guide
 
 **Based on Real-World Debugging Experience**  
 **Project**: nest-protect MCP Server  
 **Timeline**: September 17-20, 2025  
-**Framework**: FastMCP 2.12.3  
+**Framework**: FastMCP 3.1.3  
 **Status**: ✅ **PRODUCTION READY**
 
 This guide documents the **complete debugging journey** from a broken MCP server to a production-ready system. Use this to troubleshoot similar issues in other MCP projects like avatarmcp, local llms, and tapo.
@@ -15,7 +15,7 @@ This guide documents the **complete debugging journey** from a broken MCP server
 ### **Initial Problem**
 - ✅ **Symptom**: `ImportError: cannot import name 'Tool' from 'fastmcp'`
 - ✅ **Impact**: Server wouldn't start at all
-- ✅ **Root Cause**: FastMCP 2.12 changed the import structure
+- ✅ **Root Cause**: FastMCP 3.1 changed the import structure
 
 ### **Final Result**
 - ✅ **Status**: Production-ready server with 20 working tools
@@ -62,7 +62,7 @@ import sys
 print("Server started")
 print(f"Error: {error}")
 
-# ✅ CORRECT - FastMCP 2.12 compatible (logging)
+# ✅ CORRECT - FastMCP 3.1 compatible (logging)
 logger.info("Server started")
 logger.error(f"Error: {error}")
 
@@ -146,7 +146,7 @@ class MyModel(BaseModel):
 
 ---
 
-## 🐛 Common FastMCP 2.12 Issues & Solutions
+## 🐛 Common FastMCP 3.1 Issues & Solutions
 
 ### **1. Import Errors - The Starting Point**
 
@@ -193,7 +193,7 @@ def my_tool():
     pass
 ```
 
-**✅ SOLUTION - The FastMCP 2.12 Way**:
+**✅ SOLUTION - The FastMCP 3.1 Way**:
 ```python
 app = FastMCP("server-name")
 
@@ -205,7 +205,7 @@ async def my_tool() -> Dict[str, Any]:
 # That's it! No manual registration needed
 ```
 
-**Key insight**: FastMCP 2.12 handles tool registration automatically when you use `@app.tool()`.
+**Key insight**: FastMCP 3.1 handles tool registration automatically when you use `@app.tool()`.
 
 ---
 
@@ -234,7 +234,7 @@ if __name__ == "__main__":
     app.run()  # ✅ That's it!
 ```
 
-**Key insight**: Don't overcomplicate it. FastMCP 2.12 handles the complexity for you.
+**Key insight**: Don't overcomplicate it. FastMCP 3.1 handles the complexity for you.
 
 ---
 
@@ -262,7 +262,7 @@ async def tool_func(device_id: str, timeout: int = 30) -> Dict[str, Any]:
     return {"device_id": device_id, "timeout": timeout}
 ```
 
-**Key insight**: FastMCP 2.12 infers validation from function type hints. Keep it simple!
+**Key insight**: FastMCP 3.1 infers validation from function type hints. Keep it simple!
 
 ---
 
@@ -640,7 +640,7 @@ async def validate_all_tools():
 ## 📞 Quick Fixes for Common Projects
 
 ### **For avatarmcp**
-- Check if using FastMCP 2.12 import pattern
+- Check if using FastMCP 3.1 import pattern
 - Verify avatar generation dependencies are installed
 - Add error handling for image processing failures
 
@@ -667,4 +667,4 @@ async def validate_all_tools():
 
 **Debug strategy**: Start with the minimal working example and add complexity gradually. Use comprehensive logging and error handling throughout.
 
-**Remember**: FastMCP 2.12 is designed to be simple. If you're fighting the framework, you're probably doing it wrong. 🔧✨
+**Remember**: FastMCP 3.1 is designed to be simple. If you're fighting the framework, you're probably doing it wrong. 🔧✨

@@ -299,7 +299,7 @@ Total Lines: ~6,008 lines
 - ✅ `pydantic>=2.0.0` - Data validation
 - ✅ `pydantic-settings>=2.0.0` - Configuration
 - ✅ `structlog>=23.0.0` - Structured logging
-- ✅ `fastmcp>=2.12.0` - MCP framework
+- ✅ `fastmcp>=3.1.0` - MCP framework
 - ❌ `fastapi>=0.104.0` - For Funnel HTTP/SSE (Phase 6)
 - ❌ `uvicorn>=0.24.0` - ASGI server (Phase 6)
 - ❌ `websockets>=12.0` - WebSocket support (Phase 6)

@@ -1,7 +1,7 @@
 # 🔄 Systematic Project-Wide Updates with AI
 
 **The Challenge of Comprehensive Changes**  
-**Based on Real FastMCP 2.12 Migration Experience**  
+**Based on Real FastMCP 3.1 Migration Experience**  
 **Timeline**: September 2025
 
 ---
@@ -26,7 +26,7 @@
 
 ### **Real Example from Our FastMCP Migration**
 
-**The Task**: Update all tools from old pattern to FastMCP 2.12 pattern
+**The Task**: Update all tools from old pattern to FastMCP 3.1 pattern
 
 **What We Needed**:
 ```

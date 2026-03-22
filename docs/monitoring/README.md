@@ -88,7 +88,7 @@ The Tailscale MCP monitoring stack provides comprehensive observability through:
    ```powershell
    git clone <repository>
    cd tailscale-mcp
-   Copy-Item env.example .env
+   Copy-Item .env.example .env
    ```
 
 2. **Configure environment:**

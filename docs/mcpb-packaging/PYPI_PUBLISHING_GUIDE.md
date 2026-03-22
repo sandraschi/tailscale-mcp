@@ -198,7 +198,7 @@ authors = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "fastmcp>=2.12.0",
+    "fastmcp>=3.1.0",
     "mcp>=1.0.0,<2.0.0",
     "anyio>=4.0.0,<5.0.0",
     "psutil>=5.9.0",

@@ -39,6 +39,10 @@ class Device(BaseModel):
     tailnet_lock_key: str | None = Field(None, description="Tailnet lock key")
     key_expiry_disabled: bool = Field(False, description="Key expiry disabled")
     expires: datetime | None = Field(None, description="Key expiration time")
+    user: str | None = Field(
+        None,
+        description="Tailscale user login (node owner) when provided by API",
+    )
 
     @classmethod
     def from_api_response(cls, data: dict[str, Any]) -> "Device":
@@ -64,6 +68,16 @@ class Device(BaseModel):
             with contextlib.suppress(ValueError, AttributeError):
                 expires = datetime.fromisoformat(data["expires"].replace("Z", "+00:00"))
 
+        v4, v6 = cls._parse_ip_addresses(data.get("addresses"))
+
+        user_raw = data.get("user")
+        if isinstance(user_raw, str):
+            user_val: str | None = user_raw or None
+        elif isinstance(user_raw, dict):
+            user_val = user_raw.get("loginName") or user_raw.get("id") or None
+        else:
+            user_val = None
+
         return cls(
             id=data.get("id", ""),
             node_key=data.get("nodeKey"),
@@ -73,10 +87,8 @@ class Device(BaseModel):
             os=data.get("os", "unknown"),
             os_version=data.get("osVersion"),
             client_version=data.get("clientVersion"),
-            ipv4=data.get("addresses", [{}])[0].get("ip")
-            if data.get("addresses")
-            else None,
-            ipv6=None,  # Extract from addresses if present
+            ipv4=v4,
+            ipv6=v6,
             tags=data.get("tags", []),
             authorized=data.get("authorized", False),
             connected_to_control=data.get("connectedToControl", False),
@@ -84,7 +96,32 @@ class Device(BaseModel):
             tailnet_lock_key=data.get("tailnetLockKey"),
             key_expiry_disabled=data.get("keyExpiryDisabled", False),
             expires=expires,
+            user=user_val,
         )
+
+    @staticmethod
+    def _parse_ip_addresses(
+        raw: list[Any] | None,
+    ) -> tuple[str | None, str | None]:
+        """Extract IPv4/IPv6 from API `addresses` (strings or legacy {ip: ...} objects)."""
+        if not raw:
+            return None, None
+        v4: str | None = None
+        v6: str | None = None
+        for item in raw:
+            if isinstance(item, str):
+                if ":" in item:
+                    v6 = v6 or item
+                else:
+                    v4 = v4 or item
+            elif isinstance(item, dict):
+                ip = item.get("ip")
+                if isinstance(ip, str):
+                    if ":" in ip:
+                        v6 = v6 or ip
+                    else:
+                        v4 = v4 or ip
+        return v4, v6
 
     @property
     def status(self) -> DeviceStatus:

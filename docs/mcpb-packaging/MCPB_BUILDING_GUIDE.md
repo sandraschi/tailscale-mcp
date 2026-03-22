@@ -537,7 +537,7 @@ your-mcp/
 
 ### FastMCP Server Best Practices
 
-- Use FastMCP 2.12.0 or later
+- Use FastMCP 3.1.0 or later
 - Implement proper signal handling
 - Use structured logging
 - Handle all exceptions gracefully
@@ -865,13 +865,13 @@ jobs:
 
 ## 🔧 FASTMCP VERSION REQUIREMENT
 
-**CRITICAL**: Must use fastmcp>=2.12.0 for DXT compatibility.
+**CRITICAL**: Must use fastmcp>=3.1.0 for DXT compatibility.
 
 **requirements.txt:**
 
 ```txt
 # Core MCP dependencies - VERSION REQUIREMENT
-fastmcp>=2.12.0,<3.0.0
+fastmcp>=3.1.0,<3.0.0
 fastapi>=0.95.0
 uvicorn[standard]>=0.22.0
 pydantic>=2.0.0,<3.0.0
@@ -1002,7 +1002,7 @@ httpx>=0.24.0
   "name": "example-mcp",
   "version": "1.0.0",
   "description": "Example MCP server with external tool integration",
-  "long_description": "Comprehensive MCP server that demonstrates proper external dependency handling, user configuration, and professional tool integration patterns using FastMCP 2.12.0+.",
+  "long_description": "Comprehensive MCP server that demonstrates proper external dependency handling, user configuration, and professional tool integration patterns using FastMCP 3.1.0+.",
   "author": {
     "name": "Sandra Schi",
     "email": "sandra@sandraschi.dev",
@@ -1114,7 +1114,7 @@ httpx>=0.24.0
     }
   },
   "dependencies": [
-    "fastmcp>=2.12.0,<3.0.0",
+    "fastmcp>=3.1.0,<3.0.0",
     "pydantic>=2.0.0",
     "httpx>=0.25.0",
     "loguru>=0.7.0"
@@ -1131,7 +1131,7 @@ httpx>=0.24.0
 npm install -g @anthropic-ai/mcpb
 
 # Install Python dependencies (EXACT VERSIONS)
-pip install "fastmcp>=2.12.0,<3.0.0"
+pip install "fastmcp>=3.1.0,<3.0.0"
 pip install -r requirements.txt
 ```
 
@@ -1422,14 +1422,14 @@ ImportError: cannot import name 'FastMCP' from 'fastmcp'
 AttributeError: 'FastMCP' object has no attribute 'some_method'
 ```
 
-#### Solution: Update to FastMCP 2.12.0+
+#### Solution: Update to FastMCP 3.1.0+
 
 ```bash
 # Uninstall old version
 pip uninstall fastmcp
 
 # Install exact version
-pip install "fastmcp>=2.12.0,<3.0.0"
+pip install "fastmcp>=3.1.0,<3.0.0"
 
 # Verify installation
 python -c "import fastmcp; print(fastmcp.__version__)"
@@ -1439,7 +1439,7 @@ python -c "import fastmcp; print(fastmcp.__version__)"
 
 ```txt
 # CRITICAL: Use exact version constraints
-fastmcp>=2.12.0,<3.0.0
+fastmcp>=3.1.0,<3.0.0
 fastapi>=0.95.0
 uvicorn[standard]>=0.22.0
 pydantic>=2.0.0,<3.0.0
@@ -1489,7 +1489,7 @@ jobs:
     - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install "fastmcp>=2.12.0,<3.0.0"
+        pip install "fastmcp>=3.1.0,<3.0.0"
         pip install -r requirements.txt
         
     - name: Create dist directory
@@ -1537,7 +1537,7 @@ jobs:
           4. Restart Claude Desktop
           
           ### Dependencies
-          - FastMCP 2.10.1+ (bundled)
+          - FastMCP 3.1.1+ (bundled)
           - Python 3.8+ (built into Claude Desktop)
           
           ### What's New
@@ -1678,7 +1678,7 @@ mcpb pack . ../package.mcpb
 
 ### Development
 
-- [ ] Use fastmcp>=2.12.0,<3.0.0 in requirements.txt
+- [ ] Use fastmcp>=3.1.0,<3.0.0 in requirements.txt
 - [ ] Structure Python modules in `src/your_mcp/` directory
 - [ ] Create comprehensive manifest.json with AI
 - [ ] Include `cwd: "src"` and `PYTHONPATH: "src"` in mcp_config
@@ -1697,7 +1697,7 @@ mcpb pack . ../package.mcpb
 ### Release
 
 - [ ] Setup GitHub Actions workflow with Python 3.11
-- [ ] Include fastmcp>=2.12.0 installation step in CI
+- [ ] Include fastmcp>=3.1.0 installation step in CI
 - [ ] Create release tag: `git tag v1.0.0`
 - [ ] Verify automatic build and release
 - [ ] Test downloaded .mcpb package installation
@@ -1719,7 +1719,7 @@ mcpb pack . ../package.mcpb
 
 ```json
 {
-  "dependencies": ["fastmcp>=2.12.0,<3.0.0"],
+  "dependencies": ["fastmcp>=3.1.0,<3.0.0"],
   "server": {
     "type": "python",
     "entry_point": "src/blender_mcp/server.py",
@@ -1740,7 +1740,7 @@ mcpb pack . ../package.mcpb
 
 ```json
 {
-  "dependencies": ["fastmcp>=2.12.0,<3.0.0"],
+  "dependencies": ["fastmcp>=3.1.0,<3.0.0"],
   "server": {
     "type": "python", 
     "entry_point": "src/docker_mcp/server.py",
@@ -1761,7 +1761,7 @@ mcpb pack . ../package.mcpb
 
 ```json
 {
-  "dependencies": ["fastmcp>=2.12.0,<3.0.0"],
+  "dependencies": ["fastmcp>=3.1.0,<3.0.0"],
   "server": {
     "type": "python",
     "entry_point": "src/database_mcp/server.py", 
@@ -1798,7 +1798,7 @@ mcpb pack . ../package.mcpb
 
 ### Critical Updates
 
-1. **FastMCP 2.12.0 Requirement**: Mandatory for MCPB compatibility
+1. **FastMCP 3.1.0 Requirement**: Mandatory for MCPB compatibility
 2. **Python Path Fix**: Explicit `cwd` and `PYTHONPATH` configuration
 3. **Updated Examples**: All examples include new requirements
 4. **Enhanced Troubleshooting**: Manual MCP fallback procedures
@@ -1812,7 +1812,7 @@ mcpb pack . ../package.mcpb
 
 ### Migration Guide
 
-1. Update `requirements.txt`: `fastmcp>=2.12.0,<3.0.0`
+1. Update `requirements.txt`: `fastmcp>=3.1.0,<3.0.0`
 2. Add to manifest `mcp_config`: `"cwd": "src"` and `"PYTHONPATH": "src"`
 3. Rebuild MCPB package: `mcpb pack . ../dist/updated-package.mcpb`
 4. Test installation and fallback to manual MCP if needed

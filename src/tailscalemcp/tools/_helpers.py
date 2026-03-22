@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING, Any
 
 import structlog
 
+from tailscalemcp.version import __version__
+
 if TYPE_CHECKING:
     from fastmcp import FastMCP
 
@@ -37,7 +39,7 @@ async def generate_help_content(
     help_data = {
         "overview": {
             "title": "Tailscale MCP Server - Comprehensive Help System",
-            "description": "Professional Tailscale MCP server with 13 portmanteau tools and 91+ operations",
+            "description": "Professional Tailscale MCP server with portmanteau tools, MCP prompts/resources, and SEP-1577 agentic workflows",
             "tools": {
                 "tailscale_device": "Device and user management operations",
                 "tailscale_network": "DNS and network configuration",
@@ -50,8 +52,20 @@ async def generate_help_content(
                 "tailscale_performance": "Performance optimization and analysis",
                 "tailscale_reporting": "Advanced reporting and analytics",
                 "tailscale_integration": "Third-party integrations and webhooks",
+                "tailscale_agentic_workflow": "SEP-1577 multi-step workflows (sampling with tools; requires configured LLM)",
+                "tailscale_sampling": "Deprecated alias for tailscale_agentic_workflow (identical parameters)",
                 "tailscale_help": "This comprehensive help system",
                 "tailscale_status": "System status and health monitoring",
+            },
+            "credentials": {
+                "env_file": "Copy .env.example to .env in the repo root (or set process env). .env is listed in .gitignore — safe for local non-mock testing.",
+                "required": ["TAILSCALE_API_KEY", "TAILSCALE_TAILNET"],
+                "sampling_optional": [
+                    "TAILSCALE_SAMPLING_BASE_URL",
+                    "TAILSCALE_SAMPLING_MODEL",
+                    "TAILSCALE_SAMPLING_API_KEY",
+                    "TAILSCALE_SAMPLING_USE_CLIENT_LLM",
+                ],
             },
             "levels": {
                 "basic": "Quick start guide and essential commands",
@@ -71,6 +85,11 @@ async def generate_help_content(
             "funnel_disable": "tailscale_funnel(operation='funnel_disable', port=8080)",
             "funnel_certificate": "tailscale_funnel(operation='funnel_certificate_info', port=8080)",
             "help_system": "tailscale_help(topic='overview', level='intermediate')",
+            "help_sampling": "tailscale_help(topic='sampling', level='intermediate')",
+            "agentic_workflow": (
+                "tailscale_agentic_workflow(workflow_prompt='List offline devices.', "
+                "available_tools=['tailscale_device','tailscale_status'], max_iterations=5)"
+            ),
             "status_check": "tailscale_status(component='devices', detail_level='advanced')",
         },
         "best_practices": {
@@ -80,6 +99,7 @@ async def generate_help_content(
             "performance": "Monitor latency and bandwidth regularly",
             "automation": "Use workflows for repetitive tasks",
             "funnel": "Use Funnel for temporary, secure exposure of local services. Disable when not needed. Always verify ACL policy includes 'funnel' node attribute before enabling.",
+            "sampling": "Keep available_tools minimal; prefer Ollama on localhost for server-side sampling or TAILSCALE_SAMPLING_USE_CLIENT_LLM=1 with a capable host.",
         },
         "troubleshooting": {
             "connection_issues": "Check network connectivity and API credentials",
@@ -255,6 +275,30 @@ async def generate_help_content(
                 },
             },
         },
+        "sampling": {
+            "title": "SEP-1577 sampling, agentic workflow, and .env credentials",
+            "description": (
+                "For real (non-mock) API access, set TAILSCALE_API_KEY and TAILSCALE_TAILNET in a "
+                "repo-root .env file (copy .env.example). python-dotenv loads .env at startup; .env is in "
+                ".gitignore—do not commit secrets. For agentic workflows, configure a local or cloud LLM "
+                "or use TAILSCALE_SAMPLING_USE_CLIENT_LLM=1 with a capable MCP host."
+            ),
+            "tailscale_api_env": {
+                "TAILSCALE_API_KEY": "Admin API key from Tailscale admin console (Keys)",
+                "TAILSCALE_TAILNET": "Tailnet identifier (DNS name or ID)",
+            },
+            "sampling_env": {
+                "TAILSCALE_SAMPLING_BASE_URL": "OpenAI-compatible /v1 base (default http://127.0.0.1:11434/v1)",
+                "TAILSCALE_SAMPLING_MODEL": "Model name (default llama3.2)",
+                "TAILSCALE_SAMPLING_API_KEY": "Optional Bearer token for cloud endpoints",
+                "TAILSCALE_SAMPLING_USE_CLIENT_LLM": "1/true/yes = prefer host LLM for sampling; server handler is fallback",
+            },
+            "tools": {
+                "tailscale_agentic_workflow": "SEP-1577: workflow_prompt, available_tools, max_iterations, Context",
+                "tailscale_sampling": "Deprecated alias; same signature as tailscale_agentic_workflow",
+            },
+            "mcp_resource": "resource://tailscale/skills — see skills/TAILSCALE_EXPERT.md in the repo",
+        },
     }
 
     if topic == "overview" or topic is None:
@@ -267,6 +311,8 @@ async def generate_help_content(
         return help_data["troubleshooting"]
     elif topic == "funnel":
         return help_data["funnel"]
+    elif topic == "sampling":
+        return help_data["sampling"]
     else:
         return {
             "error": f"Help topic '{topic}' not found",
@@ -478,7 +524,7 @@ async def generate_status_info(
         status_data = {
             "system": {
                 "status": "operational",
-                "version": "2.0.0",
+                "version": __version__,
                 "uptime": "Running",
                 "last_updated": time.time(),
             },

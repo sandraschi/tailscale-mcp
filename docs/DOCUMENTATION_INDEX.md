@@ -1,25 +1,8 @@
-# 📚 Complete Documentation Index
+# Documentation index
 
-**Central hub for all TailscaleMCP documentation**
+**Entry:** [README.md](../README.md) · [WHAT_IS_TAILSCALE.md](WHAT_IS_TAILSCALE.md) · [INSTALL.md](INSTALL.md) · [CONTRIBUTING.md](../CONTRIBUTING.md)
 
----
-
-## 🎯 **Quick Navigation**
-
-### **New to the Project?**
-1. Start with [README.md](../README.md) - Project overview
-2. See [Installation Guide](#installation) - Get started
-3. Review [Portmanteau Tools Guide](#portmanteau-tools) - Core functionality
-
-### **Want to Contribute?**
-1. Read [CONTRIBUTING.md](../CONTRIBUTING.md) - Guidelines
-2. Check [Architecture & Design](#architecture) - System design
-3. Review [Development Guides](#development) - Best practices
-
-### **Need Help?**
-1. Check [API Reference](#api-reference) - Complete API documentation
-2. See [Troubleshooting](#troubleshooting) - Common issues
-3. Review [Security](#security) - Report issues
+**Help:** [API Reference](#api-reference) · [Troubleshooting](#troubleshooting) · [Security](#security)
 
 ---
 
@@ -27,11 +10,14 @@
 
 ```
 docs/
-├── README.md                           📘 Main project documentation
+├── WHAT_IS_TAILSCALE.md                🌐 Tailscale & Admin API primer
+├── INSTALL.md                          📦 Install, env, run, Webapp
 ├── ARCHITECTURE_AND_DESIGN.md          🏗️ System architecture & design
 ├── TAILSCALE_MCP_PORTMANTEAU_TOOLS.md  🔧 Portmanteau tools guide
 ├── API_REFERENCE.md                    📚 Complete API documentation
 ├── DOCUMENTATION_INDEX.md              📚 This file - Complete doc index
+├── PRD.md                              📋 Product requirements (MCP + web UI)
+├── WEBAPP.md                           🖥️ SOTA dashboard (`Webapp`) routes & My tailnet
 ├── ORGANIZATION_SUMMARY.md             📋 Documentation organization log
 ├── REPOSITORY_ASSESSMENT.md            📊 Comprehensive repository assessment
 ├── TAILSCALE_MCP_EXPANSION_PLAN.md     🚀 Detailed expansion implementation plan
@@ -90,115 +76,51 @@ docs/
 
 ---
 
-## 🚀 **Core Documentation**
+## Core docs
 
-### **1. Project Overview**
-📄 [README.md](../README.md)
+| Doc | Notes |
+|-----|--------|
+| [PRD.md](PRD.md) | Product scope, Webapp, tooling |
+| [WEBAPP.md](WEBAPP.md) | Routes, ports, start script |
+| [ARCHITECTURE_AND_DESIGN.md](ARCHITECTURE_AND_DESIGN.md) | Portmanteau pattern, components |
+| [TAILSCALE_MCP_PORTMANTEAU_TOOLS.md](TAILSCALE_MCP_PORTMANTEAU_TOOLS.md) | All 10 tools / operations |
+| [monitoring/](monitoring/README.md) | Grafana / Prometheus / Loki |
 
-**Main project documentation** covering:
-- Project overview and features
-- Installation and setup
-- Usage examples
-- Configuration options
-- Monitoring stack integration
-- RebootX On-Prem integration
+### **1. Project overview**
+[README.md](../README.md) — entry + doc map. Details: [INSTALL](INSTALL.md), [portmanteau tools](TAILSCALE_MCP_PORTMANTEAU_TOOLS.md), [monitoring/](monitoring/README.md).
 
 ### **2. Architecture & Design**
-📄 [ARCHITECTURE_AND_DESIGN.md](ARCHITECTURE_AND_DESIGN.md)
-
-**System architecture documentation** covering:
-- Portmanteau pattern design philosophy
-- High-level architecture overview
-- Component responsibilities
-- Future roadmap
+[ARCHITECTURE_AND_DESIGN.md](ARCHITECTURE_AND_DESIGN.md) — pattern, components, roadmap.
 
 ### **3. Portmanteau Tools Guide**
-📄 [TAILSCALE_MCP_PORTMANTEAU_TOOLS.md](TAILSCALE_MCP_PORTMANTEAU_TOOLS.md)
-
-**Complete guide to all 10 portmanteau tools** covering:
-- Device management tools
-- Network management tools
-- Monitoring tools
-- Security tools
-- Automation tools
-- And more...
+[TAILSCALE_MCP_PORTMANTEAU_TOOLS.md](TAILSCALE_MCP_PORTMANTEAU_TOOLS.md) — device, network, monitor, security, automation, etc.
 
 ### **4. API Reference**
-📄 [API_REFERENCE.md](API_REFERENCE.md)
-
-**Complete API documentation** covering:
-- All 91 operations across 10 portmanteau tools
-- Parameters and return values
-- Response formats
-- Error handling
+[API_REFERENCE.md](API_REFERENCE.md) — operations, parameters, errors.
 
 ---
 
-## 💻 **Development Documentation**
+## Development
 
-### **Purpose**
-Development guides, best practices, and troubleshooting for TailscaleMCP development.
-
-### **Documents**
-
-#### **1. Development Hub**
-📄 [development/README.md](development/README.md)
-
-Central hub for all development documentation and best practices.
-
-#### **2. AI Development Rules**
-📄 [development/AI_DEVELOPMENT_RULES.md](development/AI_DEVELOPMENT_RULES.md)
-
-AI collaboration guidelines and best practices for development.
-
-#### **3. Python Snippets Usage Guide**
-📄 [development/PYTHON_SNIPPETS_USAGE_GUIDE.md](development/PYTHON_SNIPPETS_USAGE_GUIDE.md)
-
-Reusable Python patterns and code snippets for MCP development.
-
-#### **4. Debugging Lessons Learned**
-📄 [development/DEBUGGING_LESSONS_LEARNED.md](development/DEBUGGING_LESSONS_LEARNED.md)
-
-Real-world debugging experiences and solutions.
-
-#### **5. Development Pain Points**
-📄 [development/DEVELOPMENT_PAIN_POINTS.md](development/DEVELOPMENT_PAIN_POINTS.md)
-
-Common challenges and their solutions in MCP development.
+| Doc | |
+|-----|---|
+| [development/README.md](development/README.md) | Hub |
+| [AI_DEVELOPMENT_RULES.md](development/AI_DEVELOPMENT_RULES.md) | AI collaboration |
+| [PYTHON_SNIPPETS_USAGE_GUIDE.md](development/PYTHON_SNIPPETS_USAGE_GUIDE.md) | Snippets |
+| [DEBUGGING_LESSONS_LEARNED.md](development/DEBUGGING_LESSONS_LEARNED.md) | Debugging |
+| [DEVELOPMENT_PAIN_POINTS.md](development/DEVELOPMENT_PAIN_POINTS.md) | Pain points |
 
 ---
 
-## 🔧 **MCP Technical Documentation**
+## MCP technical
 
-### **Purpose**
-Technical guides for MCP server development, deployment, and troubleshooting.
-
-### **Documents**
-
-#### **1. Claude Desktop Debugging**
-📄 [mcp-technical/CLAUDE_DESKTOP_DEBUGGING.md](mcp-technical/CLAUDE_DESKTOP_DEBUGGING.md)
-
-Debug MCP servers in Claude Desktop - log files, common errors, stdio issues.
-
-#### **2. MCP Production Checklist**
-📄 [mcp-technical/MCP_PRODUCTION_CHECKLIST.md](mcp-technical/MCP_PRODUCTION_CHECKLIST.md)
-
-Comprehensive production readiness checklist for MCP servers.
-
-#### **3. FastMCP 2.12 Troubleshooting**
-📄 [mcp-technical/TROUBLESHOOTING_FASTMCP_2.12.md](mcp-technical/TROUBLESHOOTING_FASTMCP_2.12.md)
-
-FastMCP-specific issues, version compatibility, and solutions.
-
-#### **4. Containerization Guidelines**
-📄 [mcp-technical/CONTAINERIZATION_GUIDELINES.md](mcp-technical/CONTAINERIZATION_GUIDELINES.md)
-
-Docker and containerization best practices for MCP servers.
-
-#### **5. Monitoring Stack Deployment**
-📄 [mcp-technical/MONITORING_STACK_DEPLOYMENT.md](mcp-technical/MONITORING_STACK_DEPLOYMENT.md)
-
-Production monitoring, logging, and observability setup.
+| Doc | |
+|-----|---|
+| [CLAUDE_DESKTOP_DEBUGGING.md](mcp-technical/CLAUDE_DESKTOP_DEBUGGING.md) | Claude Desktop |
+| [MCP_PRODUCTION_CHECKLIST.md](mcp-technical/MCP_PRODUCTION_CHECKLIST.md) | Production |
+| [TROUBLESHOOTING_FASTMCP_2.12.md](mcp-technical/TROUBLESHOOTING_FASTMCP_2.12.md) | FastMCP |
+| [CONTAINERIZATION_GUIDELINES.md](mcp-technical/CONTAINERIZATION_GUIDELINES.md) | Containers |
+| [MONITORING_STACK_DEPLOYMENT.md](mcp-technical/MONITORING_STACK_DEPLOYMENT.md) | Observability |
 
 ---
 

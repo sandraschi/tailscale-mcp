@@ -103,7 +103,7 @@ The Notepad++ MCP Server has not only maintained its Gold Status (85/100) but ha
 ## 📋 Gold Status Checklist - Current Compliance
 
 ### ✅ Core MCP Architecture (10/10 items)
-- [x] FastMCP 2.12+ framework implemented
+- [x] FastMCP 3.1+ framework implemented
 - [x] stdio protocol for Claude Desktop connection
 - [x] Proper tool registration with decorators
 - [x] Self-documenting tool descriptions present
@@ -344,7 +344,7 @@ The Notepad++ MCP Server has not only maintained its Gold Status (85/100) but ha
 - ✅ Structured logging (maintained)
 - ✅ Comprehensive error handling (maintained)
 - ✅ All tests passing (maintained)
-- ✅ FastMCP 2.12 compliance (maintained)
+- ✅ FastMCP 3.1 compliance (maintained)
 
 ### Net Result
 **Original Score**: 85/100 (Gold)  

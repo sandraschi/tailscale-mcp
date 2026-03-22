@@ -46,6 +46,8 @@ def register_device_tool(ctx: ToolContext) -> None:
         auth_key_ephemeral: bool = False,
         auth_key_preauthorized: bool = False,
         auth_key_tags: list[str] | None = None,
+        user_type: str | None = None,
+        user_role_filter: str | None = None,
     ) -> dict[str, Any]:
         try:
             if operation == "list":
@@ -66,8 +68,8 @@ def register_device_tool(ctx: ToolContext) -> None:
                     "devices": devices,
                     "count": len(devices),
                     "summary": f"Found {len(devices)} device{'s' if len(devices) != 1 else ''} "
-                              f"({online_count} online, {len(devices) - online_count} offline)"
-                              f"{f' filtered by {', '.join(filter_desc)}' if filter_desc else ''}",
+                    f"({online_count} online, {len(devices) - online_count} offline)"
+                    f"{f' filtered by {", ".join(filter_desc)}' if filter_desc else ''}",
                     "filters_applied": {
                         "online_only": online_only,
                         "filter_tags": filter_tags or [],
@@ -76,11 +78,17 @@ def register_device_tool(ctx: ToolContext) -> None:
 
                 # Add conversational suggestions
                 if len(devices) == 0:
-                    response["suggestion"] = "No devices found. Try removing filters or check your Tailscale API credentials."
+                    response["suggestion"] = (
+                        "No devices found. Try removing filters or check your Tailscale API credentials."
+                    )
                 elif online_count == 0:
-                    response["suggestion"] = "All devices are offline. Check network connectivity or use tailscale_status for more details."
+                    response["suggestion"] = (
+                        "All devices are offline. Check network connectivity or use tailscale_status for more details."
+                    )
                 elif len(devices) > 10:
-                    response["suggestion"] = f"That's a large tailnet! Consider using filter_tags or search_query to narrow results. Try: tailscale_device(operation='list', filter_tags=['tag:name'])"
+                    response["suggestion"] = (
+                        "That's a large tailnet! Consider using filter_tags or search_query to narrow results. Try: tailscale_device(operation='list', filter_tags=['tag:name'])"
+                    )
 
                 return response
 
@@ -230,11 +238,14 @@ def register_device_tool(ctx: ToolContext) -> None:
                     }
 
             elif operation == "user_list":
-                users = await ctx.device_manager.list_users()
+                users = await ctx.device_manager.list_users(
+                    user_type=user_type, role=user_role_filter
+                )
                 return {
                     "operation": "user_list",
                     "users": users,
                     "count": len(users),
+                    "filters": {"user_type": user_type, "role": user_role_filter},
                 }
 
             elif operation == "user_create":
@@ -281,13 +292,13 @@ def register_device_tool(ctx: ToolContext) -> None:
             elif operation == "user_details":
                 if not user_email:
                     raise TailscaleMCPError(
-                        "user_email is required for user_details operation"
+                        "user_email is required for user_details (value is the user id UUID from user_list)"
                     )
                 result = await ctx.device_manager.get_user_details(user_email)
                 return {
                     "operation": "user_details",
                     "result": result,
-                    "user_email": user_email,
+                    "user_id": user_email,
                 }
 
             elif operation == "auth_key_list":

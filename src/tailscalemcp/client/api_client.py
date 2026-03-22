@@ -97,7 +97,7 @@ class TailscaleAPIClient:
             timeout=self.timeout,
             limits=limits,
             headers={
-                "User-Agent": "tailscale-mcp/2.0.0",
+                "User-Agent": "tailscale-mcp/2.0.2",
             },
         )
 
@@ -349,3 +349,28 @@ class TailscaleAPIClient:
         """Delete a Service by ID."""
         await self._request("DELETE", f"/services/{service_id}")
         logger.info("Service deleted", service_id=service_id)
+
+    # Users (Admin API v2 — see tailscale.com/api, tag users)
+    async def list_users(
+        self,
+        user_type: str | None = None,
+        role: str | None = None,
+    ) -> list[dict[str, Any]]:
+        """List tailnet users. Optional filters: type=member|shared, role=..."""
+        params: dict[str, str] = {}
+        if user_type:
+            params["type"] = user_type
+        if role:
+            params["role"] = role
+        response = await self._request(
+            "GET", "/users", params=params if params else None
+        )
+        users = response.get("users", [])
+        logger.info("Users retrieved from API", count=len(users))
+        return users if isinstance(users, list) else []
+
+    async def get_user(self, user_id: str) -> dict[str, Any]:
+        """Get a single user by ID (UUID from list_users)."""
+        data = await self._request("GET", f"/users/{user_id}")
+        logger.info("User retrieved from API", user_id=user_id)
+        return data

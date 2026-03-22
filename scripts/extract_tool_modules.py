@@ -22,7 +22,7 @@ for i, line in enumerate(lines):
 
 # Find end of each tool
 tool_ranges = []
-for idx, (tool_name, decorator_line, def_line) in enumerate(tool_starts):
+for idx, (tool_name, _decorator_line, def_line) in enumerate(tool_starts):
     if idx + 1 < len(tool_starts):
         end_line = tool_starts[idx + 1][1] - 1
     else:
@@ -33,12 +33,10 @@ for idx, (tool_name, decorator_line, def_line) in enumerate(tool_starts):
                 break
         else:
             end_line = len(lines) - 1
-    
+
     tool_ranges.append((tool_name, def_line, end_line))
 
 # Print tool ranges for manual extraction
 print("Tool extraction ranges:")
 for tool_name, start, end in tool_ranges:
-    print(f"{tool_name}: lines {start+1}-{end+1} ({end-start+1} lines)")
-
-
+    print(f"{tool_name}: lines {start + 1}-{end + 1} ({end - start + 1} lines)")

@@ -20,6 +20,7 @@ class TestPrometheusMetrics:
         # Clear any global registries
         try:
             from prometheus_client import REGISTRY
+
             # Clear the registry by removing all collectors
             for collector in list(REGISTRY._collector_to_names.keys()):
                 with contextlib.suppress(builtins.BaseException):
@@ -52,10 +53,12 @@ class TestPrometheusMetrics:
                 setup_prometheus_metrics(9091)
 
                 # Verify info metric was configured
-                mock_info_instance.info.assert_called_once_with({
-                    "version": "2.0.0",  # Should match the version
-                    "name": "tailscale-mcp-server"
-                })
+                mock_info_instance.info.assert_called_once_with(
+                    {
+                        "version": "2.0.2",  # Should match the version
+                        "name": "tailscale-mcp-server",
+                    }
+                )
 
     def test_metrics_with_labels(self):
         """Test that metrics with labels work correctly."""
@@ -63,8 +66,12 @@ class TestPrometheusMetrics:
         registry = CollectorRegistry()
 
         # Create a counter with labels
-        counter = Counter("test_counter_with_labels", "A test counter with labels",
-                         ["label1", "label2"], registry=registry)
+        counter = Counter(
+            "test_counter_with_labels",
+            "A test counter with labels",
+            ["label1", "label2"],
+            registry=registry,
+        )
 
         # Increment with different label combinations
         counter.labels(label1="value1", label2="value2").inc()
@@ -85,7 +92,9 @@ class TestPrometheusMetrics:
         registry = CollectorRegistry()
 
         # Create a metric
-        counter = Counter("test_cleanup_counter", "A test counter for cleanup", registry=registry)
+        counter = Counter(
+            "test_cleanup_counter", "A test counter for cleanup", registry=registry
+        )
         counter.inc()
 
         # Verify metric exists
@@ -104,7 +113,9 @@ class TestPrometheusMetrics:
         registry = CollectorRegistry()
 
         # Create a metric
-        counter = Counter("test_error_counter", "A test counter for error handling", registry=registry)
+        counter = Counter(
+            "test_error_counter", "A test counter for error handling", registry=registry
+        )
 
         # This should not raise an error
         try:
@@ -119,11 +130,14 @@ class TestPrometheusMetrics:
         registry = CollectorRegistry()
 
         # Create a counter
-        counter = Counter("test_export_counter", "A test counter for export", registry=registry)
+        counter = Counter(
+            "test_export_counter", "A test counter for export", registry=registry
+        )
         counter.inc(5)
 
         # Export metrics
         from prometheus_client import generate_latest
+
         output = generate_latest(registry)
         output_str = output.decode("utf-8")
 
@@ -137,8 +151,9 @@ class TestPrometheusMetrics:
         registry = CollectorRegistry()
 
         # Create a histogram
-        histogram = Histogram("test_histogram", "A test histogram",
-                             ["method"], registry=registry)
+        histogram = Histogram(
+            "test_histogram", "A test histogram", ["method"], registry=registry
+        )
 
         # Record some values
         histogram.labels(method="GET").observe(0.5)
@@ -206,8 +221,12 @@ class TestPrometheusMetrics:
         registry = CollectorRegistry()
 
         # Create a counter with required labels
-        counter = Counter("test_labels_counter", "A test counter with labels",
-                         ["required_label"], registry=registry)
+        counter = Counter(
+            "test_labels_counter",
+            "A test counter with labels",
+            ["required_label"],
+            registry=registry,
+        )
 
         # This should work
         counter.labels(required_label="value1").inc()
@@ -222,7 +241,11 @@ class TestPrometheusMetrics:
         import time
 
         registry = CollectorRegistry()
-        counter = Counter("test_concurrent_counter", "A test counter for concurrent access", registry=registry)
+        counter = Counter(
+            "test_concurrent_counter",
+            "A test counter for concurrent access",
+            registry=registry,
+        )
 
         def increment_counter():
             for _ in range(10):

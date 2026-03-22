@@ -330,7 +330,7 @@ on:
 | **Documentation** | 9/10 | Complete professional documentation |
 | **Infrastructure** | 9/10 | Enterprise CI/CD pipeline |
 | **Packaging** | 8/10 | MCPB validation passing |
-| **MCP Compliance** | 9/10 | FastMCP 2.12 compatible |
+| **MCP Compliance** | 9/10 | FastMCP 3.1 compatible |
 
 #### Gold Tier Requirements Met
 - ✅ **Zero Print Statements**: Complete structured logging implementation
@@ -346,7 +346,7 @@ on:
 ```yaml
 name: notepadpp-mcp
 version: "0.1.0"
-description: "FastMCP 2.12 compatible MCP server for Notepad++ automation - Gold Status Certified"
+description: "FastMCP 3.1 compatible MCP server for Notepad++ automation - Gold Status Certified"
 
 quality:
   status: "gold"
@@ -373,7 +373,7 @@ mcp-server, notepadpp, windows-automation, fastmcp, gold-status, production-read
 
 #### 3. Repository Description
 ```
-FastMCP 2.12 compatible MCP server for Notepad++ automation - Gold Status Certified
+FastMCP 3.1 compatible MCP server for Notepad++ automation - Gold Status Certified
 ```
 
 ### GitHub App Integration

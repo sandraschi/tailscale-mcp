@@ -18,7 +18,7 @@ The TailscaleMCP server follows several key design principles:
 - **Solution**: Tools organized by business domains (device, network, security, etc.)
 - **Benefit**: Clear separation of concerns and logical organization
 
-### **3. FastMCP 2.12 Compliance**
+### **3. FastMCP 3.1 Compliance**
 - **Problem**: Outdated MCP patterns and limited functionality
 - **Solution**: Leverage latest FastMCP features and best practices
 - **Benefit**: Modern, performant, and maintainable codebase
@@ -38,7 +38,7 @@ The TailscaleMCP server follows several key design principles:
 ┌─────────────────────────────────────────────────────────────┐
 │                    TailscaleMCP Server                      │
 ├─────────────────────────────────────────────────────────────┤
-│  FastMCP 2.12 Framework                                     │
+│  FastMCP 3.1 Framework                                     │
 ├─────────────────────────────────────────────────────────────┤
 │  Portmanteau Tools Layer                                    │
 │  ┌─────────────┬─────────────┬─────────────┬─────────────┐  │
