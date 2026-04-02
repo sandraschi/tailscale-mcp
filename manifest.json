@@ -1,9 +1,9 @@
 {
   "manifest_version": "0.2",
   "name": "tailscale-mcp",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "Comprehensive Tailscale MCP server with portmanteau tools, SEP-1577 agentic workflows, and optional SOTA web UI",
-  "long_description": "Professional Tailscale MCP server for the Tailscale Admin API: network management, monitoring, Funnel, Taildrop, and automation. Includes FastMCP 3.1+ prompts/resources, tailscale_agentic_workflow (sampling with tools), and an optional React/Vite dashboard (web_sota) with a My tailnet page: Mermaid topology from tailscale_status(include_mermaid_diagram=True) and a decorative CSS 3D orbit view. Runtime requires TAILSCALE_API_KEY and TAILSCALE_TAILNET.",
+  "long_description": "Professional Tailscale MCP server for the Tailscale Admin API: network management, monitoring, Funnel, Taildrop, and automation. Includes FastMCP 3.1+ prompts/resources, run_agentic_tailnet_workflow (sampling with tools), and an optional React/Vite dashboard (web_sota) with a My tailnet page: Mermaid topology from get_tailnet_status(include_mermaid_diagram=True) and a decorative CSS 3D orbit view. Runtime requires TAILSCALE_API_KEY and TAILSCALE_TAILNET.",
   "author": {
     "name": "Sandra Schi",
     "email": "sandra@sandraschi.dev",
@@ -46,14 +46,14 @@
       "description": "Your Tailscale API key from https://login.tailscale.com/admin/settings/keys",
       "sensitive": true,
       "required": true,
-      "placeholder": "tskey-api-xxxxxxxxxxxxx"
+      "default": ""
     },
     "tailnet": {
       "type": "string",
       "title": "Tailnet ID",
-      "description": "Your Tailscale tailnet ID (found in your admin console URL)",
+      "description": "Your Tailscale tailnet ID (found in your admin console URL). Example: TkEvDCMcjR11CNTRL",
       "required": true,
-      "placeholder": "TkEvDCMcjR11CNTRL"
+      "default": ""
     },
     "debug_mode": {
       "type": "boolean",
@@ -65,56 +65,72 @@
   },
   "tools": [
     {
-      "name": "tailscale_device",
+      "name": "manage_tailnet_devices",
       "description": "Comprehensive device management (15 operations): list, get, authorize, rename, tag, SSH, search, stats, exit nodes, subnet routing, user management, auth keys"
     },
     {
-      "name": "tailscale_network",
+      "name": "manage_tailnet_network",
       "description": "DNS and network management (9 operations): MagicDNS, DNS records, resolution, policies, statistics"
     },
     {
-      "name": "tailscale_monitor",
+      "name": "monitor_tailnet",
       "description": "Monitoring and metrics (6 operations): status, Prometheus metrics, topology, health reports, Grafana dashboards"
     },
     {
-      "name": "tailscale_file",
+      "name": "manage_taildrop",
       "description": "File sharing via Taildrop (6 operations): send, receive, transfer management, statistics"
     },
     {
-      "name": "tailscale_security",
+      "name": "manage_funnel",
+      "description": "Tailscale Funnel (5 operations): enable, disable, status, list, certificate info"
+    },
+    {
+      "name": "run_tailnet_security",
       "description": "Security and compliance (8 operations): scanning, auditing, threat detection, policy management, alerting"
     },
     {
-      "name": "tailscale_automation",
+      "name": "run_tailnet_automation",
       "description": "Workflow automation (6 operations): workflows, scripts, batch operations, scheduling"
     },
     {
-      "name": "tailscale_backup",
+      "name": "manage_tailnet_backups",
       "description": "Backup and disaster recovery (6 operations): backup creation, restoration, scheduling, testing"
     },
     {
-      "name": "tailscale_performance",
+      "name": "analyze_tailnet_performance",
       "description": "Performance monitoring (6 operations): latency, bandwidth, optimization, capacity planning"
     },
     {
-      "name": "tailscale_reporting",
+      "name": "generate_tailnet_reports",
       "description": "Advanced reporting (6 operations): custom reports, analytics, scheduling, export"
     },
     {
-      "name": "tailscale_integration",
+      "name": "manage_tailnet_integrations",
       "description": "Third-party integrations (6 operations): webhooks, Slack, Discord, PagerDuty, Datadog"
     },
     {
-      "name": "tailscale_help",
-      "description": "Comprehensive multilevel help system (4 topics): overview, examples, best_practices, troubleshooting with basic/intermediate/advanced/expert levels"
+      "name": "get_help",
+      "description": "Comprehensive multilevel help system: overview, examples, best_practices, troubleshooting, funnel, sampling with basic/intermediate/advanced/expert levels"
     },
     {
-      "name": "tailscale_status",
+      "name": "get_tailnet_status",
       "description": "System status and health monitoring (7 components): overview, devices, network, services, metrics, alerts, health with basic/intermediate/advanced/diagnostic levels; optional Mermaid tailnet diagram when include_mermaid_diagram=True"
     },
     {
-      "name": "tailscale_partner_tailnets",
+      "name": "summarize_partner_tailnets",
       "description": "People and tailnet sharing: summary (members vs shared users, devices-by-login), users_list, user_get, devices_by_login — uses Admin API GET /users plus device grouping"
+    },
+    {
+      "name": "get_lm_link",
+      "description": "LM Link (Tailscale + LM Studio): info and readiness for remote local LLMs over the tailnet"
+    },
+    {
+      "name": "run_agentic_tailnet_workflow",
+      "description": "SEP-1577 agentic workflows: sampling with tools; workflow_prompt, available_tools, max_iterations"
+    },
+    {
+      "name": "run_agentic_tailnet_workflow_sampling",
+      "description": "Deprecated alias for run_agentic_tailnet_workflow (same parameters)"
     }
   ],
   "prompts": [
@@ -242,7 +258,6 @@
   "tools_generated": true,
   "prompts_generated": false,
   "compatibility": {
-    "platforms": ["win32", "darwin", "linux"],
-    "python_version": ">=3.10"
+    "platforms": ["win32", "darwin", "linux"]
   }
 }

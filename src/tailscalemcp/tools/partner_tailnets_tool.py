@@ -8,6 +8,8 @@ import structlog
 from tailscalemcp.exceptions import TailscaleMCPError
 
 from ._base import ToolContext
+from ._tool_types import PartnerTailnetsOperation
+from .mcp_tool_names import SUMMARIZE_PARTNER_TAILNETS
 
 logger = structlog.get_logger(__name__)
 
@@ -30,11 +32,11 @@ def _group_devices_by_login(
 
 
 def register_partner_tailnets_tool(ctx: ToolContext) -> None:
-    """Register tailscale_partner_tailnets."""
+    """Register summarize_partner_tailnets (MCP name)."""
 
-    @ctx.mcp.tool()
+    @ctx.mcp.tool(name=SUMMARIZE_PARTNER_TAILNETS)
     async def tailscale_partner_tailnets(
-        operation: str,
+        operation: PartnerTailnetsOperation,
         user_type: str | None = None,
         role: str | None = None,
         user_id: str | None = None,

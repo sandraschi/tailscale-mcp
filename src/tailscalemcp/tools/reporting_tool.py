@@ -7,20 +7,22 @@ import structlog
 from tailscalemcp.exceptions import TailscaleMCPError
 
 from ._base import ToolContext
+from ._tool_types import ReportingOperation
+from .mcp_tool_names import GENERATE_TAILNET_REPORTS
 
 logger = structlog.get_logger(__name__)
 
 
 def register_reporting_tool(ctx: ToolContext) -> None:
-    """Register the tailscale_reporting tool.
+    """Register generate_tailnet_reports (MCP name).
 
     Args:
         ctx: Tool context with all managers and MCP instance
     """
 
-    @ctx.mcp.tool()
+    @ctx.mcp.tool(name=GENERATE_TAILNET_REPORTS)
     async def tailscale_reporting(
-        operation: str,
+        operation: ReportingOperation,
         report_type: str = "usage",
         report_format: str = "json",
         date_range: str = "30d",
@@ -34,6 +36,12 @@ def register_reporting_tool(ctx: ToolContext) -> None:
         security_focus: bool = False,
         user_behavior: bool = False,  # noqa: ARG001
     ) -> dict[str, Any]:
+        """REPORTS_EXPORTS_ANALYTICS — Reporting and scheduled exports.
+
+        **Returns:** Dict with ``operation``, ``report`` / export paths, or analytics payloads.
+
+        **Errors:** ``TailscaleMCPError`` when generation fails.
+        """
         try:
             if operation == "generate":
                 report = await ctx.monitor.generate_usage_report(

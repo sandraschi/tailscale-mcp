@@ -41,21 +41,23 @@ async def generate_help_content(
             "title": "Tailscale MCP Server - Comprehensive Help System",
             "description": "Professional Tailscale MCP server with portmanteau tools, MCP prompts/resources, and SEP-1577 agentic workflows",
             "tools": {
-                "tailscale_device": "Device and user management operations",
-                "tailscale_network": "DNS and network configuration",
-                "tailscale_monitor": "Real-time monitoring and metrics",
-                "tailscale_file": "Secure file sharing via Taildrop",
-                "tailscale_funnel": "Funnel operations for exposing local services to public internet via HTTPS",
-                "tailscale_security": "Security scanning and compliance",
-                "tailscale_automation": "Workflow automation and batch operations",
-                "tailscale_backup": "Configuration backup and recovery",
-                "tailscale_performance": "Performance optimization and analysis",
-                "tailscale_reporting": "Advanced reporting and analytics",
-                "tailscale_integration": "Third-party integrations and webhooks",
-                "tailscale_agentic_workflow": "SEP-1577 multi-step workflows (sampling with tools; requires configured LLM)",
-                "tailscale_sampling": "Deprecated alias for tailscale_agentic_workflow (identical parameters)",
-                "tailscale_help": "This comprehensive help system",
-                "tailscale_status": "System status and health monitoring",
+                "manage_tailnet_devices": "Device and user management operations",
+                "manage_tailnet_network": "DNS and network configuration",
+                "monitor_tailnet": "Real-time monitoring and metrics",
+                "manage_taildrop": "Secure file sharing via Taildrop",
+                "manage_funnel": "Funnel operations for exposing local services to public internet via HTTPS",
+                "run_tailnet_security": "Security scanning and compliance",
+                "run_tailnet_automation": "Workflow automation and batch operations",
+                "manage_tailnet_backups": "Configuration backup and recovery",
+                "analyze_tailnet_performance": "Performance optimization and analysis",
+                "generate_tailnet_reports": "Advanced reporting and analytics",
+                "manage_tailnet_integrations": "Third-party integrations and webhooks",
+                "run_agentic_tailnet_workflow": "SEP-1577 multi-step workflows (sampling with tools; requires configured LLM)",
+                "run_agentic_tailnet_workflow_sampling": "Deprecated alias for run_agentic_tailnet_workflow (identical parameters)",
+                "get_help": "This comprehensive help system",
+                "get_tailnet_status": "System status and health monitoring",
+                "summarize_partner_tailnets": "Partner tailnets and people/sharing summary",
+                "get_lm_link": "LM Link (Tailscale + LM Studio) guidance and readiness",
             },
             "credentials": {
                 "env_file": "Copy .env.example to .env in the repo root (or set process env). .env is listed in .gitignore — safe for local non-mock testing.",
@@ -75,22 +77,22 @@ async def generate_help_content(
             },
         },
         "examples": {
-            "basic_device_list": "tailscale_device(operation='list', online_only=True)",
-            "advanced_monitoring": "tailscale_monitor(operation='dashboard_create', dashboard_type='network_overview')",
-            "security_scan": "tailscale_security(operation='scan', scan_type='comprehensive')",
-            "file_transfer": "tailscale_file(operation='send', file_path='/path/to/file', recipient_device='device-id')",
-            "funnel_enable": "tailscale_funnel(operation='funnel_enable', port=8080)",
-            "funnel_status": "tailscale_funnel(operation='funnel_status')",
-            "funnel_list": "tailscale_funnel(operation='funnel_list')",
-            "funnel_disable": "tailscale_funnel(operation='funnel_disable', port=8080)",
-            "funnel_certificate": "tailscale_funnel(operation='funnel_certificate_info', port=8080)",
-            "help_system": "tailscale_help(topic='overview', level='intermediate')",
-            "help_sampling": "tailscale_help(topic='sampling', level='intermediate')",
+            "basic_device_list": "manage_tailnet_devices(operation='list', online_only=True)",
+            "advanced_monitoring": "monitor_tailnet(operation='metrics')",
+            "security_scan": "run_tailnet_security(operation='scan', scan_type='comprehensive')",
+            "file_transfer": "manage_taildrop(operation='send', file_path='/path/to/file', recipient_device='device-id')",
+            "funnel_enable": "manage_funnel(operation='funnel_enable', port=8080)",
+            "funnel_status": "manage_funnel(operation='funnel_status')",
+            "funnel_list": "manage_funnel(operation='funnel_list')",
+            "funnel_disable": "manage_funnel(operation='funnel_disable', port=8080)",
+            "funnel_certificate": "manage_funnel(operation='funnel_certificate_info', port=8080)",
+            "help_system": "get_help(topic='overview', level='intermediate')",
+            "help_sampling": "get_help(topic='sampling', level='intermediate')",
             "agentic_workflow": (
-                "tailscale_agentic_workflow(workflow_prompt='List offline devices.', "
-                "available_tools=['tailscale_device','tailscale_status'], max_iterations=5)"
+                "run_agentic_tailnet_workflow(workflow_prompt='List offline devices.', "
+                "available_tools=['manage_tailnet_devices','get_tailnet_status'], max_iterations=5)"
             ),
-            "status_check": "tailscale_status(component='devices', detail_level='advanced')",
+            "status_check": "get_tailnet_status(component='devices', detail_level='advanced')",
         },
         "best_practices": {
             "security": "Always use comprehensive security scans before deploying changes",
@@ -103,9 +105,9 @@ async def generate_help_content(
         },
         "troubleshooting": {
             "connection_issues": "Check network connectivity and API credentials",
-            "performance_problems": "Use tailscale_performance tool for analysis",
-            "security_alerts": "Review tailscale_security scan results",
-            "device_problems": "Check device status with tailscale_status",
+            "performance_problems": "Use analyze_tailnet_performance for analysis",
+            "security_alerts": "Review run_tailnet_security scan results",
+            "device_problems": "Check device status with get_tailnet_status",
             "funnel_issues": "Verify Funnel is enabled in ACL policy, device has 'funnel' node attribute, Tailscale CLI is installed and accessible, and Tailscale version is 1.38.3+",
         },
         "funnel": {
@@ -162,7 +164,7 @@ async def generate_help_content(
                         "allow_tls": "Allow TLS/HTTPS connections (default: True)",
                     },
                     "returns": "Public HTTPS URL that can be accessed from anywhere",
-                    "example": "tailscale_funnel(operation='funnel_enable', port=8080)",
+                    "example": "manage_funnel(operation='funnel_enable', port=8080)",
                     "notes": [
                         "The service must already be running on the specified port",
                         "You'll receive a public URL like: https://your-device.tailnet-name.ts.net:8080",
@@ -174,7 +176,7 @@ async def generate_help_content(
                     "parameters": {
                         "port": "Port number to disable (optional - if None, disables all Funnels)",
                     },
-                    "example": "tailscale_funnel(operation='funnel_disable', port=8080)",
+                    "example": "manage_funnel(operation='funnel_disable', port=8080)",
                     "notes": [
                         "Disabling Funnel immediately stops public access",
                         "The local service continues running, just not publicly accessible",
@@ -183,7 +185,7 @@ async def generate_help_content(
                 "funnel_status": {
                     "description": "Get current Funnel status and active services",
                     "returns": "Information about all active Funnel services",
-                    "example": "tailscale_funnel(operation='funnel_status')",
+                    "example": "manage_funnel(operation='funnel_status')",
                     "notes": [
                         "Shows all ports currently exposed via Funnel",
                         "Includes public URLs and connection status",
@@ -192,7 +194,7 @@ async def generate_help_content(
                 "funnel_list": {
                     "description": "List all active Funnel services with details",
                     "returns": "List of active Funnels with port, public URL, and status",
-                    "example": "tailscale_funnel(operation='funnel_list')",
+                    "example": "manage_funnel(operation='funnel_list')",
                     "notes": [
                         "Returns structured list of all active Funnels",
                         "Useful for monitoring and auditing exposed services",
@@ -204,7 +206,7 @@ async def generate_help_content(
                         "port": "Port number (required) - the port to get certificate info for",
                     },
                     "returns": "Certificate details including issuer, expiration, and status",
-                    "example": "tailscale_funnel(operation='funnel_certificate_info', port=8080)",
+                    "example": "manage_funnel(operation='funnel_certificate_info', port=8080)",
                     "notes": [
                         "Certificates are automatically managed by Tailscale",
                         "Useful for verifying certificate validity and expiration",
@@ -217,9 +219,9 @@ async def generate_help_content(
                     "description": "Share your local development server with team members",
                     "steps": [
                         "1. Start your development server (e.g., on port 3000)",
-                        "2. Enable Funnel: tailscale_funnel(operation='funnel_enable', port=3000)",
+                        "2. Enable Funnel: manage_funnel(operation='funnel_enable', port=3000)",
                         "3. Share the returned public URL with your team",
-                        "4. Disable when done: tailscale_funnel(operation='funnel_disable', port=3000)",
+                        "4. Disable when done: manage_funnel(operation='funnel_disable', port=3000)",
                     ],
                 },
                 "api_testing": {
@@ -227,9 +229,9 @@ async def generate_help_content(
                     "description": "Make your local API accessible for external testing",
                     "steps": [
                         "1. Start your API server (e.g., on port 8000)",
-                        "2. Enable Funnel: tailscale_funnel(operation='funnel_enable', port=8000)",
+                        "2. Enable Funnel: manage_funnel(operation='funnel_enable', port=8000)",
                         "3. Use the public URL for API testing tools",
-                        "4. Check status: tailscale_funnel(operation='funnel_status')",
+                        "4. Check status: manage_funnel(operation='funnel_status')",
                         "5. Disable when testing is complete",
                     ],
                 },
@@ -240,7 +242,7 @@ async def generate_help_content(
                         "1. Start your demo application",
                         "2. Enable Funnel for the application port",
                         "3. Share the public URL with stakeholders",
-                        "4. Monitor active Funnels: tailscale_funnel(operation='funnel_list')",
+                        "4. Monitor active Funnels: manage_funnel(operation='funnel_list')",
                         "5. Disable after the demo is complete",
                     ],
                 },
@@ -294,8 +296,8 @@ async def generate_help_content(
                 "TAILSCALE_SAMPLING_USE_CLIENT_LLM": "1/true/yes = prefer host LLM for sampling; server handler is fallback",
             },
             "tools": {
-                "tailscale_agentic_workflow": "SEP-1577: workflow_prompt, available_tools, max_iterations, Context",
-                "tailscale_sampling": "Deprecated alias; same signature as tailscale_agentic_workflow",
+                "run_agentic_tailnet_workflow": "SEP-1577: workflow_prompt, available_tools, max_iterations, Context",
+                "run_agentic_tailnet_workflow_sampling": "Deprecated alias; same signature as run_agentic_tailnet_workflow",
             },
             "mcp_resource": "resource://tailscale/skills — see skills/TAILSCALE_EXPERT.md in the repo",
         },

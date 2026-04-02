@@ -7,27 +7,36 @@ import structlog
 from tailscalemcp.exceptions import TailscaleMCPError
 
 from ._base import ToolContext
+from ._tool_types import MonitorDashboardExportType, MonitorOperation
+from .mcp_tool_names import MONITOR_TAILNET
 
 logger = structlog.get_logger(__name__)
 
 
 def register_monitor_tool(ctx: ToolContext) -> None:
-    """Register the tailscale_monitor tool.
+    """Register monitor_tailnet (MCP name).
 
     Args:
         ctx: Tool context with all managers and MCP instance
     """
 
-    @ctx.mcp.tool()
+    @ctx.mcp.tool(name=MONITOR_TAILNET)
     async def tailscale_monitor(
-        operation: str,
+        operation: MonitorOperation,
         grafana_url: str | None = None,
         api_key: str | None = None,
-        dashboard_type: str = "comprehensive",
+        dashboard_type: MonitorDashboardExportType = "comprehensive",
         filename: str | None = None,
         include_panels: bool = True,  # noqa: ARG001
         include_variables: bool = True,  # noqa: ARG001
     ) -> dict[str, Any]:
+        """METRICS_TOPOLOGY_GRAFANA — Monitoring, Prometheus text, health, Grafana export.
+
+        **Returns:** Dict with ``operation`` and ``status`` / ``metrics`` / ``topology`` /
+        ``health_report`` / ``dashboard`` / export metadata.
+
+        **Errors:** ``TailscaleMCPError`` on unknown operation or missing Grafana params.
+        """
         try:
             if operation == "status":
                 status = await ctx.monitor.get_network_status()

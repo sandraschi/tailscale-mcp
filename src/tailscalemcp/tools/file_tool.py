@@ -7,28 +7,38 @@ import structlog
 from tailscalemcp.exceptions import TailscaleMCPError
 
 from ._base import ToolContext
+from ._tool_types import ExpireHours, FileOperation, TaildropStatusFilter
+from .mcp_tool_names import MANAGE_TAILDROP
 
 logger = structlog.get_logger(__name__)
 
 
 def register_file_tool(ctx: ToolContext) -> None:
-    """Register the tailscale_file tool.
+    """Register manage_taildrop (MCP name).
 
     Args:
         ctx: Tool context with all managers and MCP instance
     """
 
-    @ctx.mcp.tool()
+    @ctx.mcp.tool(name=MANAGE_TAILDROP)
     async def tailscale_file(
-        operation: str,
+        operation: FileOperation,
         file_path: str | None = None,
         recipient_device: str | None = None,
         sender_device: str | None = None,
-        expire_hours: int = 24,
+        expire_hours: ExpireHours = 24,
         transfer_id: str | None = None,
         save_path: str | None = None,
-        status_filter: str | None = None,
+        status_filter: TaildropStatusFilter | None = None,
     ) -> dict[str, Any]:
+        """TAILDROP_TRANSFER — Send, receive, list, and manage Taildrop file transfers.
+
+        **Returns:** Dict with ``operation``; ``send``/``receive`` include ``result``;
+        ``list`` includes ``transfers``, ``count``, ``status_filter``; ``stats`` includes
+        ``statistics``.
+
+        **Errors:** ``TailscaleMCPError`` if required IDs/paths are missing or CLI fails.
+        """
         try:
             if operation == "send":
                 if not file_path or not recipient_device:

@@ -1,6 +1,6 @@
 # 📚 Documentation Organization Summary
 
-**Complete documentation organization for TailscaleMCP - October 24, 2025**
+**Complete documentation organization for Tailscale-MCP - April 2, 2026**
 
 ---
 
@@ -57,12 +57,11 @@ docs/
 │   ├── GLAMA_AI_RESCAN_GUIDE.md
 │   └── GLAMA_RESCAN_EMAIL.txt
 │
-├── notepadpp/                     📝 Complete Notepad++ reference (NEW!)
-│   ├── README.md                  → Notepad++ hub (NEW!)
-│   ├── NOTEPADPP_COMPLETE_GUIDE.md → 15+ pages complete reference (NEW!)
-│   ├── PLUGIN_ECOSYSTEM_COMPREHENSIVE.md → 12+ pages plugin guide (NEW!)
-│   ├── COMMUNITY_AND_SUPPORT.md   → 10+ pages community (NEW!)
-│   └── NOTEPADPP_COLOR_FIX_2025_10_08.md → Color fix documentation
+├── WHAT_IS_TAILSCALE.md                🌐 Tailscale & Admin API primer
+├── INSTALL.md                          📦 Install, env, run, Webapp
+├── ARCHITECTURE_AND_DESIGN.md          🏗️ System architecture & design
+├── TAILSCALE_MCP_PORTMANTEAU_TOOLS.md  🔧 Portmanteau tools guide
+├── API_REFERENCE.md                    📚 Complete API documentation
 │
 ├── MCPB_BUILDING_GUIDE.md         📦 MCPB packaging (1,900+ lines)
 ├── MCPB_IMPLEMENTATION_SUMMARY.md
@@ -75,7 +74,7 @@ scripts/
 ├── build-mcpb-package.ps1
 └── backup-repo.ps1
 
-src/notepadpp_mcp/docs/
+src/tailscalemcp/docs/
 ├── README.md                      📘 API documentation
 ├── PRD.md
 ├── PLUGIN_ECOSYSTEM.md
@@ -128,22 +127,20 @@ src/notepadpp_mcp/docs/
 
 ---
 
-### **Notepad++ Reference** (5 files) ✨ **NEW!**
-**Directory**: `docs/notepadpp/`
+### **Tailscale Reference** (NEW!)
+**Directory**: `docs/`
 
-| File | Purpose | Pages | Content |
-|------|---------|-------|---------|
-| README.md | Notepad++ documentation hub | 2 | **NEW!** |
-| NOTEPADPP_COMPLETE_GUIDE.md | Complete reference | 15+ | **NEW!** |
-| PLUGIN_ECOSYSTEM_COMPREHENSIVE.md | Plugin guide | 12+ | **NEW!** |
-| COMMUNITY_AND_SUPPORT.md | Community resources | 10+ | **NEW!** |
-| NOTEPADPP_COLOR_FIX_2025_10_08.md | Display fix | 2 | Applied fix |
+| File | Purpose | Content |
+|------|---------|---------|
+| WHAT_IS_TAILSCALE.md | Tailscale primer | **NEW!** |
+| API_REFERENCE.md | Complete reference | **NEW!** |
+| TAILSCALE_MCP_PORTMANTEAU_TOOLS.md | Portmanteau guide | **NEW!** |
 
 **Total**: 5 files, **39+ pages**, 12,500+ words covering:
-- Complete Notepad++ history (2003-2025)
+- Complete Tailscale history
 - All features and functions
-- 1,400+ plugin ecosystem
-- Community channels (forum, Reddit, GitHub)
+- Tailscale API ecosystem
+- Community channels
 - Configuration and customization
 - Technical architecture
 - Recent changes and updates
@@ -259,7 +256,7 @@ src/notepadpp_mcp/docs/
 | **MCPB packaging** | [docs/mcpb-packaging/](mcpb-packaging/README.md) |
 | **All documentation** | [docs/DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md) |
 | **Scripts** | [scripts/README.md](../scripts/README.md) |
-| **API Reference** | [src/notepadpp_mcp/docs/README.md](../src/notepadpp_mcp/docs/README.md) |
+| **API Reference** | [src/tailscalemcp/docs/README.md](../src/tailscalemcp/docs/README.md) |
 
 ---
 
@@ -280,8 +277,8 @@ All documentation has been organized into **6 logical subdirectories**:
 ✅ **`docs/glama-platform/`** (11 files)
 - Gold Status, platform integration
 
-✅ **`docs/notepadpp/`** (5 files, 39+ pages NEW!)
-- Complete Notepad++ reference
+✅ **`docs/`**
+- Complete Tailscale reference
 
 ✅ **`docs/development/`** (7 files)
 - Development guides, best practices
@@ -294,7 +291,7 @@ All documentation has been organized into **6 logical subdirectories**:
 
 ---
 
-*Organization completed: October 8, 2025*  
+*Organization completed: April 2, 2026*  
 *Files organized: 33*  
 *New comprehensive docs created: 11*  
 *New documentation pages: 80+*  

@@ -1,7 +1,7 @@
 # Tailscale-MCP Status Report
 
-**Generated:** 2025-01-27  
-**Version:** 2.0.0  
+**Generated:** 2026-04-02  
+**Version:** 2.1.0  
 **Overall Status:** Active Development  
 **Project Health:** Good ⚠️ (Needs Attention: Ruff Errors, Test Collection Issues)
 
@@ -26,7 +26,7 @@ Tailscale-MCP is a comprehensive FastMCP 3.1 compliant server for managing Tails
 
 ### Codebase Metrics
 - **Total Python Files:** 102 (source code)
-- **Version:** 2.0.0
+- **Version:** 2.1.0
 - **Python Version:** >=3.10 (target: 3.11+)
 - **Dependencies:** 20+ production dependencies
 - **Test Files:** 12+ test files
@@ -80,18 +80,18 @@ src/tailscalemcp/
 - ✅ **Additional Operations** - Analytics, audit, keys, policies, reporting, tags
 
 #### 4. Portmanteau Tools (12 Tools)
-1. ✅ `tailscale_device` - Device management (15 operations)
-2. ✅ `tailscale_network` - DNS and network (9 operations)
-3. ✅ `tailscale_monitor` - Monitoring and metrics (6 operations)
-4. ✅ `tailscale_file` - File sharing (6 operations)
-5. ✅ `tailscale_security` - Security and compliance (8 operations)
-6. ✅ `tailscale_automation` - Workflow automation (6 operations)
-7. ✅ `tailscale_backup` - Backup and recovery (6 operations)
-8. ✅ `tailscale_performance` - Performance monitoring (6 operations)
-9. ✅ `tailscale_reporting` - Advanced reporting (6 operations)
-10. ✅ `tailscale_integration` - Third-party integrations (6 operations)
-11. ✅ `tailscale_help` - Help system (4 topics, 4 levels)
-12. ✅ `tailscale_status` - Status monitoring (7 components, 4 levels)
+1. ✅ `manage_tailnet_devices` - Device management (15 operations)
+2. ✅ `manage_tailnet_network` - DNS and network (9 operations)
+3. ✅ `monitor_tailnet` - Monitoring and metrics (6 operations)
+4. ✅ `manage_taildrop` - File sharing (6 operations)
+5. ✅ `run_tailnet_security` - Security and compliance (8 operations)
+6. ✅ `run_tailnet_automation` - Workflow automation (6 operations)
+7. ✅ `manage_tailnet_backups` - Backup and recovery (6 operations)
+8. ✅ `analyze_tailnet_performance` - Performance monitoring (6 operations)
+9. ✅ `generate_tailnet_reports` - Advanced reporting (6 operations)
+10. ✅ `manage_tailnet_integrations` - Third-party integrations (6 operations)
+11. ✅ `get_help` - Help system (4 topics, 4 levels)
+12. ✅ `get_tailnet_status` - Status monitoring (7 components, 4 levels)
 
 #### 5. Monitoring Stack
 - ✅ **Grafana** - 4 comprehensive dashboards
@@ -386,7 +386,7 @@ src/tailscalemcp/
 
 **Report End**
 
-*Last Updated: 2025-01-27*  
+*Last Updated: 2026-04-02*  
 *For questions or updates, see project documentation or GitHub issues.*
 
 

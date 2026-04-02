@@ -7,37 +7,45 @@ import structlog
 from tailscalemcp.exceptions import TailscaleMCPError
 
 from ._base import ToolContext
+from ._tool_types import DnsTtl, NetworkOperation, PolicyPriority
+from .mcp_tool_names import MANAGE_TAILNET_NETWORK
 
 logger = structlog.get_logger(__name__)
 
 
 def register_network_tool(ctx: ToolContext) -> None:
-    """Register the tailscale_network tool.
+    """Register manage_tailnet_network (MCP name).
 
     Args:
         ctx: Tool context with all managers and MCP instance
     """
 
-    @ctx.mcp.tool()
+    @ctx.mcp.tool(name=MANAGE_TAILNET_NETWORK)
     async def tailscale_network(
-        operation: str,
+        operation: NetworkOperation,
         enabled: bool | None = None,
         override_local_dns: bool = False,
         name: str | None = None,
         record_type: str | None = None,
         value: str | None = None,
-        ttl: int = 3600,
+        ttl: DnsTtl = 3600,
         hostname: str | None = None,
         use_cache: bool = True,
         domain: str | None = None,
         policy_name: str | None = None,
         rules: list[dict[str, Any]] | None = None,
-        priority: int = 100,
+        priority: PolicyPriority = 100,
         policy_id: str | None = None,  # noqa: ARG001
-        # Services (TailVIPs)
         service_id: str | None = None,
         service_payload: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
+        """DNS_MAGICDNS_ROUTES_SERVICES — MagicDNS, DNS records, ACL-ish policy hooks, Tailscale Services.
+
+        **Returns:** Dict with ``operation`` (echo or normalized sub-op), plus ``result``,
+        ``configuration``, ``services``, or ``service`` keys depending on the operation.
+
+        **Errors:** ``TailscaleMCPError`` on missing parameters or API failures.
+        """
         try:
             if operation == "dns_config":
                 # Use NetworkOperations for real API calls

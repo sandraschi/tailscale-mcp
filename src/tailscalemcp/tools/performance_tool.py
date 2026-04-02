@@ -7,20 +7,22 @@ import structlog
 from tailscalemcp.exceptions import TailscaleMCPError
 
 from ._base import ToolContext
+from ._tool_types import PerformanceOperation
+from .mcp_tool_names import ANALYZE_TAILNET_PERFORMANCE
 
 logger = structlog.get_logger(__name__)
 
 
 def register_performance_tool(ctx: ToolContext) -> None:
-    """Register the tailscale_performance tool.
+    """Register analyze_tailnet_performance (MCP name).
 
     Args:
         ctx: Tool context with all managers and MCP instance
     """
 
-    @ctx.mcp.tool()
+    @ctx.mcp.tool(name=ANALYZE_TAILNET_PERFORMANCE)
     async def tailscale_performance(
-        operation: str,
+        operation: PerformanceOperation,
         device_id: str | None = None,
         measure_duration: int = 60,
         bandwidth_test: bool = False,  # noqa: ARG001
@@ -32,6 +34,12 @@ def register_performance_tool(ctx: ToolContext) -> None:
         scaling_factor: float = 1.2,
         performance_threshold: float = 0.8,
     ) -> dict[str, Any]:
+        """LATENCY_BANDWIDTH_BASELINE — Performance measurement and tuning (portmanteau).
+
+        **Returns:** Dict with ``operation`` and measurement ``results`` / recommendations.
+
+        **Errors:** ``TailscaleMCPError`` on unknown operation or monitor failures.
+        """
         try:
             if operation == "latency":
                 latency_results = await ctx.monitor.measure_latency(

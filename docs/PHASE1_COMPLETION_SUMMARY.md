@@ -14,32 +14,41 @@ Phase 1 of the Tailscale-MCP Expansion Plan has been **completed successfully**.
 
 ## ✅ Completed Components
 
-### 1. Operations Layer (100% Complete)
+### 1. Operations Layer (100% Complete - Re-aligned v2.1.0)
 
 **Created 10 Operations Modules:**
 
-1. ✅ **devices.py** (252 lines) - Device management operations
-2. ✅ **network.py** (101 lines) - Network, DNS, and ACL operations
-3. ✅ **services.py** (160 lines) - Tailscale Services (TailVIPs) operations
-4. ✅ **policies.py** (310 lines) - Advanced ACL policy management
-5. ✅ **audit.py** (224 lines) - Device audit and compliance operations
-6. ✅ **tags.py** (268 lines) - Tag management operations
-7. ✅ **keys.py** (135 lines) - API key management operations
-8. ✅ **policy_analyzer.py** (261 lines) - Policy analysis and querying
-9. ✅ **analytics.py** (177 lines) - Network analytics and statistics
-10. ✅ **reporting.py** (263 lines) - Report generation and export
+1. ✅ **devices.py** - Device management operations
+2. ✅ **network.py** - Network, DNS, and ACL operations
+3. ✅ **services.py** - Tailscale Services (TailVIPs) operations
+4. ✅ **policies.py** - Advanced ACL policy management
+5. ✅ **audit.py** - Device audit and compliance operations
+6. ✅ **tags.py** - Tag management operations
+7. ✅ **keys.py** - API key management operations
+8. ✅ **policy_analyzer.py** - Policy analysis and querying
+9. ✅ **analytics.py** - Network analytics and statistics
+10. ✅ **reporting.py** - Report generation and export
 
-**Total:** ~2,151 lines of operations layer code
+**Total:** Real API integration achieved for all operations.
 
-### 2. Integration & Tooling (100% Complete)
+### 2. Integration & Tooling (100% Complete - v2.1.0)
 
-✅ **Updated portmanteau_tools.py:**
-- Added imports for all operations classes
-- Initialized operations instances in `__init__`
-- Updated `services_*` operations to use ServiceOperations directly
-- Updated `dns_config` operation to use NetworkOperations
-- Updated `policy` operation to use NetworkOperations for ACL policies
-- Updated `audit` operation to use AuditOperations
+✅ **Refactored to Verb-First Portmanteau:**
+- `manage_tailnet_devices`
+- `configure_tailnet_network`
+- `monitor_tailnet_activity`
+- `manage_tailnet_files`
+- `configure_tailnet_funnel`
+- `manage_tailnet_security`
+- `automate_tailnet_tasks`
+- `backup_tailnet_config`
+- `optimize_tailnet_performance`
+- `generate_tailnet_reports`
+- `integrate_tailnet_services`
+- `get_tailnet_help`
+- `get_tailnet_status`
+- `manage_tailnet_keys`
+- `run_agentic_tailnet_workflow`
 
 ✅ **Updated monitoring.py:**
 - Changed from old `api_client` import to new `client.api_client`

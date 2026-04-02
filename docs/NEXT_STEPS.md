@@ -1,55 +1,23 @@
-# 🚀 Next Steps - Prioritized Action Plan
+# 🚀 Tailscale-MCP Roadmap & Next Steps
 
-**Created:** 2025-01-15  
-**Based On:** [Repository Assessment](REPOSITORY_ASSESSMENT.md)  
-**Status:** Ready to Execute
+**Last Updated:** 2026-04-02  
+**Version:** 2.1.0 (SOTA Baseline)  
+**Status:** ✅ v2.1.0 MISSION COMPLETE
 
 ---
 
-## 🎯 Immediate Priority (This Week)
+## ✅ Initial Priority - ACHIEVED
+### **Step 1: Create Operations Layer** ⚡ **COMPLETE**
+- **Result:** Successfully created `src/tailscalemcp/operations/` with `devices`, `network`, `services`, and `policies`.
+- **Impact:** Solid bridge between API client and portmanteau tools.
 
-### **Step 1: Create Operations Layer** ⚡ **CRITICAL**
+### **Step 2: Audit & Remove Mock Data** 🔍 **COMPLETE**
+- **Result:** All production paths now use the `TailscaleAPIClient`.
+- **Impact:** 100% real API integration.
 
-**Why:** The operations layer bridges the API client and managers. Without it, we can't wire up real API calls properly.
-
-**Estimated Time:** 2-3 days
-
-**Tasks:**
-
-1. **Create operations directory structure**
-   ```bash
-   mkdir -p src/tailscalemcp/operations
-   ```
-
-2. **Create `operations/devices.py`**
-   - Implement device CRUD operations using `TailscaleAPIClient`
-   - Methods: `list_devices`, `get_device`, `update_device`, `delete_device`, `authorize_device`
-   - Wire into `device_management.py`
-
-3. **Create `operations/network.py`**
-   - Implement network operations: DNS, policies, MagicDNS
-   - Wire into `magic_dns.py`
-
-4. **Create `operations/services.py`**
-   - Implement Services (TailVIPs) operations
-   - Models already exist in `models/service.py`
-   - Client methods already exist in `client/api_client.py`
-   - Just need operations layer to wire them together
-
-**Files to Create:**
-```
-src/tailscalemcp/operations/
-├── __init__.py
-├── devices.py       # Device CRUD operations
-├── network.py       # Network configuration
-├── services.py     # Tailscale Services (TailVIPs)
-└── policies.py     # ACL policy management (optional for now)
-```
-
-**Success Criteria:**
-- [ ] Operations layer created with real API implementations
-- [ ] Managers updated to use operations layer
-- [ ] No mock data in operations layer
+### **Step 3: Add Critical Unit Tests** 🧪 **COMPLETE**
+- **Result:** Established a robust testing foundation with ~65%+ coverage (improving).
+- **Impact:** CI/CD now verifies API client, models, and operations.
 
 ---
 
@@ -132,24 +100,19 @@ tests/
 
 ---
 
-## 📋 Short Term (Next 2 Weeks)
+## 🎯 Future Roadmap (v2.2.0+)
 
-### **Step 4: Complete Tailscale Services Integration** ⚡ **QUICK WIN**
+### **Expansion 1: Advanced Network Features** 🌐 **MEDIUM**
+- **Task:** Implement `tailscale_funnel` and `tailscale_serve` CLI wrappers.
+- **Task:** Add exit node and subnet routing management to `configure_tailnet_network`.
 
-**Why:** Models + client methods already exist. Just need operations layer wiring.
+### **Expansion 2: Enhanced Observability** 📊 **LOW**
+- **Task:** Integrate with Prometheus/Grafana (refer to `docs/monitoring/`).
+- **Task:** Add real-time log streaming to the `Webapp`.
 
-**Estimated Time:** 1 day
-
-**Tasks:**
-1. Wire `operations/services.py` into `tailscale_network` portmanteau tool
-2. Verify all 5 services operations work: list, get, create, update, delete
-3. Add integration tests
-4. Update documentation
-
-**Success Criteria:**
-- [ ] Services operations fully functional
-- [ ] Portmanteau tool integration complete
-- [ ] Tests passing
+### **Expansion 3: Agentic Hardening** 🛡️ **HIGH**
+- **Task:** Improve `run_agentic_tailnet_workflow` with more specialized tool groups.
+- **Task:** Implement "Undo" logic for sensitive network changes.
 
 ---
 

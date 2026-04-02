@@ -35,7 +35,7 @@ export function Services() {
     setLoading(true);
     setError(null);
     try {
-      const res = await callTool("tailscale_network", { operation: "services_list" });
+      const res = await callTool("manage_tailnet_network", { operation: "services_list" });
       const data = res.data as { services?: ServiceRow[]; count?: number } | undefined;
       const list = Array.isArray(data?.services) ? data.services : [];
       setServices(list);
@@ -80,7 +80,7 @@ export function Services() {
       {services.length === 0 && !loading && !error && (
         <Card className="border-slate-800 bg-slate-950/50">
           <CardContent className="py-8 text-center text-slate-400">
-            No services. Use tailscale_network with services_create, or check tailnet policy.
+            No services. Use manage_tailnet_network with services_create, or check tailnet policy.
           </CardContent>
         </Card>
       )}

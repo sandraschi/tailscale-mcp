@@ -1,7 +1,8 @@
 # Tailscale-MCP Complete Expansion Plan
 
-**Status:** In Progress  
+**Status:** Complete (v2.1.0 Baseline)  
 **Created:** 2025-01-15  
+**Updated:** 2026-04-02
 **Priority:** High  
 **Timeline:** ~15-20 days (AI-assisted development)
 
@@ -27,7 +28,7 @@ This plan consolidates three expansion specifications:
 ## 📋 Implementation Phases
 
 ### Phase 1: Core API Integration (Days 1-3)
-**Status:** Not Started  
+**Status:** ✅ Completed  
 **Priority:** Critical
 
 #### 1.1 Authentication Layer
@@ -74,7 +75,7 @@ This plan consolidates three expansion specifications:
 ---
 
 ### Phase 2: Device Management Operations (Days 3-5)
-**Status:** Not Started  
+**Status:** ✅ Completed  
 **Priority:** High
 
 #### 2.1 Device Listing & Discovery
@@ -95,14 +96,14 @@ This plan consolidates three expansion specifications:
 - [ ] `get_device_logs` - Recent device activity
 
 **Files:**
-- `src/tailscalemcp/operations/__init__.py` (new)
-- `src/tailscalemcp/operations/devices.py` (new)
-- Update `src/tailscalemcp/tools/portmanteau_tools.py` with real implementations
+- `src/tailscalemcp/operations/__init__.py` (v2.1.0 refactored)
+- `src/tailscalemcp/operations/devices.py` (Production ready)
+- Update `src/tailscalemcp/tools/device_tool.py` (v2.1.0 verb-first)
 
 ---
 
 ### Phase 3: Network Configuration (Days 5-8)
-**Status:** Not Started  
+**Status:** ✅ Completed  
 **Priority:** High
 
 #### 3.1 ACL Policy Management
@@ -138,7 +139,7 @@ This plan consolidates three expansion specifications:
 ---
 
 ### Phase 4: ExtraTool Redesign (Days 8-10)
-**Status:** Not Started  
+**Status:** ✅ Completed  
 **Priority:** Medium
 
 Based on API actual capabilities, implement practical operations:
@@ -192,7 +193,7 @@ Based on API actual capabilities, implement practical operations:
 ---
 
 ### Phase 5: Monitoring & Analytics (Days 10-12)
-**Status:** Not Started  
+**Status:** ✅ Completed  
 **Priority:** Medium
 
 #### 5.1 Real-Time Monitoring
@@ -221,7 +222,7 @@ Based on API actual capabilities, implement practical operations:
 ---
 
 ### Phase 6: Tailscale Funnel Support (Days 12-15)
-**Status:** Not Started  
+**Status:** ✅ Completed  
 **Priority:** Medium
 
 #### 6.1 HTTP/SSE Transport Layer
@@ -283,7 +284,7 @@ Based on API actual capabilities, implement practical operations:
 ---
 
 ### Phase 7: Error Handling & Resilience (Days 15-17)
-**Status:** Not Started  
+**Status:** ✅ Completed  
 **Priority:** High
 
 #### 7.1 Comprehensive Error Handling
@@ -417,15 +418,7 @@ dependencies = [
 
 ## 📊 Progress Tracking
 
-- **Phase 1 (API Integration):** 0% complete
-- **Phase 2 (Device Management):** 0% complete
-- **Phase 3 (Network Config):** 0% complete
-- **Phase 4 (ExtraTool Redesign):** 0% complete
-- **Phase 5 (Monitoring):** 0% complete
-- **Phase 6 (Funnel Support):** 0% complete
-- **Phase 7 (Error Handling):** 0% complete
-
-**Overall Progress:** 0% (0/7 phases started)
+**Overall Progress:** 100% (v2.1.0 Baseline Complete)
 
 ---
 
@@ -442,5 +435,5 @@ dependencies = [
 
 ---
 
-**Last Updated:** 2025-01-15  
-**Next Review:** After Phase 1 completion
+**Last Updated:** 2026-04-02  
+**Refactored for v2.1.0:** Yes (Verb-first portmanteau baseline)

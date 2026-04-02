@@ -62,8 +62,8 @@ export function MyTailnet() {
     setError(null);
     try {
       const [devRes, statusRes] = await Promise.all([
-        callTool("tailscale_device", { operation: "list" }),
-        callTool("tailscale_status", {
+        callTool("manage_tailnet_devices", { operation: "list" }),
+        callTool("get_tailnet_status", {
           component: "overview",
           detail_level: "basic",
           include_mermaid_diagram: true,

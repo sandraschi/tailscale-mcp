@@ -12,20 +12,20 @@ The TailscaleMCP server provides **10 comprehensive portmanteau tools** with **9
 
 | Tool | Operations | Domain | Description |
 |------|------------|--------|-------------|
-| `tailscale_device` | 19 | Device & User Management | Complete device and user lifecycle management |
-| `tailscale_network` | 8 | DNS & Network | MagicDNS, DNS records, and network policies |
-| `tailscale_monitor` | 8 | Monitoring & Metrics | Network monitoring and Grafana dashboards |
-| `tailscale_file` | 7 | File Sharing | Taildrop file sharing operations |
-| `tailscale_security` | 10 | Security & Compliance | Security scanning and compliance validation |
-| `tailscale_automation` | 9 | Workflow Automation | Workflow creation and script execution |
-| `tailscale_backup` | 8 | Backup & Recovery | Configuration backup and disaster recovery |
-| `tailscale_performance` | 8 | Performance Monitoring | Network performance analysis and optimization |
-| `tailscale_reporting` | 9 | Advanced Reporting | Custom reports and analytics |
-| `tailscale_integration` | 9 | Third-Party Integrations | Webhooks and platform integrations |
+| `manage_tailnet_devices` | 19 | Device & User Management | Complete device and user lifecycle management |
+| `manage_tailnet_network` | 8 | DNS & Network | MagicDNS, DNS records, and network policies |
+| `monitor_tailnet` | 8 | Monitoring & Metrics | Network monitoring and Grafana dashboards |
+| `manage_taildrop` | 7 | File Sharing | Taildrop file sharing operations |
+| `run_tailnet_security` | 10 | Security & Compliance | Security scanning and compliance validation |
+| `run_tailnet_automation` | 9 | Workflow Automation | Workflow creation and script execution |
+| `manage_tailnet_backups` | 8 | Backup & Recovery | Configuration backup and disaster recovery |
+| `analyze_tailnet_performance` | 8 | Performance Monitoring | Network performance analysis and optimization |
+| `generate_tailnet_reports` | 9 | Advanced Reporting | Custom reports and analytics |
+| `manage_tailnet_integrations` | 9 | Third-Party Integrations | Webhooks and platform integrations |
 
 ---
 
-## 🔧 **Device Management (`tailscale_device`)**
+## 🔧 **Device Management (`manage_tailnet_devices`)**
 
 **Purpose**: Comprehensive device and user management operations.
 
@@ -89,13 +89,13 @@ The TailscaleMCP server provides **10 comprehensive portmanteau tools** with **9
 
 ```python
 # List all devices
-result = await tailscale_device(operation="list", online_only=True)
+result = await manage_tailnet_devices(operation="list", online_only=True)
 
 # Get device details
-device = await tailscale_device(operation="get", device_id="device123")
+device = await manage_tailnet_devices(operation="get", device_id="device123")
 
 # Authorize a device
-await tailscale_device(
+await manage_tailnet_devices(
     operation="authorize",
     device_id="device123",
     authorize=True,
@@ -103,14 +103,14 @@ await tailscale_device(
 )
 
 # Add tags to device
-await tailscale_device(
+await manage_tailnet_devices(
     operation="tag",
     device_id="device123",
     tags=["engineering", "laptop", "production"]
 )
 
 # Enable SSH access
-await tailscale_device(
+await manage_tailnet_devices(
     operation="ssh",
     device_id="device123",
     public_key="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ...",
@@ -118,14 +118,14 @@ await tailscale_device(
 )
 
 # Search devices
-results = await tailscale_device(
+results = await manage_tailnet_devices(
     operation="search",
     search_query="engineering",
     search_fields=["name", "tags", "user"]
 )
 
 # Enable exit node
-await tailscale_device(
+await manage_tailnet_devices(
     operation="exit_node",
     device_id="device123",
     enable_exit_node=True,
@@ -133,14 +133,14 @@ await tailscale_device(
 )
 
 # Create user
-await tailscale_device(
+await manage_tailnet_devices(
     operation="user_create",
     user_email="john@company.com",
     user_role="admin"
 )
 
 # Create auth key
-await tailscale_device(
+await manage_tailnet_devices(
     operation="auth_key_create",
     auth_key_name="deploy-key",
     auth_key_expiry="2025-12-31",
@@ -151,7 +151,7 @@ await tailscale_device(
 
 ---
 
-## 🌐 **Network Management (`tailscale_network`)**
+## 🌐 **Network Management (`manage_tailnet_network`)**
 
 **Purpose**: DNS configuration, MagicDNS, and network policy management.
 
@@ -184,17 +184,17 @@ await tailscale_device(
 
 ```python
 # Get DNS configuration
-config = await tailscale_network(operation="dns_config")
+config = await manage_tailnet_network(operation="dns_config")
 
 # Configure MagicDNS
-await tailscale_network(
+await manage_tailnet_network(
     operation="magic_dns",
     enabled=True,
     override_local_dns=False
 )
 
 # Add DNS record
-await tailscale_network(
+await manage_tailnet_network(
     operation="dns_record",
     name="api.internal",
     record_type="A",
@@ -202,21 +202,21 @@ await tailscale_network(
 )
 
 # Resolve hostname
-result = await tailscale_network(
+result = await manage_tailnet_network(
     operation="resolve",
     hostname="api.internal",
     record_type="A"
 )
 
 # Add search domain
-await tailscale_network(
+await manage_tailnet_network(
     operation="search_domain",
     domain="internal",
     enabled=True
 )
 
 # Create network policy
-await tailscale_network(
+await manage_tailnet_network(
     operation="policy",
     policy_name="restrict-api",
     rules=[
@@ -229,15 +229,15 @@ await tailscale_network(
 )
 
 # Get DNS statistics
-stats = await tailscale_network(operation="stats")
+stats = await manage_tailnet_network(operation="stats")
 
 # Clear DNS cache
-await tailscale_network(operation="cache")
+await manage_tailnet_network(operation="cache")
 ```
 
 ---
 
-## 📊 **Monitoring (`tailscale_monitor`)**
+## 📊 **Monitoring (`monitor_tailnet`)**
 
 **Purpose**: Network monitoring, metrics collection, and Grafana dashboard management.
 
@@ -264,29 +264,29 @@ await tailscale_network(operation="cache")
 
 ```python
 # Get network status
-status = await tailscale_monitor(operation="status")
+status = await monitor_tailnet(operation="status")
 
 # Get network metrics
-metrics = await tailscale_monitor(operation="metrics")
+metrics = await monitor_tailnet(operation="metrics")
 
 # Get Prometheus metrics
-prometheus_metrics = await tailscale_monitor(operation="prometheus")
+prometheus_metrics = await monitor_tailnet(operation="prometheus")
 
 # Generate network topology
-topology = await tailscale_monitor(operation="topology")
+topology = await monitor_tailnet(topology="topology")
 
 # Get health report
-health = await tailscale_monitor(operation="health")
+health = await monitor_tailnet(operation="health")
 
 # Create Grafana dashboard
-await tailscale_monitor(
+await monitor_tailnet(
     operation="dashboard",
     grafana_url="http://grafana:3000",
     api_key="your-grafana-api-key"
 )
 
 # Export dashboard
-await tailscale_monitor(
+await monitor_tailnet(
     operation="export",
     filename="tailscale-dashboard.json",
     dashboard_type="comprehensive"
@@ -295,7 +295,7 @@ await tailscale_monitor(
 
 ---
 
-## 📁 **File Sharing (`tailscale_file`)**
+## 📁 **File Sharing (`manage_taildrop`)**
 
 **Purpose**: Taildrop file sharing operations and transfer management.
 
@@ -324,7 +324,7 @@ await tailscale_monitor(
 
 ```python
 # Send file via Taildrop
-await tailscale_file(
+await manage_taildrop(
     operation="send",
     file_path="/path/to/file.txt",
     recipient_device="device123",
@@ -332,40 +332,40 @@ await tailscale_file(
 )
 
 # Receive file
-await tailscale_file(
+await manage_taildrop(
     operation="receive",
     transfer_id="transfer123",
     save_path="/downloads/"
 )
 
 # List active transfers
-transfers = await tailscale_file(
+transfers = await manage_taildrop(
     operation="list",
     status_filter="active"
 )
 
 # Cancel transfer
-await tailscale_file(
+await manage_taildrop(
     operation="cancel",
     transfer_id="transfer123"
 )
 
 # Get transfer status
-status = await tailscale_file(
+status = await manage_taildrop(
     operation="status",
     transfer_id="transfer123"
 )
 
 # Get Taildrop statistics
-stats = await tailscale_file(operation="stats")
+stats = await manage_taildrop(operation="stats")
 
 # Clean up expired transfers
-await tailscale_file(operation="cleanup")
+await manage_taildrop(operation="cleanup")
 ```
 
 ---
 
-## 🔒 **Security (`tailscale_security`)**
+## 🔒 **Security (`run_tailnet_security`)**
 
 **Purpose**: Security scanning, compliance validation, and threat management.
 
@@ -403,45 +403,45 @@ await tailscale_file(operation="cleanup")
 
 ```python
 # Security vulnerability scan
-scan_results = await tailscale_security(
+scan_results = await run_tailnet_security(
     operation="scan",
     scan_type="comprehensive"
 )
 
 # Compliance validation
-compliance_report = await tailscale_security(
+compliance_report = await run_tailnet_security(
     operation="compliance",
     compliance_standard="SOC2"
 )
 
 # Device security audit
-audit_report = await tailscale_security(
+audit_report = await run_tailnet_security(
     operation="audit",
     device_id="device123"
 )
 
 # Generate security report
-security_report = await tailscale_security(operation="report")
+security_report = await run_tailnet_security(operation="report")
 
 # Monitor suspicious activity
-monitoring_status = await tailscale_security(operation="monitor")
+monitoring_status = await run_tailnet_security(operation="monitor")
 
 # Block malicious IP
-await tailscale_security(
+await run_tailnet_security(
     operation="block",
     ip_address="192.168.1.100",
     block_duration=3600
 )
 
 # Quarantine compromised device
-await tailscale_security(
+await run_tailnet_security(
     operation="quarantine",
     device_id="device123",
     quarantine_duration=24
 )
 
 # Create security policy
-await tailscale_security(
+await run_tailnet_security(
     operation="policy",
     policy_name="restrict-api",
     rules=[
@@ -454,7 +454,7 @@ await tailscale_security(
 )
 
 # Threat detection
-threat_results = await tailscale_security(
+threat_results = await run_tailnet_security(
     operation="threat",
     threat_type="malware",
     test_mode=False
@@ -463,7 +463,7 @@ threat_results = await tailscale_security(
 
 ---
 
-## 🤖 **Automation (`tailscale_automation`)**
+## 🤖 **Automation (`run_tailnet_automation`)**
 
 **Purpose**: Workflow creation, script execution, and batch operations.
 
@@ -497,7 +497,7 @@ threat_results = await tailscale_security(
 
 ```python
 # Create automation workflow
-await tailscale_automation(
+await run_tailnet_automation(
     operation="workflow_create",
     workflow_name="daily-backup",
     workflow_steps=[
@@ -508,37 +508,37 @@ await tailscale_automation(
 )
 
 # Execute workflow
-await tailscale_automation(
+await run_tailnet_automation(
     operation="workflow_execute",
     workflow_id="workflow123",
     execute_now=True
 )
 
 # Schedule workflow
-await tailscale_automation(
+await run_tailnet_automation(
     operation="workflow_schedule",
     workflow_id="workflow123",
     schedule_cron="0 2 * * *"
 )
 
 # List workflows
-workflows = await tailscale_automation(operation="workflow_list")
+workflows = await run_tailnet_automation(operation="workflow_list")
 
 # Execute custom script
-await tailscale_automation(
+await run_tailnet_automation(
     operation="script_execute",
     script_content="print('Hello Tailscale')",
     script_language="python"
 )
 
 # Get script template
-template = await tailscale_automation(
+template = await run_tailnet_automation(
     operation="script_template",
     template_name="device-audit"
 )
 
 # Batch operations
-await tailscale_automation(
+await run_tailnet_automation(
     operation="batch",
     batch_operations=[
         {"operation": "authorize", "device_id": "device123"},
@@ -547,7 +547,7 @@ await tailscale_automation(
 )
 
 # Preview operations
-preview = await tailscale_automation(
+preview = await run_tailnet_automation(
     operation="dry_run",
     batch_operations=[
         {"operation": "authorize", "device_id": "device123"}
@@ -557,7 +557,7 @@ preview = await tailscale_automation(
 
 ---
 
-## 💾 **Backup (`tailscale_backup`)**
+## 💾 **Backup (`manage_tailnet_backups`)**
 
 **Purpose**: Configuration backup, restoration, and disaster recovery planning.
 
@@ -586,53 +586,53 @@ preview = await tailscale_automation(
 
 ```python
 # Create configuration backup
-await tailscale_backup(
+await manage_tailnet_backups(
     operation="backup_create",
     backup_name="daily-backup",
     backup_type="full"
 )
 
 # Restore from backup
-await tailscale_backup(
+await manage_tailnet_backups(
     operation="backup_restore",
     backup_id="backup123"
 )
 
 # Schedule automated backups
-await tailscale_backup(
+await manage_tailnet_backups(
     operation="backup_schedule",
     schedule_cron="0 2 * * *",
     retention_days=30
 )
 
 # List backups
-backups = await tailscale_backup(operation="backup_list")
+backups = await manage_tailnet_backups(operation="backup_list")
 
 # Delete backup
-await tailscale_backup(
+await manage_tailnet_backups(
     operation="backup_delete",
     backup_id="backup123"
 )
 
 # Test backup integrity
-test_result = await tailscale_backup(
+test_result = await manage_tailnet_backups(
     operation="backup_test",
     backup_id="backup123"
 )
 
 # Test restore procedure
-restore_test = await tailscale_backup(
+restore_test = await manage_tailnet_backups(
     operation="restore_test",
     backup_id="backup123"
 )
 
 # Create disaster recovery plan
-recovery_plan = await tailscale_backup(operation="recovery_plan")
+recovery_plan = await manage_tailnet_backups(operation="recovery_plan")
 ```
 
 ---
 
-## 📈 **Performance (`tailscale_performance`)**
+## 📈 **Performance (`analyze_tailnet_performance`)**
 
 **Purpose**: Network performance monitoring, optimization, and capacity planning.
 
@@ -664,53 +664,53 @@ recovery_plan = await tailscale_backup(operation="recovery_plan")
 
 ```python
 # Measure network latency
-latency_results = await tailscale_performance(
+latency_results = await analyze_tailnet_performance(
     operation="latency",
     device_id="device123",
     measure_duration=60
 )
 
 # Analyze bandwidth utilization
-bandwidth_analysis = await tailscale_performance(
+bandwidth_analysis = await analyze_tailnet_performance(
     operation="bandwidth",
     device_id="device123",
     measure_duration=300
 )
 
 # Optimize routing performance
-optimization_result = await tailscale_performance(
+optimization_result = await analyze_tailnet_performance(
     operation="optimize",
     route_optimization=True
 )
 
 # Establish performance baseline
-baseline_result = await tailscale_performance(
+baseline_result = await analyze_tailnet_performance(
     operation="baseline",
     baseline_name="production",
     baseline_duration=300
 )
 
 # Predict capacity requirements
-capacity_analysis = await tailscale_performance(
+capacity_analysis = await analyze_tailnet_performance(
     operation="capacity",
     capacity_period="30d",
     scaling_factor=1.2
 )
 
 # Analyze resource utilization
-utilization_report = await tailscale_performance(
+utilization_report = await analyze_tailnet_performance(
     operation="utilization",
     device_id="device123"
 )
 
 # Get scaling recommendations
-scaling_recommendations = await tailscale_performance(
+scaling_recommendations = await analyze_tailnet_performance(
     operation="scaling",
     scaling_factor=1.5
 )
 
 # Set performance threshold
-await tailscale_performance(
+await analyze_tailnet_performance(
     operation="threshold",
     performance_threshold=0.8
 )
@@ -718,7 +718,7 @@ await tailscale_performance(
 
 ---
 
-## 📊 **Reporting (`tailscale_reporting`)**
+## 📊 **Reporting (`generate_tailnet_reports`)**
 
 **Purpose**: Custom report generation, analytics, and automated reporting.
 
@@ -754,55 +754,55 @@ await tailscale_performance(
 
 ```python
 # Generate usage analytics report
-usage_report = await tailscale_reporting(
+usage_report = await generate_tailnet_reports(
     operation="usage",
     date_range="30d",
     include_charts=True
 )
 
 # Create custom report
-custom_report = await tailscale_reporting(
+custom_report = await generate_tailnet_reports(
     operation="custom",
     custom_fields=["device_count", "bandwidth_usage", "security_events"],
     date_range="7d"
 )
 
 # Schedule automated reports
-await tailscale_reporting(
+await generate_tailnet_reports(
     operation="schedule",
     schedule_cron="0 9 * * 1",
     email_recipients=["admin@company.com", "security@company.com"]
 )
 
 # Export reports
-await tailscale_reporting(
+await generate_tailnet_reports(
     operation="export",
     export_path="/reports/",
     report_format="pdf"
 )
 
 # Deep network analytics
-analytics_report = await tailscale_reporting(
+analytics_report = await generate_tailnet_reports(
     operation="analytics",
     analytics_depth="comprehensive",
     date_range="90d"
 )
 
 # User behavior analysis
-behavior_report = await tailscale_reporting(
+behavior_report = await generate_tailnet_reports(
     operation="behavior",
     date_range="30d"
 )
 
 # Security metrics
-security_report = await tailscale_reporting(
+security_report = await generate_tailnet_reports(
     operation="security",
     date_range="30d",
     security_focus=True
 )
 
 # Get report template
-template = await tailscale_reporting(
+template = await generate_tailnet_reports(
     operation="template",
     template_name="executive-summary"
 )
@@ -810,7 +810,7 @@ template = await tailscale_reporting(
 
 ---
 
-## 🔗 **Integration (`tailscale_integration`)**
+## 🔗 **Integration (`manage_tailnet_integrations`)**
 
 **Purpose**: Webhook management and third-party platform integrations.
 
@@ -846,55 +846,55 @@ template = await tailscale_reporting(
 
 ```python
 # Create webhook endpoint
-await tailscale_integration(
+await manage_tailnet_integrations(
     operation="webhook_create",
     webhook_url="https://api.company.com/webhook",
     webhook_events=["device_connected", "device_disconnected", "security_alert"]
 )
 
 # Test webhook delivery
-test_result = await tailscale_integration(
+test_result = await manage_tailnet_integrations(
     operation="webhook_test",
     webhook_id="webhook123"
 )
 
 # List webhooks
-webhooks = await tailscale_integration(operation="webhook_list")
+webhooks = await manage_tailnet_integrations(operation="webhook_list")
 
 # Delete webhook
-await tailscale_integration(
+await manage_tailnet_integrations(
     operation="webhook_delete",
     webhook_id="webhook123"
 )
 
 # Integrate with Slack
-await tailscale_integration(
+await manage_tailnet_integrations(
     operation="slack",
     slack_channel="#tailscale-alerts",
     api_key="slack-api-key"
 )
 
 # Integrate with Discord
-await tailscale_integration(
+await manage_tailnet_integrations(
     operation="discord",
     discord_webhook="https://discord.com/api/webhooks/..."
 )
 
 # Integrate with PagerDuty
-await tailscale_integration(
+await manage_tailnet_integrations(
     operation="pagerduty",
     pagerduty_key="pagerduty-integration-key"
 )
 
 # Integrate with Datadog
-await tailscale_integration(
+await manage_tailnet_integrations(
     operation="datadog",
     datadog_api_key="datadog-api-key",
     api_endpoint="https://api.datadoghq.com"
 )
 
 # Test integration connection
-test_result = await tailscale_integration(
+test_result = await manage_tailnet_integrations(
     operation="test",
     integration_type="slack",
     api_key="slack-api-key",
@@ -1012,20 +1012,20 @@ if __name__ == "__main__":
 tools = server.portmanteau_tools
 
 # Use device management
-devices = await tools.tailscale_device(operation="list", online_only=True)
+devices = await tools.manage_tailnet_devices(operation="list", online_only=True)
 
 # Use network management
-await tools.tailscale_network(operation="magic_dns", enabled=True)
+await tools.manage_tailnet_network(operation="magic_dns", enabled=True)
 
 # Use monitoring
-status = await tools.tailscale_monitor(operation="status")
+status = await tools.monitor_tailnet(operation="status")
 ```
 
 ---
 
 *API Reference Documentation*  
-*Version: 1.0.0*  
-*Last Updated: December 2024*  
+*Version: 2.1.0*  
+*Last Updated: April 2026*  
 *Total Operations: 91*  
 *Portmanteau Tools: 10*  
 *Status: Production Ready* 🚀

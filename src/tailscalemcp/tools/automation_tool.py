@@ -7,20 +7,22 @@ import structlog
 from tailscalemcp.exceptions import TailscaleMCPError
 
 from ._base import ToolContext
+from ._tool_types import AutomationOperation
+from .mcp_tool_names import RUN_TAILNET_AUTOMATION
 
 logger = structlog.get_logger(__name__)
 
 
 def register_automation_tool(ctx: ToolContext) -> None:
-    """Register the tailscale_automation tool.
+    """Register run_tailnet_automation (MCP name).
 
     Args:
         ctx: Tool context with all managers and MCP instance
     """
 
-    @ctx.mcp.tool()
+    @ctx.mcp.tool(name=RUN_TAILNET_AUTOMATION)
     async def tailscale_automation(
-        operation: str,
+        operation: AutomationOperation,
         workflow_name: str | None = None,
         workflow_steps: list[dict[str, Any]] | None = None,
         schedule_cron: str | None = None,
@@ -32,6 +34,12 @@ def register_automation_tool(ctx: ToolContext) -> None:
         execute_now: bool = False,
         workflow_id: str | None = None,
     ) -> dict[str, Any]:
+        """WORKFLOWS_SCRIPTS_BATCH — Automation and batch operations (portmanteau).
+
+        **Returns:** Dict with ``operation`` and ``result`` / workflow metadata.
+
+        **Errors:** ``TailscaleMCPError`` when required workflow fields are missing.
+        """
         try:
             if operation == "workflow_create":
                 if not workflow_name or not workflow_steps:

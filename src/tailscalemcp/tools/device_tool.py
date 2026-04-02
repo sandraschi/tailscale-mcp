@@ -1,26 +1,29 @@
 """Tailscale Device tool module."""
 
-from typing import Any
+from typing import Annotated, Any
 
 import structlog
+from pydantic import Field
 
 from tailscalemcp.exceptions import TailscaleMCPError
 
 from ._base import ToolContext
+from ._tool_types import DeviceOperation
+from .mcp_tool_names import MANAGE_TAILNET_DEVICES
 
 logger = structlog.get_logger(__name__)
 
 
 def register_device_tool(ctx: ToolContext) -> None:
-    """Register the tailscale_device tool.
+    """Register manage_tailnet_devices (MCP name).
 
     Args:
         ctx: Tool context with all managers and MCP instance
     """
 
-    @ctx.mcp.tool()
+    @ctx.mcp.tool(name=MANAGE_TAILNET_DEVICES)
     async def tailscale_device(
-        operation: str,
+        operation: DeviceOperation,
         device_id: str | None = None,
         name: str | None = None,
         tags: list[str] | None = None,
@@ -31,12 +34,19 @@ def register_device_tool(ctx: ToolContext) -> None:
         online_only: bool = False,
         filter_tags: list[str] | None = None,
         search_query: str | None = None,
-        search_fields: list[str] | None = None,
+        search_fields: Annotated[
+            list[str] | None,
+            Field(
+                description=(
+                    "For operation='search': fields to match against (e.g. name, hostname, tags, id). "
+                    "Default in the API layer is name, hostname, tags when omitted."
+                ),
+            ),
+        ] = None,
         enable_exit_node: bool = False,
         advertise_routes: list[str] | None = None,
         enable_subnet_router: bool = False,
         subnets: list[str] | None = None,
-        # User management parameters
         user_email: str | None = None,
         user_role: str | None = None,
         user_permissions: list[str] | None = None,
@@ -46,9 +56,40 @@ def register_device_tool(ctx: ToolContext) -> None:
         auth_key_ephemeral: bool = False,
         auth_key_preauthorized: bool = False,
         auth_key_tags: list[str] | None = None,
-        user_type: str | None = None,
-        user_role_filter: str | None = None,
+        user_type: Annotated[
+            str | None,
+            Field(
+                description="For user_list: filter by Tailscale user type (e.g. member, shared)."
+            ),
+        ] = None,
+        user_role_filter: Annotated[
+            str | None,
+            Field(description="For user_list: filter by role (e.g. admin)."),
+        ] = None,
     ) -> dict[str, Any]:
+        """LIST_GET_MANAGE_DEVICES — Tailscale devices, users, auth keys (Admin API).
+
+        PORTMANTEAU PATTERN RATIONALE: One domain tool with an ``operation`` enum avoids dozens
+        of separate tool names while keeping the MCP tool list small (fleet SOTA pattern).
+
+        **Returns (always includes ``operation``):**
+        - ``list``: ``devices``, ``count``, ``summary``, ``filters_applied``, optional ``suggestion``
+        - ``get``: ``device``, ``device_id``
+        - ``authorize``: ``result``, ``device_id``, ``authorized``
+        - ``rename``: ``result``, ``device_id``, ``new_name``
+        - ``tag``: ``result``, ``device_id``, ``tags``
+        - ``ssh``: ``result``, ``device_id`` (enable vs disable reflected in ``operation`` echo)
+        - ``search``: ``results``, ``query``, ``count``
+        - ``stats``: ``statistics``
+        - ``exit_node`` / ``subnet_router``: ``result``, ``device_id``, routes/subnets as applicable
+        - ``user_*``: ``users`` or ``result``, ``user_email``, etc.
+        - ``auth_key_*``: ``keys`` or ``result``, ``auth_key_name``, etc.
+
+        **Errors:** Missing required fields or API failures raise ``TailscaleMCPError`` with a
+        concrete message. Retry transient HTTP errors; fix ACL/API key scope for 403.
+
+        **Recovery:** On ``Unknown operation``, use only values from the ``operation`` schema enum.
+        """
         try:
             if operation == "list":
                 devices = await ctx.device_manager.list_devices(
@@ -83,11 +124,11 @@ def register_device_tool(ctx: ToolContext) -> None:
                     )
                 elif online_count == 0:
                     response["suggestion"] = (
-                        "All devices are offline. Check network connectivity or use tailscale_status for more details."
+                        "All devices are offline. Check network connectivity or use get_tailnet_status for more details."
                     )
                 elif len(devices) > 10:
                     response["suggestion"] = (
-                        "That's a large tailnet! Consider using filter_tags or search_query to narrow results. Try: tailscale_device(operation='list', filter_tags=['tag:name'])"
+                        "That's a large tailnet! Consider using filter_tags or search_query to narrow results. Try: manage_tailnet_devices(operation='list', filter_tags=['tag:name'])"
                     )
 
                 return response

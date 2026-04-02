@@ -15,8 +15,8 @@ export function Stats() {
     setError(null);
     try {
       const [statusRes, metricsRes] = await Promise.all([
-        callTool("tailscale_monitor", { operation: "status" }),
-        callTool("tailscale_monitor", { operation: "metrics" }),
+        callTool("monitor_tailnet", { operation: "status" }),
+        callTool("monitor_tailnet", { operation: "metrics" }),
       ]);
       const sd = statusRes.data as Record<string, unknown> | undefined;
       const md = metricsRes.data as Record<string, unknown> | undefined;

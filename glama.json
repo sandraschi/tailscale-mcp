@@ -2,11 +2,11 @@
   "$schema": "https://glama.ai/mcp/schemas/server.json",
   "maintainers": ["sandraschi"],
   "name": "tailscale-mcp",
-  "description": "FastMCP 3.1+ Tailscale network controller with persistent storage, SEP-1577 agentic workflows, optional SOTA web UI (My tailnet, Partner tailnets), and tailscale_partner_tailnets for members vs shared users. Beta status.",
+  "description": "FastMCP 3.1+ Tailscale network controller with persistent storage, SEP-1577 run_agentic_tailnet_workflow, optional SOTA web UI (My tailnet, Partner tailnets), and summarize_partner_tailnets for members vs shared users. Beta status.",
   "type": "mcp_server",
   "status": "beta",
   "framework": "FastMCP 3.1+",
-  "tools": 11,
+  "tools": 17,
   "transport": ["stdio"],
   "keywords": [
     "tailscale",

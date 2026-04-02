@@ -9,6 +9,10 @@ from fastmcp import Context
 from tailscalemcp.exceptions import TailscaleMCPError
 
 from ._base import ToolContext
+from ._tool_types import MaxAgenticIterations
+from .mcp_tool_names import (
+    RUN_AGENTIC_TAILNET_WORKFLOW,
+)
 
 logger = structlog.get_logger(__name__)
 _log = logging.getLogger(__name__)
@@ -23,14 +27,14 @@ def _success(
 ) -> dict[str, Any]:
     return {
         "success": True,
-        "operation": "tailscale_agentic_workflow",
+        "operation": RUN_AGENTIC_TAILNET_WORKFLOW,
         "summary": summary,
         "result": result,
         "iterations": iterations,
         "executed_tools": executed_tools,
         "recommendations": [
             "Review tool outputs and repeat with a narrower prompt if needed.",
-            "Use tailscale_status(component='mcp_server') to list available tool names.",
+            "Use get_tailnet_status(component='mcp_server') to list available tool names.",
         ],
     }
 
@@ -43,7 +47,7 @@ def _error(
 ) -> dict[str, Any]:
     return {
         "success": False,
-        "operation": "tailscale_agentic_workflow",
+        "operation": RUN_AGENTIC_TAILNET_WORKFLOW,
         "error": message,
         "error_code": error_code,
         "recovery_options": recovery_options,
@@ -51,7 +55,7 @@ def _error(
 
 
 def register_sampling_tool(ctx: ToolContext) -> None:
-    """Register tailscale_agentic_workflow and tailscale_sampling (alias)."""
+    """Register run_agentic_tailnet_workflow and run_agentic_tailnet_workflow_sampling (deprecated alias)."""
 
     mcp = ctx.mcp
 
@@ -72,7 +76,7 @@ def register_sampling_tool(ctx: ToolContext) -> None:
                 "available_tools cannot be empty",
                 error_code="EMPTY_TOOLS_LIST",
                 recovery_options=[
-                    "Include at least one registered tool name, e.g. tailscale_device, tailscale_status."
+                    "Include at least one registered tool name, e.g. manage_tailnet_devices, get_tailnet_status."
                 ],
             )
         if context is None or not hasattr(context, "sample_step"):
@@ -100,7 +104,7 @@ def register_sampling_tool(ctx: ToolContext) -> None:
                 f"Registered include: {list(name_to_tool.keys())[:40]}...",
                 error_code="TOOLS_NOT_FOUND",
                 recovery_options=[
-                    "Call tailscale_status(component='mcp_server') for the full tool list."
+                    "Call get_tailnet_status(component='mcp_server') for the full tool list."
                 ],
             )
 
@@ -180,7 +184,7 @@ def register_sampling_tool(ctx: ToolContext) -> None:
 
         Args:
             workflow_prompt: What you want done (natural language).
-            available_tools: Registered tool names the model may call (e.g. tailscale_device, tailscale_status).
+            available_tools: Registered tool names the model may call (e.g. manage_tailnet_devices, get_tailnet_status).
             max_iterations: Maximum LLM/tool rounds (default 5).
 
         Returns:
@@ -191,17 +195,17 @@ def register_sampling_tool(ctx: ToolContext) -> None:
                 workflow_prompt, available_tools, max_iterations, context
             )
         except Exception as e:
-            logger.exception("tailscale_agentic_workflow failed")
+            logger.exception("run_agentic_tailnet_workflow failed")
             raise TailscaleMCPError(f"Agentic workflow failed: {e}") from e
 
     @mcp.tool()
     async def tailscale_sampling(
         workflow_prompt: str,
         available_tools: list[str],
-        max_iterations: int = 5,
+        max_iterations: MaxAgenticIterations = 5,
         context: Context | None = None,
     ) -> dict[str, Any]:
-        """Deprecated alias for ``tailscale_agentic_workflow`` (same parameters)."""
+        """Deprecated alias for ``run_agentic_tailnet_workflow`` (same parameters)."""
         return await tailscale_agentic_workflow(
             workflow_prompt, available_tools, max_iterations, context
         )

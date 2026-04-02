@@ -1,6 +1,6 @@
 # 📚 Complete Documentation Structure
 
-**Final Organization - October 24, 2025**
+**Final Organization - April 2, 2026**
 
 ---
 
@@ -67,7 +67,7 @@ tailscale-mcp/
 │   ├── ORGANIZATION_SUMMARY.md             📋 Organization log
 │   └── COMPLETE_DOCUMENTATION_STRUCTURE.md 📊 This file
 │
-├── src/notepadpp_mcp/docs/                 📘 API documentation
+├── src/tailscalemcp/docs/                 📘 API documentation
 │   ├── README.md
 │   ├── PRD.md
 │   ├── PLUGIN_ECOSYSTEM.md
@@ -106,8 +106,8 @@ tailscale-mcp/
 
 **Start Here**:
 1. [Main README](../README.md) - Project overview (5 min)
-2. [Notepad++ Complete Guide](notepadpp/NOTEPADPP_COMPLETE_GUIDE.md) - Understanding Notepad++ (30 min)
-3. [Installation](#) - Get up and running (10 min)
+2. [Tailscale-MCP Complete Guide](WHAT_IS_TAILSCALE.md) - Understanding Tailscale (30 min)
+3. [Installation](INSTALL.md) - Get up and running (10 min)
 
 **Total time**: 45 minutes to understand the project
 
@@ -150,21 +150,7 @@ tailscale-mcp/
 
 ## 📚 **Documentation Highlights**
 
-### **Notepad++ Reference** (NEW! 39+ pages)
-
-**Comprehensive coverage**:
-- ✅ 22-year history (2003-2025)
-- ✅ Complete feature documentation
-- ✅ 1,400+ plugin ecosystem
-- ✅ 100M+ user community
-- ✅ Technical architecture
-- ✅ Configuration files (1,800+ line stylers.xml)
-- ✅ Recent updates (v8.5-8.7)
-
-**Files created**:
-1. NOTEPADPP_COMPLETE_GUIDE.md (15+ pages)
-2. PLUGIN_ECOSYSTEM_COMPREHENSIVE.md (12+ pages)
-3. COMMUNITY_AND_SUPPORT.md (10+ pages)
+**Key feature**: Safe AI experimentation on `feature/experimental` branch!
 
 **Word count**: 12,500+ words
 
@@ -254,7 +240,7 @@ Links to all major documentation sections with clear categories.
 | `docs/mcp-technical/` | 6 | 30+ | MCP tech |
 | `docs/mcpb-packaging/` | 3 | 20+ | Packaging |
 | `docs/` (root) | 2 | 5+ | Indexes |
-| `src/notepadpp_mcp/docs/` | 4 | 15+ | API |
+| `src/tailscalemcp/docs/` | 4 | 15+ | API |
 | `scripts/` | 1 | 2+ | Scripts |
 | **Total** | **43** | **206+** | Complete |
 
@@ -495,7 +481,7 @@ Links to all major documentation sections with clear categories.
 
 ## 🎊 **Summary**
 
-**The notepadpp-mcp documentation is now**:
+**The tailscale-mcp documentation is now**:
 
 ✅ **Comprehensive** - 206+ pages covering everything  
 ✅ **Organized** - 6 logical subdirectories  

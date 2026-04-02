@@ -8,20 +8,22 @@ import structlog
 from tailscalemcp.exceptions import TailscaleMCPError
 
 from ._base import ToolContext
+from ._tool_types import PolicyPriority, SecurityOperation
+from .mcp_tool_names import RUN_TAILNET_SECURITY
 
 logger = structlog.get_logger(__name__)
 
 
 def register_security_tool(ctx: ToolContext) -> None:
-    """Register the tailscale_security tool.
+    """Register run_tailnet_security (MCP name).
 
     Args:
         ctx: Tool context with all managers and MCP instance
     """
 
-    @ctx.mcp.tool()
+    @ctx.mcp.tool(name=RUN_TAILNET_SECURITY)
     async def tailscale_security(
-        operation: str,
+        operation: SecurityOperation,
         scan_type: str = "comprehensive",
         compliance_standard: str = "SOC2",
         device_id: str | None = None,
@@ -31,11 +33,17 @@ def register_security_tool(ctx: ToolContext) -> None:
         alert_message: str | None = None,
         policy_name: str | None = None,
         rules: list[dict[str, Any]] | None = None,
-        priority: int = 100,
+        priority: PolicyPriority = 100,
         test_mode: bool = False,
         block_duration: int = 3600,
         threat_type: str | None = None,
     ) -> dict[str, Any]:
+        """SCAN_POLICY_THREAT — Security scans, compliance, quarantine, alerts (tailnet posture).
+
+        **Returns:** Dict with ``operation`` and domain payloads (``results``, ``report``, etc.).
+
+        **Errors:** ``TailscaleMCPError`` on invalid args or backend failures.
+        """
         try:
             if operation == "scan":
                 scan_results = await ctx.device_manager.security_scan(scan_type)

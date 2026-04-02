@@ -67,7 +67,7 @@ export function Control() {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    name: "tailscale_device",
+                    name: "manage_tailnet_devices",
                     arguments: { operation: "list" },
                 }),
             });
@@ -117,7 +117,7 @@ export function Control() {
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-2xl font-bold tracking-tight text-white">Devices</h2>
-                    <p className="text-slate-400">Tailscale tailnet devices (via MCP tool <code className="text-slate-500">tailscale_device</code>)</p>
+                    <p className="text-slate-400">Tailscale tailnet devices (via MCP tool <code className="text-slate-500">manage_tailnet_devices</code>)</p>
                 </div>
                 <Button
                     variant="outline"

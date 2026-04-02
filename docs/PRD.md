@@ -1,10 +1,10 @@
 # Product requirements — Tailscale MCP
 
-**Status:** Living document · **Last updated:** 2026-03-22 (docs + dev tooling sync)
+**Status:** Living document · **Last updated:** 2026-04-02 (v2.1.0 alignment)
 
 ## Summary
 
-Tailscale MCP is a **FastMCP 3.1+** server that exposes the **Tailscale Admin API** and related CLI flows (Funnel, Taildrop) to AI agents and operators through **portmanteau tools**, **runtime prompts/resources**, and optional **SEP-1577** agentic workflows (`tailscale_agentic_workflow`). An optional **SOTA web dashboard** (`Webapp`) provides a glass-style UI for browsing devices, settings, help, and **tailnet visualization**.
+Tailscale MCP is a **FastMCP 3.1+** server that exposes the **Tailscale Admin API** and related CLI flows (Funnel, Taildrop) to AI agents and operators through **portmanteau tools**, **runtime prompts/resources**, and optional **SEP-1577** agentic workflows (`run_agentic_tailnet_workflow`). An optional **SOTA web dashboard** (`Webapp`) provides a glass-style UI for browsing devices, settings, help, and **tailnet visualization**.
 
 **Context:** [WHAT_IS_TAILSCALE.md](WHAT_IS_TAILSCALE.md) · **Install:** [INSTALL.md](INSTALL.md)
 
@@ -29,19 +29,19 @@ Tailscale MCP is a **FastMCP 3.1+** server that exposes the **Tailscale Admin AP
 ### MCP server
 
 - **Credentials:** `TAILSCALE_API_KEY`, `TAILSCALE_TAILNET` required for live API calls.
-- **Tools:** Portmanteau pattern (`operation` parameter); includes device, network, monitor, file, funnel, security, automation, backup, performance, reporting, integration, help, status, LM link, and agentic workflow tools.
-- **Sampling:** Server-side OpenAI-compatible HTTP (`TAILSCALE_SAMPLING_*`) or client LLM (`TAILSCALE_SAMPLING_USE_CLIENT_LLM=1`) for `tailscale_agentic_workflow`.
-- **Status:** `tailscale_status` exposes MCP capability counts; optional **`include_mermaid_diagram`** returns Mermaid text for tailnet topology (consumed by the web app and agents).
+- **Tools:** Portmanteau pattern (`operation` parameter); includes `manage_tailnet_devices`, `configure_tailnet_network`, `monitor_tailnet_activity`, `manage_tailnet_files`, `configure_tailnet_funnel`, `manage_tailnet_security`, `automate_tailnet_tasks`, `backup_tailnet_config`, `optimize_tailnet_performance`, `generate_tailnet_reports`, `integrate_tailnet_services`, `get_tailnet_help`, `get_tailnet_status`, `manage_tailnet_keys`, and `run_agentic_tailnet_workflow`.
+- **Sampling:** Server-side OpenAI-compatible HTTP (`TAILSCALE_SAMPLING_*`) or client LLM (`TAILSCALE_SAMPLING_USE_CLIENT_LLM=1`) for `run_agentic_tailnet_workflow`.
+- **Status:** `get_tailnet_status` exposes MCP capability counts; optional **`include_mermaid_diagram`** returns Mermaid text for tailnet topology (consumed by the web app and agents).
 
 ### Web dashboard (`Webapp`)
 
 - **Routes:** Documented in [WEBAPP.md](WEBAPP.md).
-- **My tailnet (`/my-tailnet`):** Tab A — render Mermaid from `tailscale_status` + `include_mermaid_diagram: true`, with fallback graph from device list. Tab B — **Orbit (CSS 3D)** decorative device ring (not a geographic map).
+- **My tailnet (`/my-tailnet`):** Tab A — render Mermaid from `get_tailnet_status` + `include_mermaid_diagram: true`, with fallback graph from device list. Tab B — **Orbit (CSS 3D)** decorative device ring (not a geographic map).
 - **Help:** `/help` documents env vars and sampling; linked from shell UI.
 
 ### Partner tailnets
 
-- **MCP:** `tailscale_partner_tailnets` aggregates Admin API **users** (`member` vs **shared** tailnet users) and **devices grouped by login** (node `user` field).
+- **MCP:** `summarize_partner_tailnets` aggregates Admin API **users** (`member` vs **shared** tailnet users) and **devices grouped by login** (node `user` field).
 - **Web:** `/partner-tailnets` surfaces the same summary, Mermaid overview, and raw JSON for debugging.
 
 ### Non-goals (current)

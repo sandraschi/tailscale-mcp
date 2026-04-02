@@ -7,21 +7,23 @@ import structlog
 from tailscalemcp.exceptions import TailscaleMCPError
 
 from ._base import ToolContext
+from ._tool_types import FunnelOperation, PortNumber
+from .mcp_tool_names import MANAGE_FUNNEL
 
 logger = structlog.get_logger(__name__)
 
 
 def register_funnel_tool(ctx: ToolContext) -> None:
-    """Register the tailscale_funnel tool.
+    """Register manage_funnel (MCP name).
 
     Args:
         ctx: Tool context with all managers and MCP instance
     """
 
-    @ctx.mcp.tool()
+    @ctx.mcp.tool(name=MANAGE_FUNNEL)
     async def tailscale_funnel(
-        operation: str,
-        port: int | None = None,
+        operation: FunnelOperation,
+        port: PortNumber | None = None,
         allow_tcp: bool = True,
         allow_tls: bool = True,
     ) -> dict[str, Any]:
@@ -90,7 +92,9 @@ def register_funnel_tool(ctx: ToolContext) -> None:
             allow_tls: Allow TLS connections. Used by: funnel_enable operation. Default: True
 
         Returns:
-            Dictionary containing operation results. Structure varies by operation.
+            Dict with ``operation`` matching the sub-operation. Typical keys: ``operation``,
+            ``message``, ``public_url`` / ``funnels`` / CLI output fields from the Funnel manager.
+            Errors raise ``TailscaleMCPError`` (CLI missing, ACL, invalid port).
 
         Examples:
             Enable Funnel for port 8080:
@@ -109,8 +113,8 @@ def register_funnel_tool(ctx: ToolContext) -> None:
             - Invalid port: Port must be between 1 and 65535
 
         See Also:
-            - tailscale_device: For device management
-            - tailscale_network: For DNS and network configuration
+            - manage_tailnet_devices: For device management
+            - manage_tailnet_network: For DNS and network configuration
         """
         try:
             if not ctx.funnel_manager:

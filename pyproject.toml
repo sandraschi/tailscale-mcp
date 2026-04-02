@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tailscale-mcp"
-version = "2.0.2"
+version = "2.1.0"
 description = "FastMCP 3.1+ compliant Tailscale network controller with persistent storage"
 readme = "README.md"
 authors = [

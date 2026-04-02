@@ -128,7 +128,7 @@ docs/
 
 - **Repository Assessment:** Comprehensive analysis of strengths, gaps, and improvement plans
   - See: `docs/REPOSITORY_ASSESSMENT.md` - Complete assessment with priorities
-- Tailscale Services (TailVIPs) support added in `tailscale_network` tool
+- Tailscale Services (TailVIPs) support added in `manage_tailnet_network` tool
   - See: `docs/TAILSCALE_MCP_EXPANSION_PLAN.md` (Phase 6.5)
   - See: `docs/IMPLEMENTATION_STATUS.md`
 
@@ -228,7 +228,7 @@ Complete guide to professional MCP server packaging and distribution.
 📄 [mcpb-packaging/MCPB_BUILDING_GUIDE.md](mcpb-packaging/MCPB_BUILDING_GUIDE.md)
 
 **Comprehensive guide** covering:
-- MCPB vs DXT migration
+- MCPB packaging and manifests
 - Manifest configuration
 - Build process & automation
 - GitHub Actions CI/CD
@@ -400,7 +400,7 @@ Based on what you need:
 
 *Documentation Index*  
 *Created: October 24, 2025*  
-*Last Updated: October 24, 2025*  
+*Last Updated: April 2, 2026*  
 *Total Pages: 1020+*  
 *Total Documents: 38*  
 *Status: Complete*  

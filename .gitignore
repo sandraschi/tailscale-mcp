@@ -230,3 +230,9 @@ mcpb-dist/
 
 # Pre-commit
 .pre-commit-cache/
+
+# Cursor IDE (local skills/rules — use central docs or repo-specific docs instead)
+.cursor/
+
+# Backup / scratch files
+*.bak

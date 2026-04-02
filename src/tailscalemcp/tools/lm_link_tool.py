@@ -5,6 +5,8 @@ from typing import Any
 import structlog
 
 from ._base import ToolContext
+from ._tool_types import LmLinkOperation
+from .mcp_tool_names import GET_LM_LINK
 
 logger = structlog.get_logger(__name__)
 
@@ -25,11 +27,11 @@ Built on tsnet (Tailscale userspace); traffic is E2E encrypted, not visible to T
 
 
 def register_lm_link_tool(ctx: ToolContext) -> None:
-    """Register the tailscale_lm_link tool (LM Link / remote local LLM)."""
+    """Register get_lm_link (MCP name; LM Link / remote local LLM)."""
 
-    @ctx.mcp.tool()
+    @ctx.mcp.tool(name=GET_LM_LINK)
     async def tailscale_lm_link(
-        operation: str = "info",
+        operation: LmLinkOperation = "info",
     ) -> dict[str, Any]:
         """LM Link: Tailscale + LM Studio remote local LLM (Feb 2026).
 

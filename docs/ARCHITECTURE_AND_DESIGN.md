@@ -41,18 +41,19 @@ The TailscaleMCP server follows several key design principles:
 │  FastMCP 3.1 Framework                                     │
 ├─────────────────────────────────────────────────────────────┤
 │  Portmanteau Tools Layer                                    │
-│  ┌─────────────┬─────────────┬─────────────┬─────────────┐  │
-│  │   Device    │   Network   │   Monitor   │    File     │  │
-│  │ Management  │ Management  │   & Metrics │   Sharing   │  │
-│  └─────────────┴─────────────┴─────────────┴─────────────┘  │
-│  ┌─────────────┬─────────────┬─────────────┬─────────────┐  │
-│  │  Security   │ Automation  │   Backup    │ Performance │  │
-│  │ & Compliance│ & Workflows │ & Recovery  │ Monitoring  │  │
-│  └─────────────┴─────────────┴─────────────┴─────────────┘  │
-│  ┌─────────────┬─────────────┐                             │
-│  │  Reporting  │ Integration │                             │
-│  │ & Analytics │ & Webhooks  │                             │
-│  └─────────────┴─────────────┘                             │
+│  ┌────────────────────────┬────────────────────────┬─────────┐  │
+│  │ manage_tailnet_devices │ manage_tailnet_network │ monitor │  │
+│  │                        │                        │ _tailnet│  │
+│  ├────────────────────────┼────────────────────────┼─────────┤  │
+│  │ manage_taildrop        │ run_tailnet_security   │ run_    │  │
+│  │                        │                        │ automati│  │
+│  │                        │                        │ on      │  │
+│  └────────────────────────┴────────────────────────┴─────────┘  │
+│  ┌────────────────────────┬────────────────────────┬─────────┐  │
+│  │ analyze_performance    │ generate_reports       │ manage_ │  │
+│  │                        │                        │ integrat│  │
+│  │                        │                        │ ions    │  │
+│  └────────────────────────┴────────────────────────┴─────────┘  │
 ├─────────────────────────────────────────────────────────────┤
 │  Business Logic Layer                                       │
 │  ┌─────────────┬─────────────┬─────────────┬─────────────┐  │
@@ -99,7 +100,7 @@ Each portmanteau tool follows a consistent structure:
 
 ```python
 @self.mcp.tool()
-async def tailscale_[domain](
+async def [verb]_tailnet_[domain](
     operation: str,                    # Primary operation selector
     # Domain-specific parameters
     param1: str | None = None,
@@ -344,7 +345,7 @@ class SecurityManager:
 All operations are fully asynchronous:
 
 ```python
-async def tailscale_device(operation: str, ...) -> dict[str, Any]:
+async def [verb]_tailnet_[domain](operation: str, ...) -> dict[str, Any]:
     """Async device operations for better performance."""
     # All operations are async
     result = await self.device_manager.get_device(device_id)
@@ -413,13 +414,13 @@ class TestTailscaleDevice:
     
     async def test_list_devices(self, device_tool):
         """Test device listing operation."""
-        result = await device_tool.tailscale_device(operation="list")
+        result = await device_tool.manage_tailnet_devices(operation="list")
         assert result["status"] == "success"
         assert "devices" in result["data"]
     
     async def test_authorize_device(self, device_tool):
         """Test device authorization operation."""
-        result = await device_tool.tailscale_device(
+        result = await device_tool.manage_tailnet_devices(
             operation="authorize",
             device_id="test-device",
             authorize=True
@@ -588,6 +589,6 @@ docs/
 ---
 
 *Architecture & Design Documentation*  
-*Version: 1.0.0*  
-*Last Updated: December 2024*  
+*Version: 2.1.0*  
+*Last Updated: April 2, 2026*  
 *Status: Production Ready* 🚀

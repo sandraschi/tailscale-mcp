@@ -7,7 +7,7 @@ export function Help() {
             <div>
                 <h2 className="text-2xl font-bold tracking-tight text-white">Help</h2>
                 <p className="text-slate-400">
-                    MCP tool <span className="font-mono text-slate-300">tailscale_help</span> mirrors these topics;
+                    MCP tool <span className="font-mono text-slate-300">get_help</span> mirrors these topics;
                     use <span className="font-mono">topic=&quot;sampling&quot;</span> for SEP-1577 and credentials.
                 </p>
             </div>
@@ -37,7 +37,7 @@ export function Help() {
                 <CardHeader>
                     <CardTitle className="text-white">SEP-1577 / sampling</CardTitle>
                     <CardDescription className="text-slate-400">
-                        <span className="font-mono">tailscale_agentic_workflow</span> uses FastMCP sampling with tools.
+                        <span className="font-mono">run_agentic_tailnet_workflow</span> uses FastMCP sampling with tools.
                         Optional environment variables:
                     </CardDescription>
                 </CardHeader>
@@ -78,7 +78,7 @@ export function Help() {
                         className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300"
                         href="https://tailscale.com/api"
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                     >
                         Tailscale API reference
                         <ExternalLink className="h-4 w-4" />

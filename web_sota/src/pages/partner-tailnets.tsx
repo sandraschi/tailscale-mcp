@@ -74,7 +74,7 @@ export function PartnerTailnets() {
     setLoading(true);
     setError(null);
     try {
-      const res = await callTool("tailscale_partner_tailnets", { operation: "summary" });
+      const res = await callTool("summarize_partner_tailnets", { operation: "summary" });
       const raw = parseRecord(res.data) ?? devDataFromContent(res);
       if (raw && raw.success === false) {
         setError(String(raw.error ?? "Unknown error"));

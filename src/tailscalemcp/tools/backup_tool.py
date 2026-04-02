@@ -7,20 +7,22 @@ import structlog
 from tailscalemcp.exceptions import TailscaleMCPError
 
 from ._base import ToolContext
+from ._tool_types import BackupOperation
+from .mcp_tool_names import MANAGE_TAILNET_BACKUPS
 
 logger = structlog.get_logger(__name__)
 
 
 def register_backup_tool(ctx: ToolContext) -> None:
-    """Register the tailscale_backup tool.
+    """Register manage_tailnet_backups (MCP name).
 
     Args:
         ctx: Tool context with all managers and MCP instance
     """
 
-    @ctx.mcp.tool()
+    @ctx.mcp.tool(name=MANAGE_TAILNET_BACKUPS)
     async def tailscale_backup(
-        operation: str,
+        operation: BackupOperation,
         backup_name: str | None = None,
         backup_type: str = "full",
         include_devices: bool = True,
@@ -34,6 +36,12 @@ def register_backup_tool(ctx: ToolContext) -> None:
         encryption: bool = True,
         test_restore: bool = False,
     ) -> dict[str, Any]:
+        """BACKUP_RESTORE_SCHEDULE — Configuration backup and recovery helpers.
+
+        **Returns:** Dict with ``operation`` and ``result`` / backup lists.
+
+        **Errors:** ``TailscaleMCPError`` on missing backup name or API errors.
+        """
         try:
             if operation == "backup_create":
                 if not backup_name:

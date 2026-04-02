@@ -15,8 +15,8 @@ export function Funnels() {
     setError(null);
     try {
       const [listRes, statusRes] = await Promise.all([
-        callTool("tailscale_funnel", { operation: "funnel_list" }),
-        callTool("tailscale_funnel", { operation: "funnel_status" }),
+        callTool("manage_funnel", { operation: "funnel_list" }),
+        callTool("manage_funnel", { operation: "funnel_status" }),
       ]);
       const listData = listRes.data as Record<string, unknown>;
       const statusData = statusRes.data as Record<string, unknown>;

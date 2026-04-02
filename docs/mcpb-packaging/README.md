@@ -14,7 +14,7 @@
 **Complete 1,900+ line comprehensive guide**
 
 **What it covers**:
-- ✅ MCPB vs DXT migration (complete transition guide)
+- ✅ MCPB manifests, build, and distribution
 - ✅ Manifest configuration (detailed examples)
 - ✅ Build process (step-by-step)
 - ✅ GitHub Actions CI/CD (automated workflows)

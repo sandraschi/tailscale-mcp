@@ -15,8 +15,8 @@ export function Nets() {
     setError(null);
     try {
       const [dnsRes, topoRes] = await Promise.all([
-        callTool("tailscale_network", { operation: "dns_config" }),
-        callTool("tailscale_monitor", { operation: "topology" }),
+        callTool("manage_tailnet_network", { operation: "dns_config" }),
+        callTool("monitor_tailnet", { operation: "topology" }),
       ]);
       const dns = dnsRes.data as Record<string, unknown> | undefined;
       const topo = topoRes.data as Record<string, unknown> | undefined;

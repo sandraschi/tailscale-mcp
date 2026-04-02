@@ -9,26 +9,28 @@ from tailscalemcp.exceptions import TailscaleMCPError
 
 from ._base import ToolContext
 from ._helpers import generate_status_info
+from ._tool_types import StatusComponent, StatusDetailLevel, StatusTimeRange
+from .mcp_tool_names import GET_TAILNET_STATUS
 
 logger = structlog.get_logger(__name__)
 
 
 def register_status_tool(ctx: ToolContext) -> None:
-    """Register the tailscale_status tool.
+    """Register get_tailnet_status (MCP name).
 
     Args:
         ctx: Tool context with all managers and MCP instance
     """
 
-    @ctx.mcp.tool()
+    @ctx.mcp.tool(name=GET_TAILNET_STATUS)
     async def tailscale_status(
-        component: str | None = None,
-        detail_level: str = "basic",
+        component: StatusComponent | None = None,
+        detail_level: StatusDetailLevel = "basic",
         include_metrics: bool = True,
         include_health: bool = True,
         include_performance: bool = False,
         device_filter: str | None = None,
-        time_range: str = "1h",
+        time_range: StatusTimeRange = "1h",
         include_mermaid_diagram: bool = False,
     ) -> dict[str, Any]:
         """Comprehensive system status and health monitoring.
@@ -68,22 +70,22 @@ def register_status_tool(ctx: ToolContext) -> None:
             include_mermaid_diagram: Whether to include Mermaid diagram of tailnet topology (default: False)
 
         Returns:
-            Comprehensive status information with health indicators and optional Mermaid diagram.
-            If include_mermaid_diagram=True, the status dict includes a 'mermaid_diagram' field
-            containing the Mermaid code that can be rendered in Markdown viewers.
+            Dict with ``component``, ``detail_level``, ``timestamp``, ``status`` (nested health/devices/network/
+            mcp_server blocks), optional ``summary`` / ``suggestion``, and optional ``mermaid_diagram`` when
+            ``include_mermaid_diagram=True``.
 
         Raises:
             TailscaleMCPError: If status check fails
 
         Examples:
             # Basic status check
-            tailscale_status()
+            get_tailnet_status()
 
             # Status with Mermaid diagram
-            tailscale_status(include_mermaid_diagram=True)
+            get_tailnet_status(include_mermaid_diagram=True)
 
             # Advanced status with diagram
-            tailscale_status(
+            get_tailnet_status(
                 detail_level="advanced",
                 include_metrics=True,
                 include_performance=True,
@@ -143,15 +145,15 @@ def register_status_tool(ctx: ToolContext) -> None:
                 # Add contextual suggestions
                 if devices_online == 0:
                     response["suggestion"] = (
-                        "All devices are offline. Check network connectivity or run diagnostics with: tailscale_status(component='network', detail_level='advanced')"
+                        "All devices are offline. Check network connectivity or run diagnostics with: get_tailnet_status(component='network', detail_level='advanced')"
                     )
                 elif alerts_count > 0:
                     response["suggestion"] = (
-                        f"There are {alerts_count} alerts. Get details with: tailscale_status(component='alerts', detail_level='advanced')"
+                        f"There are {alerts_count} alerts. Get details with: get_tailnet_status(component='alerts', detail_level='advanced')"
                     )
                 elif devices_total > 20:
                     response["suggestion"] = (
-                        "That's a large tailnet! Consider monitoring with: tailscale_monitor(operation='dashboard_create', dashboard_type='network_overview')"
+                        "That's a large tailnet! Consider monitor_tailnet(operation='export', dashboard_type='comprehensive', filename='tailnet.json') after configuring Grafana params."
                     )
 
             elif component == "devices":
@@ -161,7 +163,7 @@ def register_status_tool(ctx: ToolContext) -> None:
                 )
                 if device_count == 0:
                     response["suggestion"] = (
-                        "No devices found. Check API credentials or try: tailscale_status(component='network') for connectivity issues"
+                        "No devices found. Check API credentials or try: get_tailnet_status(component='network') for connectivity issues"
                     )
 
             elif component == "network":
@@ -169,7 +171,7 @@ def register_status_tool(ctx: ToolContext) -> None:
                 response["summary"] = f"Network status: {health_status.title()}"
                 if health_status.lower() == "degraded":
                     response["suggestion"] = (
-                        "Network issues detected. Run diagnostics with: tailscale_performance(operation='analyze', analyze_type='network')"
+                        "Network issues detected. Run diagnostics with: analyze_tailnet_performance(operation='latency')."
                     )
 
             return response

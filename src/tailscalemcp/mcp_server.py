@@ -439,7 +439,7 @@ class TailscaleMCPServer:
                 pass
             return (
                 "# Tailscale MCP\n\n"
-                "Use tailscale_agentic_workflow for SEP-1577. "
+                "Use run_agentic_tailnet_workflow for SEP-1577. "
                 "Configure TAILSCALE_SAMPLING_* or TAILSCALE_SAMPLING_USE_CLIENT_LLM=1.\n"
             )
 

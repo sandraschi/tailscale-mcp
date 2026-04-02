@@ -1,6 +1,6 @@
 id = "tailscale-mcp"
 name = "TailscaleNetworkManagement"
-version = "2.0.2"
+version = "2.1.0"
 schema_version = 1
 authors = ["Sandra <sandraschipal@hotmail.com>"]
 description = "Zero-trust networking and VPN management"

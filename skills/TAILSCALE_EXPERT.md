@@ -2,8 +2,8 @@
 
 ## When to use what
 
-- **Direct tools** (`tailscale_device`, `tailscale_network`, `tailscale_status`, …): deterministic, scriptable calls to the Tailscale Admin API. Prefer these when you know the operation and parameters.
-- **`tailscale_agentic_workflow`** (SEP-1577): multi-step tasks where the model should choose tools and interpret results. Requires sampling (server-side LLM or a capable MCP host).
+- **Direct tools** (`manage_tailnet_devices`, `manage_tailnet_network`, `get_tailnet_status`, …): deterministic, scriptable calls to the Tailscale Admin API. Prefer these when you know the operation and parameters.
+- **`run_agentic_tailnet_workflow`** (SEP-1577): multi-step tasks where the model should choose tools and interpret results. Requires sampling (server-side LLM or a capable MCP host).
 
 ## Sampling configuration
 
@@ -17,8 +17,8 @@ No API key is required for typical localhost or private-LAN Ollama.
 
 ## Agentic workflow pattern
 
-1. List tool names with `tailscale_status(component="mcp_server", detail_level="diagnostic")` if unsure.
-2. Call `tailscale_agentic_workflow(workflow_prompt="...", available_tools=["tailscale_device", "tailscale_status"], max_iterations=5)`.
+1. List tool names with `get_tailnet_status(component="mcp_server", detail_level="diagnostic")` if unsure.
+2. Call `run_agentic_tailnet_workflow(workflow_prompt="...", available_tools=["manage_tailnet_devices", "get_tailnet_status"], max_iterations=5)`.
 3. Keep `available_tools` minimal to reduce confusion and token use.
 
 ## API authority
@@ -27,4 +27,4 @@ The canonical HTTP surface is documented at [https://tailscale.com/api](https://
 
 ## Deprecated alias
 
-`tailscale_sampling` is an alias for `tailscale_agentic_workflow` with the same parameters.
+`run_agentic_tailnet_workflow_sampling` is an alias for `run_agentic_tailnet_workflow` with the same parameters.

@@ -5,7 +5,7 @@
 To get the tailnet status **with** a Mermaid diagram visualization, use:
 
 ```python
-tailscale_status(include_mermaid_diagram=True)
+get_tailnet_status(include_mermaid_diagram=True)
 ```
 
 ## Examples
@@ -13,7 +13,7 @@ tailscale_status(include_mermaid_diagram=True)
 ### Basic Status with Diagram
 ```python
 # Simple call - get status with Mermaid diagram
-result = await tailscale_status(include_mermaid_diagram=True)
+result = await get_tailnet_status(include_mermaid_diagram=True)
 
 # The diagram will be in:
 diagram = result["status"]["mermaid_diagram"]
@@ -23,7 +23,7 @@ print(diagram)  # Mermaid code ready to render
 ### Advanced Status with Diagram
 ```python
 # Get comprehensive status with diagram
-result = await tailscale_status(
+result = await get_tailnet_status(
     detail_level="advanced",
     include_metrics=True,
     include_performance=True,
@@ -39,7 +39,7 @@ if "mermaid_diagram" in result["status"]:
 ### Status Without Diagram (Default)
 ```python
 # Regular status call (no diagram)
-result = await tailscale_status()
+result = await get_tailnet_status()
 # mermaid_diagram field will not be present
 ```
 
@@ -67,7 +67,7 @@ When `include_mermaid_diagram=True`, the response includes:
 ### Option 1: View Online
 1. Get the status with diagram:
    ```python
-   result = await tailscale_status(include_mermaid_diagram=True)
+   result = await get_tailnet_status(include_mermaid_diagram=True)
    ```
 2. Copy the `mermaid_diagram` field value
 3. Paste into https://mermaid.live/
@@ -75,7 +75,7 @@ When `include_mermaid_diagram=True`, the response includes:
 
 ### Option 2: Save to File
 ```python
-result = await tailscale_status(include_mermaid_diagram=True)
+result = await get_tailnet_status(include_mermaid_diagram=True)
 mermaid_code = result["status"]["mermaid_diagram"]
 
 # Save to file
@@ -104,7 +104,7 @@ graph TB
 ## Full Parameter Reference
 
 ```python
-tailscale_status(
+get_tailnet_status(
     component: str | None = None,              # Component to check
     detail_level: str = "basic",               # basic, intermediate, advanced, diagnostic
     include_metrics: bool = True,              # Include performance metrics
@@ -127,7 +127,7 @@ Get the tailscale status with a Mermaid diagram showing all devices and funnels
 Or explicitly:
 
 ```
-tailscale_status(include_mermaid_diagram=True)
+get_tailnet_status(include_mermaid_diagram=True)
 ```
 
 ## What the Diagram Shows
@@ -142,5 +142,5 @@ tailscale_status(include_mermaid_diagram=True)
 
 ---
 
-**Last Updated**: 2025-11-24
+**Last Updated**: 2026-04-02 (v2.1.0 alignment)
 

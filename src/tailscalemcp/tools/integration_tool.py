@@ -7,20 +7,22 @@ import structlog
 from tailscalemcp.exceptions import TailscaleMCPError
 
 from ._base import ToolContext
+from ._tool_types import IntegrationOperation
+from .mcp_tool_names import MANAGE_TAILNET_INTEGRATIONS
 
 logger = structlog.get_logger(__name__)
 
 
 def register_integration_tool(ctx: ToolContext) -> None:
-    """Register the tailscale_integration tool.
+    """Register manage_tailnet_integrations (MCP name).
 
     Args:
         ctx: Tool context with all managers and MCP instance
     """
 
-    @ctx.mcp.tool()
+    @ctx.mcp.tool(name=MANAGE_TAILNET_INTEGRATIONS)
     async def tailscale_integration(
-        operation: str,
+        operation: IntegrationOperation,
         webhook_url: str | None = None,
         webhook_secret: str | None = None,
         webhook_events: list[str] | None = None,
@@ -34,6 +36,12 @@ def register_integration_tool(ctx: ToolContext) -> None:
         test_connection: bool = False,
         webhook_id: str | None = None,
     ) -> dict[str, Any]:
+        """WEBHOOKS_NOTIFY_THIRDPARTY — Webhooks and chat/observability integrations.
+
+        **Returns:** Dict with ``operation`` and ``result`` / webhook metadata.
+
+        **Errors:** ``TailscaleMCPError`` when required URLs or events are missing.
+        """
         try:
             if operation == "webhook_create":
                 if not webhook_url or not webhook_events:

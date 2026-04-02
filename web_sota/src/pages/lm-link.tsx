@@ -15,8 +15,8 @@ export function LmLink() {
     setError(null);
     try {
       const [infoRes, readinessRes] = await Promise.all([
-        callTool("tailscale_lm_link", { operation: "info" }),
-        callTool("tailscale_lm_link", { operation: "readiness" }),
+        callTool("get_lm_link", { operation: "info" }),
+        callTool("get_lm_link", { operation: "readiness" }),
       ]);
       setInfo((infoRes.data as Record<string, unknown>) ?? null);
       setReadiness((readinessRes.data as Record<string, unknown>) ?? null);

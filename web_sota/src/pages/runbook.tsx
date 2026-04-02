@@ -5,10 +5,10 @@ import { copyToClipboard } from "@/common/clipboard";
 const SNIPPETS: { title: string; description: string; body: string }[] = [
   {
     title: "List devices (REST tool call)",
-    description: "POST /api/v1/tools/call with tailscale_device",
+    description: "POST /api/v1/tools/call with manage_tailnet_devices",
     body: JSON.stringify(
       {
-        name: "tailscale_device",
+        name: "manage_tailnet_devices",
         arguments: { operation: "list", online_only: false },
       },
       null,
@@ -17,10 +17,10 @@ const SNIPPETS: { title: string; description: string; body: string }[] = [
   },
   {
     title: "Network status overview",
-    description: "tailscale_status component overview",
+    description: "get_tailnet_status component overview",
     body: JSON.stringify(
       {
-        name: "tailscale_status",
+        name: "get_tailnet_status",
         arguments: {
           component: "overview",
           detail_level: "intermediate",
@@ -36,7 +36,7 @@ const SNIPPETS: { title: string; description: string; body: string }[] = [
     description: "Structured help for SEP-1577 and .env",
     body: JSON.stringify(
       {
-        name: "tailscale_help",
+        name: "get_help",
         arguments: { topic: "sampling", level: "intermediate" },
       },
       null,
@@ -47,9 +47,9 @@ const SNIPPETS: { title: string; description: string; body: string }[] = [
     title: "IDE: agentic workflow (MCP)",
     description:
       "Use from Cursor/Claude with sampling enabled. Not the same as REST-only call_tool.",
-    body: `tailscale_agentic_workflow(
+    body: `run_agentic_tailnet_workflow(
   workflow_prompt="Summarize offline devices and suggest checks.",
-  available_tools=["tailscale_device", "tailscale_status"],
+  available_tools=["manage_tailnet_devices", "get_tailnet_status"],
   max_iterations=5
 )`,
   },

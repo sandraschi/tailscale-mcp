@@ -2,7 +2,7 @@
 
 This is what the response would look like when you call:
 ```python
-tailscale_status(include_mermaid_diagram=True)
+get_tailnet_status(include_mermaid_diagram=True)
 ```
 
 ## Sample Response Structure
@@ -15,7 +15,7 @@ tailscale_status(include_mermaid_diagram=True)
   "status": {
     "system": {
       "status": "operational",
-      "version": "2.0.0",
+      "version": "2.1.0",
       "uptime": "Running",
       "last_updated": 1732406400.0
     },
@@ -35,19 +35,19 @@ tailscale_status(include_mermaid_diagram=True)
       "tools": {
         "count": 13,
         "names": [
-          "tailscale_device",
-          "tailscale_network",
-          "tailscale_monitor",
-          "tailscale_file",
-          "tailscale_funnel",
-          "tailscale_security",
-          "tailscale_automation",
-          "tailscale_backup",
-          "tailscale_performance",
-          "tailscale_reporting",
-          "tailscale_integration",
-          "tailscale_help",
-          "tailscale_status"
+          "manage_tailnet_devices",
+          "manage_tailnet_network",
+          "monitor_tailnet",
+          "manage_taildrop",
+          "manage_funnel",
+          "run_tailnet_security",
+          "run_tailnet_automation",
+          "manage_tailnet_backups",
+          "analyze_tailnet_performance",
+          "generate_tailnet_reports",
+          "manage_tailnet_integrations",
+          "get_help",
+          "get_tailnet_status"
         ]
       },
       "prompts": {
@@ -128,7 +128,7 @@ https://my-device.tailnet.ts.net:3000"]
 
 1. **Call the tool in Claude Desktop:**
    ```
-   tailscale_status(include_mermaid_diagram=True)
+   get_tailnet_status(include_mermaid_diagram=True)
    ```
 
 2. **Extract the diagram:**
