@@ -1,9 +1,11 @@
 # Tailscale MCP
 
-**Operate your tailnet from the AI tools you already use.** Tailscale MCP is a [FastMCP 3.1+](https://github.com/pydantic/fastmcp) server that exposes the [**Tailscale Admin API**](https://tailscale.com/api) to assistants and automation: devices, DNS, services, monitoring, Funnel, Taildrop-related flows, and more  through a **small set of portmanteau tools** (many operations each, so your client does not drown in hundreds of tiny tool names). Optional **SEP-1577** agentic workflows (`run_agentic_tailnet_workflow`) let a capable host run multi-step flows when **sampling** is configured. An optional **Webapp** (Vite/React) gives humans a glass-style dashboard: **My tailnet** topology, **Partner tailnets** insights, help, and connection status.
+[![FastMCP Version](https://img.shields.io/badge/FastMCP-3.1.0-blue?style=flat-square&logo=python&logoColor=white)](https://github.com/sandraschi/fastmcp) [![Linted with Biome](https://img.shields.io/badge/Linted_with-Biome-60a5fa?style=flat-square&logo=biome&logoColor=white)](https://biomejs.dev/) [![Built with Just](https://img.shields.io/badge/Built_with-Just-000000?style=flat-square&logo=gnu-bash&logoColor=white)](https://github.com/casey/just)
+
+**Operate your tailnet from the AI tools you already use.** Tailscale MCP is a [FastMCP 3.1.0+](https://github.com/pydantic/fastmcp) server that exposes the [**Tailscale Admin API**](https://tailscale.com/api) to assistants and automation: devices, DNS, services, monitoring, Funnel, Taildrop-related flows, and more  through a **small set of portmanteau tools** (many operations each, so your client does not drown in hundreds of tiny tool names). Optional **SEP-1577** agentic workflows (`run_agentic_tailnet_workflow`) let a capable host run multi-step flows when **sampling** is configured. An optional **Webapp** (Vite/React) gives humans a glass-style dashboard: **My tailnet** topology, **Partner tailnets** insights, help, and connection status.
 
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
-[![FastMCP 3.1+](https://img.shields.io/badge/FastMCP-3.1+-green.svg)](https://github.com/pydantic/fastmcp)
+[![FastMCP 3.1.0+](https://img.shields.io/badge/FastMCP-3.1+-green.svg)](https://github.com/pydantic/fastmcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
@@ -45,7 +47,7 @@ Ports for this repo follow the fleet **adjacency** convention (**10820** fronten
 
 ### Persistence and observability
 
-**DiskStore** (FastMCP 3.1) holds durable state for funnels, transfers, and preferences across restarts  see **[docs/STORAGE_BACKENDS.md](docs/STORAGE_BACKENDS.md)**. Optional **Prometheus / Grafana / Loki**-style stacks are documented under **[docs/monitoring/](docs/monitoring/README.md)** if you want full observability on your own infrastructure.
+**DiskStore** (FastMCP 3.1.0) holds durable state for funnels, transfers, and preferences across restarts  see **[docs/STORAGE_BACKENDS.md](docs/STORAGE_BACKENDS.md)**. Optional **Prometheus / Grafana / Loki**-style stacks are documented under **[docs/monitoring/](docs/monitoring/README.md)** if you want full observability on your own infrastructure.
 
 ### Skills for agents
 
@@ -105,6 +107,17 @@ Set `TAILSCALE_API_KEY` and `TAILSCALE_TAILNET` in your environment or `.env` be
 | Contributing (uv, Ruff, tests) | [CONTRIBUTING.md](CONTRIBUTING.md) |
 
 ---
+
+
+## 🛡️ Industrial Quality Stack
+
+This project adheres to **SOTA 14.1** industrial standards for high-fidelity agentic orchestration:
+
+- **Python (Core)**: [Ruff](https://astral.sh/ruff) for linting and formatting. Zero-tolerance for `print` statements in core handlers (`T201`).
+- **Webapp (UI)**: [Biome](https://biomejs.dev/) for sub-millisecond linting. Strict `noConsoleLog` enforcement.
+- **Protocol Compliance**: Hardened `stdout/stderr` isolation to ensure crash-resistant JSON-RPC communication.
+- **Automation**: [Justfile](./justfile) recipes for all fleet operations (`just lint`, `just fix`, `just dev`).
+- **Security**: Automated audits via `bandit` and `safety`.
 
 ## License
 

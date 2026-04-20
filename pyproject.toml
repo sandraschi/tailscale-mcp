@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "tailscale-mcp"
 version = "2.1.0"
-description = "FastMCP 3.1+ compliant Tailscale network controller with persistent storage"
+description = "FastMCP 3.1.0+ compliant Tailscale network controller with persistent storage"
 readme = "README.md"
 authors = [
     { name = "Sandra", email = "sandra@example.com" },
@@ -154,7 +154,7 @@ output = "coverage.xml"
 [tool.mcpb]
 name = "tailscalemcp"
 version = "2.0.2"
-description = "FastMCP 3.1+ compliant Tailscale network controller with persistent storage and optional SOTA web UI (My tailnet visualization)."
+description = "FastMCP 3.1.0+ compliant Tailscale network controller with persistent storage and optional SOTA web UI (My tailnet visualization)."
 author = "Sandra Schi"
 author_email = "sandra@sandraschi.dev"
 license = "MIT"
