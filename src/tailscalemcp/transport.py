@@ -30,11 +30,12 @@ Usage:
 
 import argparse
 import asyncio
-import logging
 import os
 from typing import Literal
 
-logger = logging.getLogger(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 TransportType = Literal["stdio", "http", "sse"]
 
@@ -230,8 +231,12 @@ async def run_server_async(
     config = resolve_config(args)
     transport = config["transport"]
 
-    logger.info(f"Starting {server_name} v{getattr(mcp_app, 'version', '?.?.?')}")
-    logger.info(f"Transport: {transport.upper()}")
+    logger.info(
+        "Starting server",
+        server_name=server_name,
+        version=getattr(mcp_app, "version", "?.?.?"),
+    )
+    logger.info("Transport mode", transport=transport.upper())
 
     try:
         if transport == "stdio":
@@ -242,8 +247,10 @@ async def run_server_async(
             host = config["host"]
             port = config["port"]
             path = config["path"]
-            endpoint = f"http://{host}:{port}{path}"
-            logger.info(f"Running in HTTP Streamable mode: {endpoint}")
+            logger.info(
+                "Running in HTTP Streamable mode",
+                endpoint=f"http://{host}:{port}{path}",
+            )
             await mcp_app.run_http_async(host=host, port=port, path=path)
 
         elif transport == "sse":
@@ -253,12 +260,12 @@ async def run_server_async(
                 "SSE mode is deprecated. Migrate to HTTP Streamable (--http)."
             )
             logger.info(f"Running in SSE mode: http://{host}:{port}")
-            await mcp_app.run_sse_async(host=host, port=port)
+            await mcp_app.run_async(transport='sse', host=host, port=port)
 
     except asyncio.CancelledError:
         logger.info(f"{server_name} task cancelled")
     except Exception as e:
-        logger.error(f"{server_name} failed: {e}", exc_info=True)
+        logger.error("Server failed", server_name=server_name, error=str(e), exc_info=True)
         raise
 
 

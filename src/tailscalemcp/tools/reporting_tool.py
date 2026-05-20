@@ -34,7 +34,7 @@ def register_reporting_tool(ctx: ToolContext) -> None:
         template_name: str | None = None,
         analytics_depth: str = "standard",
         security_focus: bool = False,
-        user_behavior: bool = False,  # noqa: ARG001
+        user_behavior: bool = False,
     ) -> dict[str, Any]:
         """REPORTS_EXPORTS_ANALYTICS — Reporting and scheduled exports.
 

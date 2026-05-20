@@ -1,15 +1,12 @@
-version: '3.8'
-
 services:
   # Prometheus - Metrics collection and storage
   prometheus:
     image: prom/prometheus:latest
     container_name: tailscale-prometheus
     ports:
-      - "9090:9090"
+      - "127.0.0.1:9090:9090"
     volumes:
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./monitoring/prometheus/rules:/etc/prometheus/rules
       - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -18,7 +15,6 @@ services:
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--storage.tsdb.retention.time=200h'
       - '--web.enable-lifecycle'
-      - '--web.enable-admin-api'
     networks:
       - monitoring
     restart: unless-stopped
@@ -28,7 +24,7 @@ services:
     image: grafana/loki:latest
     container_name: tailscale-loki
     ports:
-      - "3100:3100"
+      - "127.0.0.1:3100:3100"
     volumes:
       - ./monitoring/loki/loki.yml:/etc/loki/local-config.yaml
       - loki_data:/loki
@@ -58,15 +54,13 @@ services:
     image: grafana/grafana:latest
     container_name: tailscale-grafana
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_USERS_ALLOW_SIGN_UP=false
       - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
-      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
     networks:
       - monitoring
     restart: unless-stopped
@@ -81,68 +75,22 @@ services:
       dockerfile: Dockerfile
     container_name: tailscale-mcp-server
     ports:
-      - "8080:8080"
+      - "127.0.0.1:10821:10821"
     environment:
       - TAILSCALE_API_KEY=${TAILSCALE_API_KEY}
       - TAILSCALE_TAILNET=${TAILSCALE_TAILNET}
       - LOG_LEVEL=INFO
+      - MCP_TRANSPORT=http
+      - MCP_PORT=10821
       - PROMETHEUS_PORT=9091
     volumes:
       - ./logs:/app/logs
-      - ./monitoring/promtail/promtail.yml:/etc/promtail/config.yml
     networks:
       - monitoring
     restart: unless-stopped
     depends_on:
       - prometheus
       - loki
-
-  # RebootX On-Prem - Mobile infrastructure monitoring
-  rebootx-on-prem:
-    image: golang:1.22
-    container_name: tailscale-rebootx-on-prem
-    ports:
-      - "9001:9001"
-    environment:
-      - RBTX_API_KEY=${REBOOTX_API_KEY:-tailscale-mcp-rebootx-key-2024}
-      - RBTX_PATH_PREFIX=${REBOOTX_PATH_PREFIX:-tailscale-mcp}
-      - RBTX_DASHBOARD_SERVICE_FILE_JSON_FILE_PATH=/data/dashboards.json
-      - RBTX_DASHBOARD_SERVICE_IMPL=fileJson
-      - RBTX_PORT=9001
-      - RBTX_RUNNABLE_SERVICE_FILE_JSON_FILE_PATH=/data/servers.json
-      - RBTX_RUNNABLE_SERVICE_IMPL=fileJson
-      - RBTX_BIND=0.0.0.0
-      - RBTX_PROTOCOL=http
-    volumes:
-      - ./monitoring/rebootx-on-prem/data:/data
-      - ./monitoring/rebootx-on-prem/impl:/app
-    working_dir: "/app"
-    command: bash -c "cd /app/http-server-go && go fmt && go build -o /build/rebootx-on-prem -v && /build/rebootx-on-prem"
-    networks:
-      - monitoring
-    restart: unless-stopped
-    depends_on:
-      - tailscale-mcp
-      - grafana
-      - prometheus
-      - loki
-
-  # RebootX Swagger UI - API documentation
-  rebootx-swagger-ui:
-    image: swaggerapi/swagger-ui:v5.12.0
-    container_name: tailscale-rebootx-swagger-ui
-    ports:
-      - "9002:9002"
-    environment:
-      - PORT=9002
-      - SWAGGER_JSON=/spec/swagger.json
-    volumes:
-      - ./monitoring/rebootx-on-prem/spec:/spec
-    networks:
-      - monitoring
-    restart: unless-stopped
-    depends_on:
-      - rebootx-on-prem
 
 volumes:
   prometheus_data:

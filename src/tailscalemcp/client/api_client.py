@@ -374,3 +374,245 @@ class TailscaleAPIClient:
         data = await self._request("GET", f"/users/{user_id}")
         logger.info("User retrieved from API", user_id=user_id)
         return data
+
+    # --- Device invites ---
+    async def list_device_invites(self, device_id: str) -> list[dict[str, Any]]:
+        """List all share invites for a device."""
+        data = await self._request("GET", f"/devices/{device_id}/device-invites")
+        invites = data if isinstance(data, list) else []
+        logger.info("Device invites retrieved", device_id=device_id, count=len(invites))
+        return invites
+
+    async def create_device_invites(
+        self, device_id: str, invites: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
+        """Create share invites for a device."""
+        data = await self._request("POST", f"/devices/{device_id}/device-invites", json=invites)
+        result = data if isinstance(data, list) else []
+        logger.info("Device invites created", device_id=device_id, count=len(result))
+        return result
+
+    async def get_device_invite(self, invite_id: str) -> dict[str, Any]:
+        """Get a specific device invite."""
+        return await self._request("GET", f"/device-invites/{invite_id}")
+
+    async def delete_device_invite(self, invite_id: str) -> None:
+        """Delete a device invite."""
+        await self._request("DELETE", f"/device-invites/{invite_id}")
+        logger.info("Device invite deleted", invite_id=invite_id)
+
+    async def resend_device_invite(self, invite_id: str) -> None:
+        """Resend a device invite email."""
+        await self._request("POST", f"/device-invites/{invite_id}/resend")
+        logger.info("Device invite resent", invite_id=invite_id)
+
+    async def accept_device_invite(self, invite: str) -> dict[str, Any]:
+        """Accept a device share invite by URL or code."""
+        return await self._request("POST", "/device-invites/-/accept", json={"invite": invite})
+
+    # --- User invites ---
+    async def list_user_invites(self, tailnet: str | None = None) -> list[dict[str, Any]]:
+        """List all open user invites to the tailnet."""
+        t = tailnet or self.tailnet
+        data = await self._request("GET", f"/tailnet/{t}/user-invites")
+        invites = data if isinstance(data, list) else []
+        logger.info("User invites retrieved", count=len(invites))
+        return invites
+
+    async def create_user_invites(
+        self, invites: list[dict[str, Any]], tailnet: str | None = None
+    ) -> list[dict[str, Any]]:
+        """Create user invites to the tailnet."""
+        t = tailnet or self.tailnet
+        data = await self._request("POST", f"/tailnet/{t}/user-invites", json=invites)
+        result = data if isinstance(data, list) else []
+        logger.info("User invites created", count=len(result))
+        return result
+
+    async def get_user_invite(self, invite_id: str) -> dict[str, Any]:
+        """Get a specific user invite."""
+        return await self._request("GET", f"/user-invites/{invite_id}")
+
+    async def delete_user_invite(self, invite_id: str) -> None:
+        """Delete a user invite."""
+        await self._request("DELETE", f"/user-invites/{invite_id}")
+        logger.info("User invite deleted", invite_id=invite_id)
+
+    async def resend_user_invite(self, invite_id: str) -> None:
+        """Resend a user invite email."""
+        await self._request("POST", f"/user-invites/{invite_id}/resend")
+        logger.info("User invite resent", invite_id=invite_id)
+
+    # --- Device posture attributes ---
+    async def get_device_posture_attributes(self, device_id: str) -> dict[str, Any]:
+        """Get all posture attributes for a device."""
+        return await self._request("GET", f"/devices/{device_id}/attributes")
+
+    async def set_custom_device_posture_attribute(
+        self, device_id: str, attribute_key: str, value: Any, expiry: str | None = None, comment: str | None = None
+    ) -> dict[str, Any]:
+        """Set a custom posture attribute on a device."""
+        body: dict[str, Any] = {"value": value}
+        if expiry:
+            body["expiry"] = expiry
+        if comment:
+            body["comment"] = comment
+        return await self._request("POST", f"/devices/{device_id}/attributes/{attribute_key}", json=body)
+
+    async def delete_custom_device_posture_attribute(self, device_id: str, attribute_key: str) -> None:
+        """Delete a custom posture attribute from a device."""
+        await self._request("DELETE", f"/devices/{device_id}/attributes/{attribute_key}")
+        logger.info("Device posture attribute deleted", device_id=device_id, key=attribute_key)
+
+    async def batch_update_device_posture_attributes(
+        self, nodes: dict[str, Any], comment: str | None = None, tailnet: str | None = None
+    ) -> None:
+        """Batch update custom posture attributes across devices."""
+        t = tailnet or self.tailnet
+        body: dict[str, Any] = {"nodes": nodes}
+        if comment:
+            body["comment"] = comment
+        await self._request("PATCH", f"/tailnet/{t}/device-attributes", json=body)
+        logger.info("Batch posture attributes updated")
+
+    # --- Device key management ---
+    async def expire_device_key(self, device_id: str) -> None:
+        """Expire a device's node key (forces re-authentication)."""
+        await self._request("POST", f"/devices/{device_id}/expire")
+        logger.info("Device key expired", device_id=device_id)
+
+    async def update_device_key(self, device_id: str, key_expiry_disabled: bool) -> None:
+        """Update device key expiry settings."""
+        await self._request(
+            "POST", f"/devices/{device_id}/key",
+            json={"keyExpiryDisabled": key_expiry_disabled},
+        )
+        logger.info("Device key updated", device_id=device_id, key_expiry_disabled=key_expiry_disabled)
+
+    async def set_device_ip(self, device_id: str, ipv4: str) -> None:
+        """Set a device's IPv4 address."""
+        await self._request("POST", f"/devices/{device_id}/ip", json={"ipv4": ipv4})
+        logger.info("Device IP set", device_id=device_id, ipv4=ipv4)
+
+    # --- Logging ---
+    async def list_configuration_audit_logs(
+        self,
+        tailnet: str | None = None,
+        start: str | None = None,
+        end: str | None = None,
+        actor: str | None = None,
+        target: str | None = None,
+        event: str | None = None,
+    ) -> list[dict[str, Any]]:
+        """List configuration audit logs for a tailnet."""
+        t = tailnet or self.tailnet
+        params: dict[str, str] = {}
+        if start: params["start"] = start
+        if end: params["end"] = end
+        if actor: params["actor"] = actor
+        if target: params["target"] = target
+        if event: params["event"] = event
+        data = await self._request("GET", f"/tailnet/{t}/logging/configuration", params=params or None)
+        logs = data.get("logs", []) if isinstance(data, dict) else []
+        logger.info("Configuration audit logs retrieved", count=len(logs))
+        return logs
+
+    async def list_network_flow_logs(
+        self,
+        tailnet: str | None = None,
+        start: str | None = None,
+        end: str | None = None,
+    ) -> list[dict[str, Any]]:
+        """List network flow logs for a tailnet."""
+        t = tailnet or self.tailnet
+        params: dict[str, str] = {}
+        if start: params["start"] = start
+        if end: params["end"] = end
+        data = await self._request("GET", f"/tailnet/{t}/logging/network", params=params or None)
+        logs = data.get("logs", []) if isinstance(data, dict) else []
+        logger.info("Network flow logs retrieved", count=len(logs))
+        return logs
+
+    async def get_log_streaming_status(self, log_type: str, tailnet: str | None = None) -> dict[str, Any]:
+        """Get log streaming status for a log type."""
+        t = tailnet or self.tailnet
+        return await self._request("GET", f"/tailnet/{t}/logging/{log_type}/stream/status")
+
+    async def get_log_streaming_configuration(self, log_type: str, tailnet: str | None = None) -> dict[str, Any]:
+        """Get log streaming configuration for a log type."""
+        t = tailnet or self.tailnet
+        return await self._request("GET", f"/tailnet/{t}/logging/{log_type}/stream")
+
+    async def set_log_streaming_configuration(
+        self, log_type: str, config: dict[str, Any], tailnet: str | None = None
+    ) -> dict[str, Any]:
+        """Set log streaming configuration for a log type."""
+        t = tailnet or self.tailnet
+        return await self._request("PUT", f"/tailnet/{t}/logging/{log_type}/stream", json=config)
+
+    # --- Webhooks ---
+    async def list_webhooks(self, tailnet: str | None = None) -> list[dict[str, Any]]:
+        """List all webhook endpoints for a tailnet."""
+        t = tailnet or self.tailnet
+        data = await self._request("GET", f"/tailnet/{t}/webhooks")
+        hooks = data.get("webhooks", []) if isinstance(data, dict) else []
+        logger.info("Webhooks retrieved", count=len(hooks))
+        return hooks
+
+    async def create_webhook(
+        self, endpoint_url: str, provider_type: str, tailnet: str | None = None,
+        secret: str | None = None, subscriptions: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Create a webhook endpoint."""
+        t = tailnet or self.tailnet
+        body: dict[str, Any] = {"endpointUrl": endpoint_url, "providerType": provider_type}
+        if secret:
+            body["secret"] = secret
+        if subscriptions:
+            body["subscriptions"] = subscriptions
+        return await self._request("POST", f"/tailnet/{t}/webhooks", json=body)
+
+    async def get_webhook(self, webhook_id: str, tailnet: str | None = None) -> dict[str, Any]:
+        """Get a specific webhook."""
+        t = tailnet or self.tailnet
+        return await self._request("GET", f"/tailnet/{t}/webhooks/{webhook_id}")
+
+    async def update_webhook(
+        self, webhook_id: str, updates: dict[str, Any], tailnet: str | None = None
+    ) -> dict[str, Any]:
+        """Update a webhook."""
+        t = tailnet or self.tailnet
+        return await self._request("PATCH", f"/tailnet/{t}/webhooks/{webhook_id}", json=updates)
+
+    async def delete_webhook(self, webhook_id: str, tailnet: str | None = None) -> None:
+        """Delete a webhook."""
+        t = tailnet or self.tailnet
+        await self._request("DELETE", f"/tailnet/{t}/webhooks/{webhook_id}")
+        logger.info("Webhook deleted", webhook_id=webhook_id)
+
+    async def rotate_webhook_secret(self, webhook_id: str, tailnet: str | None = None) -> dict[str, Any]:
+        """Rotate a webhook's secret."""
+        t = tailnet or self.tailnet
+        return await self._request("POST", f"/tailnet/{t}/webhooks/{webhook_id}/rotate")
+
+    # --- Tailnet settings ---
+    async def get_tailnet_settings(self, tailnet: str | None = None) -> dict[str, Any]:
+        """Get tailnet settings."""
+        t = tailnet or self.tailnet
+        return await self._request("GET", f"/tailnet/{t}/tailnet-settings")
+
+    async def update_tailnet_settings(self, settings: dict[str, Any], tailnet: str | None = None) -> dict[str, Any]:
+        """Update tailnet settings."""
+        t = tailnet or self.tailnet
+        return await self._request("PATCH", f"/tailnet/{t}/tailnet-settings", json=settings)
+
+    # --- Contacts ---
+    async def get_contact_preferences(self, tailnet: str | None = None) -> dict[str, Any]:
+        """Get contact preferences for a tailnet."""
+        t = tailnet or self.tailnet
+        return await self._request("GET", f"/tailnet/{t}/contacts")
+
+    async def update_contact_preferences(self, contacts: dict[str, Any], tailnet: str | None = None) -> dict[str, Any]:
+        """Update contact preferences."""
+        t = tailnet or self.tailnet
+        return await self._request("PUT", f"/tailnet/{t}/contacts", json=contacts)

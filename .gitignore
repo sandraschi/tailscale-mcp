@@ -236,3 +236,4 @@ mcpb-dist/
 
 # Backup / scratch files
 *.bak
+_dashboard/

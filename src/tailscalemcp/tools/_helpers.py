@@ -19,10 +19,10 @@ logger = structlog.get_logger(__name__)
 
 async def generate_help_content(
     topic: str | None,
-    level: str,  # noqa: ARG001
-    category: str | None,  # noqa: ARG001
-    operation: str | None,  # noqa: ARG001
-    include_examples: bool,  # noqa: ARG001
+    level: str,
+    category: str | None,
+    operation: str | None,
+    include_examples: bool,
 ) -> dict[str, Any]:
     """Generate comprehensive help content.
 
@@ -478,13 +478,13 @@ async def generate_status_info(
     mcp: "FastMCP",
     device_manager: "AdvancedDeviceManager",
     monitor: "TailscaleMonitor",
-    component: str | None,  # noqa: ARG001
+    component: str | None,
     detail_level: str,
     include_metrics: bool,
-    include_health: bool,  # noqa: ARG001
+    include_health: bool,
     include_performance: bool,
-    device_filter: str | None,  # noqa: ARG001
-    time_range: str,  # noqa: ARG001
+    device_filter: str | None,
+    time_range: str,
     include_mermaid: bool = False,
     funnel_manager: "FunnelManager | None" = None,
 ) -> dict[str, Any]:

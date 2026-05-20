@@ -8,13 +8,6 @@ if ($Headless -and ($Host.UI.RawUI.WindowTitle -notmatch 'Hidden')) {
 $WindowStyle = if ($Headless) { 'Hidden' } else { 'Normal' }
 # ------------------------------
 
-$env:FASTMCP_LOG_LEVEL = 'WARNING'
-# tailscale-mcp Start - Standards-Compliant SOTA
-Write-Host 'Starting tailscale-mcp...' -ForegroundColor Cyan
-
-Set-Location $PSScriptRoot
-Write-Host 'Starting Standardized Fullstack Hybrid...' -ForegroundColor Green
-# Launch backend Hidden by default to prevent console spam
-Start-Process pwsh -ArgumentList '-NoProfile', '-Command', 'uv run -m tailscale_mcp' -WindowStyle Hidden
-Set-Location web_sota
-npm run dev
+# tailscale-mcp Unified Start - delegates to web_sota/start.ps1
+Write-Host 'Starting tailscale-mcp (delegating to web_sota/start.ps1)...' -ForegroundColor Cyan
+& "$PSScriptRoot\web_sota\start.ps1" @PSBoundParameters

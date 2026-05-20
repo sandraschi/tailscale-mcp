@@ -1,27 +1,42 @@
 """
-FastAPI application for web_sota backend (FastMCP 3.1 single-backend pattern).
+FastAPI application for web_sota backend (FastMCP 3.2 single-backend pattern).
 Serves /health, /api/v1/tools, /api/v1/tools/call, sampling/LLM helpers, optional chat proxy, and MCP at /mcp.
 """
 
 from __future__ import annotations
 
 import contextlib
-import logging
 import os
 from typing import Any
 
 import httpx
+import structlog
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastmcp.client import Client
 from pydantic import BaseModel
 
-from tailscalemcp.mcp_server import server as tailscale_server
+from tailscalemcp import setup_logging
+from tailscalemcp.mcp_server import server as tailscale_mcp_server
 
-logger = logging.getLogger(__name__)
+setup_logging()
+
+logger = structlog.get_logger(__name__)
 
 # Build MCP ASGI app and capture lifespan for FastAPI
-mcp_app = tailscale_server.mcp.http_app(path="/mcp")
+mcp_app = tailscale_mcp_server.mcp.http_app(path="/mcp")
+
+# Reusable FastMCP Client — created once, not per-request
+_fastmcp_client = None
+
+
+def _get_client():
+    """Get or create the shared FastMCP Client."""
+    global _fastmcp_client
+    if _fastmcp_client is None:
+        from fastmcp.client import Client
+
+        _fastmcp_client = Client(tailscale_mcp_server.mcp)
+    return _fastmcp_client
 
 app = FastAPI(
     title="Tailscale MCP Webapp Backend",
@@ -35,8 +50,6 @@ app.add_middleware(
     allow_origins=[
         "http://127.0.0.1:10820",
         "http://localhost:10820",
-        "http://127.0.0.1:5173",
-        "http://localhost:5173",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -71,18 +84,18 @@ async def api_status() -> dict[str, Any]:
 @app.get("/api/v1/tools")
 async def list_tools() -> dict[str, Any]:
     try:
-        async with Client(tailscale_server.mcp) as client:
-            tools = await client.list_tools()
-            return {
-                "tools": [
-                    {
-                        "name": t.name,
-                        "description": getattr(t, "description", None) or "",
-                        "inputSchema": getattr(t, "inputSchema", None),
-                    }
-                    for t in tools
-                ]
-            }
+        client = _get_client()
+        tools = await client.list_tools()
+        return {
+            "tools": [
+                {
+                    "name": t.name,
+                    "description": getattr(t, "description", None) or "",
+                    "inputSchema": getattr(t, "inputSchema", None),
+                }
+                for t in tools
+            ]
+        }
     except Exception as e:
         logger.exception("list_tools failed")
         raise HTTPException(
@@ -102,19 +115,19 @@ class ToolCallRequest(BaseModel):
 @app.post("/api/v1/tools/call")
 async def call_tool(body: ToolCallRequest) -> dict[str, Any]:
     try:
-        async with Client(tailscale_server.mcp) as client:
-            result = await client.call_tool(body.name, body.arguments or {})
-            content = result.content or []
-            text_parts = [getattr(c, "text", str(c)) for c in content]
-            return {
-                "result": {
-                    "content": [{"type": "text", "text": "\n".join(text_parts)}],
-                    "data": result.data,
-                },
+        client = _get_client()
+        result = await client.call_tool(body.name, body.arguments or {})
+        content = result.content or []
+        text_parts = [getattr(c, "text", str(c)) for c in content]
+        return {
+            "result": {
+                "content": [{"type": "text", "text": "\n".join(text_parts)}],
                 "data": result.data,
-                "content": content,
-                "is_error": result.is_error,
-            }
+            },
+            "data": result.data,
+            "content": content,
+            "is_error": result.is_error,
+        }
     except Exception as e:
         logger.exception("call_tool failed")
         msg = str(e)

@@ -1,20 +1,16 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
+
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+# Copy dependency files
+COPY pyproject.toml uv.lock ./
 
-# Copy requirements first for better caching
-COPY requirements.txt .
-COPY pyproject.toml .
-
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --no-cache-dir prometheus-client structlog
+# Install dependencies using uv (respects lockfile)
+RUN uv sync --frozen --no-dev --no-install-project
 
 # Copy application code
 COPY src/ ./src/
@@ -24,16 +20,17 @@ COPY manifest.json .
 RUN mkdir -p /app/logs
 
 # Expose ports
-EXPOSE 8080 9091
+EXPOSE 10821 9091
 
 # Set environment variables
 ENV PYTHONPATH=/app/src
 ENV LOG_LEVEL=INFO
 ENV PROMETHEUS_PORT=9091
+ENV MCP_TRANSPORT=http
+ENV MCP_PORT=10821
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:9091/metrics || exit 1
+# Activate the venv in PATH
+ENV PATH="/app/.venv/bin:$PATH"
 
-# Run the application
-CMD ["python", "-m", "tailscalemcp"]
+# Run in HTTP mode using the transport module (respects MCP_TRANSPORT env var)
+CMD ["python", "-m", "tailscalemcp", "--http"]

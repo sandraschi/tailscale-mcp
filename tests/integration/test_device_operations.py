@@ -42,13 +42,9 @@ async def test_list_devices(operations):
     ]
 
     with patch.object(
-        operations.client.client, "request", new_callable=AsyncMock
+        operations.client, "_request", new_callable=AsyncMock
     ) as mock_request:
-        mock_response_obj = AsyncMock()
-        mock_response_obj.status_code = 200
-        mock_response_obj.json.return_value = {"devices": mock_devices}
-        mock_response_obj.raise_for_status = AsyncMock()
-        mock_request.return_value = mock_response_obj
+        mock_request.return_value = {"devices": mock_devices}
 
         devices = await operations.list_devices()
         assert len(devices) == 1
@@ -85,13 +81,9 @@ async def test_list_devices_online_only(operations):
     ]
 
     with patch.object(
-        operations.client.client, "request", new_callable=AsyncMock
+        operations.client, "_request", new_callable=AsyncMock
     ) as mock_request:
-        mock_response_obj = AsyncMock()
-        mock_response_obj.status_code = 200
-        mock_response_obj.json.return_value = {"devices": mock_devices}
-        mock_response_obj.raise_for_status = AsyncMock()
-        mock_request.return_value = mock_response_obj
+        mock_request.return_value = {"devices": mock_devices}
 
         devices = await operations.list_devices(online_only=True)
         assert len(devices) == 1
@@ -115,13 +107,9 @@ async def test_get_device(operations):
     }
 
     with patch.object(
-        operations.client.client, "request", new_callable=AsyncMock
+        operations.client, "_request", new_callable=AsyncMock
     ) as mock_request:
-        mock_response_obj = AsyncMock()
-        mock_response_obj.status_code = 200
-        mock_response_obj.json.return_value = mock_device
-        mock_response_obj.raise_for_status = AsyncMock()
-        mock_request.return_value = mock_response_obj
+        mock_request.return_value = mock_device
 
         device = await operations.get_device("device1")
         assert device.id == "device1"
@@ -132,11 +120,9 @@ async def test_get_device(operations):
 async def test_get_device_not_found(operations):
     """Test getting non-existent device."""
     with patch.object(
-        operations.client.client, "request", new_callable=AsyncMock
+        operations.client, "_request", new_callable=AsyncMock
     ) as mock_request:
-        mock_response_obj = AsyncMock()
-        mock_response_obj.status_code = 404
-        mock_request.return_value = mock_response_obj
+        mock_request.side_effect = NotFoundError("Device", "nonexistent")
 
         with pytest.raises(NotFoundError):
             await operations.get_device("nonexistent")
@@ -158,15 +144,9 @@ async def test_authorize_device(operations):
     }
 
     with patch.object(
-        operations.client.client, "request", new_callable=AsyncMock
+        operations.client, "_request", new_callable=AsyncMock
     ) as mock_request:
-        # First call: get device
-        # Second call: update device
-        mock_response_obj = AsyncMock()
-        mock_response_obj.status_code = 200
-        mock_response_obj.json.return_value = mock_device
-        mock_response_obj.raise_for_status = AsyncMock()
-        mock_request.return_value = mock_response_obj
+        mock_request.return_value = mock_device
 
         device = await operations.authorize_device(
             "device1", True, "Test authorization"
@@ -190,13 +170,9 @@ async def test_rename_device(operations):
     }
 
     with patch.object(
-        operations.client.client, "request", new_callable=AsyncMock
+        operations.client, "_request", new_callable=AsyncMock
     ) as mock_request:
-        mock_response_obj = AsyncMock()
-        mock_response_obj.status_code = 200
-        mock_response_obj.json.return_value = mock_device
-        mock_response_obj.raise_for_status = AsyncMock()
-        mock_request.return_value = mock_response_obj
+        mock_request.return_value = mock_device
 
         device = await operations.rename_device("device1", "new-name")
         assert device.name == "new-name"
@@ -231,13 +207,9 @@ async def test_search_devices(operations):
     ]
 
     with patch.object(
-        operations.client.client, "request", new_callable=AsyncMock
+        operations.client, "_request", new_callable=AsyncMock
     ) as mock_request:
-        mock_response_obj = AsyncMock()
-        mock_response_obj.status_code = 200
-        mock_response_obj.json.return_value = {"devices": mock_devices}
-        mock_response_obj.raise_for_status = AsyncMock()
-        mock_request.return_value = mock_response_obj
+        mock_request.return_value = {"devices": mock_devices}
 
         devices = await operations.search_devices("engineering", ["name", "tags"])
         assert len(devices) == 1

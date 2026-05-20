@@ -27,8 +27,8 @@ def register_monitor_tool(ctx: ToolContext) -> None:
         api_key: str | None = None,
         dashboard_type: MonitorDashboardExportType = "comprehensive",
         filename: str | None = None,
-        include_panels: bool = True,  # noqa: ARG001
-        include_variables: bool = True,  # noqa: ARG001
+        include_panels: bool = True,
+        include_variables: bool = True,
     ) -> dict[str, Any]:
         """METRICS_TOPOLOGY_GRAFANA — Monitoring, Prometheus text, health, Grafana export.
 

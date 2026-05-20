@@ -20,6 +20,15 @@ ANALYZE_TAILNET_PERFORMANCE = "analyze_tailnet_performance"
 GENERATE_TAILNET_REPORTS = "generate_tailnet_reports"
 MANAGE_TAILNET_INTEGRATIONS = "manage_tailnet_integrations"
 
+# --- New API domains ---
+MANAGE_TAILNET_INVITES = "manage_tailnet_invites"
+MANAGE_POSTURE_ATTRIBUTES = "manage_posture_attributes"
+MANAGE_DEVICE_KEYS = "manage_device_keys"
+MANAGE_TAILNET_LOGGING = "manage_tailnet_logging"
+MANAGE_TAILNET_WEBHOOKS = "manage_tailnet_webhooks"
+MANAGE_TAILNET_SETTINGS = "manage_tailnet_settings"
+MANAGE_TAILNET_CONTACTS = "manage_tailnet_contacts"
+
 # --- Standalone utilities ---
 GET_HELP = "get_help"
 GET_TAILNET_STATUS = "get_tailnet_status"
@@ -43,6 +52,13 @@ ALL_PUBLIC_TOOL_NAMES: tuple[str, ...] = (
     ANALYZE_TAILNET_PERFORMANCE,
     GENERATE_TAILNET_REPORTS,
     MANAGE_TAILNET_INTEGRATIONS,
+    MANAGE_TAILNET_INVITES,
+    MANAGE_POSTURE_ATTRIBUTES,
+    MANAGE_DEVICE_KEYS,
+    MANAGE_TAILNET_LOGGING,
+    MANAGE_TAILNET_WEBHOOKS,
+    MANAGE_TAILNET_SETTINGS,
+    MANAGE_TAILNET_CONTACTS,
     GET_HELP,
     GET_TAILNET_STATUS,
     SUMMARIZE_PARTNER_TAILNETS,

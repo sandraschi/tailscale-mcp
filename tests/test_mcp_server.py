@@ -130,11 +130,10 @@ async def test_server_parameter_override():
 
 @pytest.mark.asyncio
 async def test_server_no_parameters():
-    """Test server initialization with no parameters."""
+    """Test server initialization with no parameters raises ValueError."""
     with patch.dict("os.environ", {}, clear=True):
-        server = TailscaleMCPServer()
-        assert server.api_key is None
-        assert server.tailnet is None
+        with pytest.raises(ValueError, match="Tailscale API key is required"):
+            TailscaleMCPServer()
 
 
 @pytest.mark.asyncio

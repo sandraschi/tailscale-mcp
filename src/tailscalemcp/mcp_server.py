@@ -16,6 +16,7 @@ from typing import Any
 import structlog
 from dotenv import load_dotenv
 from fastmcp import FastMCP
+from fastmcp.server import create_proxy
 
 # Try to import DiskStore for persistent storage
 try:
@@ -50,24 +51,10 @@ else:
     # Also try loading from current directory
     load_dotenv()
 
-# Configure structured logging
-structlog.configure(
-    processors=[
-        structlog.stdlib.filter_by_level,
-        structlog.stdlib.add_logger_name,
-        structlog.stdlib.add_log_level,
-        structlog.stdlib.PositionalArgumentsFormatter(),
-        structlog.processors.TimeStamper(fmt="iso"),
-        structlog.processors.StackInfoRenderer(),
-        structlog.processors.format_exc_info,
-        structlog.processors.UnicodeDecoder(),
-        structlog.processors.JSONRenderer(),
-    ],
-    context_class=dict,
-    logger_factory=structlog.stdlib.LoggerFactory(),
-    wrapper_class=structlog.stdlib.BoundLogger,
-    cache_logger_on_first_use=True,
-)
+# Initialize logging (idempotent)
+from . import setup_logging  # noqa: E402
+
+setup_logging()
 
 logger = structlog.get_logger(__name__)
 
@@ -168,7 +155,7 @@ class TailscaleMCPServer:
                 "No API credentials found! Check user_config or environment variables"
             )
 
-        # Initialize FastMCP with server lifespan (3.1+ feature) and SEP-1577 sampling handler
+        # Initialize FastMCP with server lifespan (3.2+ feature) and SEP-1577 sampling handler
         lifespan = create_server_lifespan(self.api_key, self.tailnet)
         self._sampling_handler = TailscaleSamplingHandler()
         self.mcp = FastMCP(
@@ -179,6 +166,18 @@ class TailscaleMCPServer:
             strict_input_validation=True,
             on_duplicate="replace",
         )
+
+        _bridge_proxies: list[str] = []
+        bridge_urls = os.getenv("MCP_BRIDGE_URLS", "")
+        if bridge_urls:
+            for url in bridge_urls.split(","):
+                url = url.strip()
+                if url:
+                    try:
+                        self.mcp.add_provider(create_proxy(url))
+                        _bridge_proxies.append(url)
+                    except Exception:
+                        pass
 
         # Configure DiskStore for persistent storage (if available)
         # FastMCP may provide its own storage, but we'll use DiskStore directly for guaranteed persistence

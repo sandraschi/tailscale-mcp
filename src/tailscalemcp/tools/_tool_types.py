@@ -159,6 +159,71 @@ IntegrationOperation = Literal[
     "test",
 ]
 
+# --- Device invites ---
+DeviceInviteOperation = Literal[
+    "list",
+    "create",
+    "get",
+    "delete",
+    "resend",
+    "accept",
+]
+
+# --- User invites ---
+UserInviteOperation = Literal[
+    "list",
+    "create",
+    "get",
+    "delete",
+    "resend",
+]
+
+# --- Device posture attributes ---
+PostureAttributeOperation = Literal[
+    "get",
+    "set",
+    "delete",
+    "batch_update",
+]
+
+# --- Device key management ---
+DeviceKeyOperation = Literal[
+    "expire",
+    "update_key_expiry",
+    "set_ip",
+]
+
+# --- Logging ---
+LoggingOperation = Literal[
+    "configuration_audit_logs",
+    "network_flow_logs",
+    "stream_status",
+    "stream_config_get",
+    "stream_config_set",
+]
+
+# --- Webhooks (native Tailscale API, not generic integrations) ---
+WebhookOperation = Literal[
+    "list",
+    "create",
+    "get",
+    "update",
+    "delete",
+    "rotate_secret",
+]
+
+# --- Tailnet settings ---
+TailnetSettingsOperation = Literal[
+    "get",
+    "update",
+]
+
+# --- Contacts ---
+ContactOperation = Literal[
+    "get",
+    "update",
+]
+
 PartnerTailnetsOperation = Literal[
     "summary",
     "users_list",

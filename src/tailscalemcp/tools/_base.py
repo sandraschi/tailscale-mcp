@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from fastmcp import FastMCP
 
+    from tailscalemcp.client.api_client import TailscaleAPIClient
     from tailscalemcp.config import TailscaleConfig
     from tailscalemcp.device_management import AdvancedDeviceManager
     from tailscalemcp.funnel import FunnelManager
@@ -40,15 +41,16 @@ class ToolContext:
         magic_dns_manager: "MagicDNSManager",
         funnel_manager: "FunnelManager | None",
         config: "TailscaleConfig",
-        network_ops: "NetworkOperations",
-        policy_ops: "PolicyOperations",
-        audit_ops: "AuditOperations",
-        tag_ops: "TagOperations",
-        key_ops: "KeyOperations",
-        policy_analyzer: "PolicyAnalyzer",
-        analytics_ops: "AnalyticsOperations",
-        reporting_ops: "ReportingOperations",
-        service_ops: "ServiceOperations",
+        api_client: "TailscaleAPIClient",
+        network_ops: "NetworkOperations | None" = None,
+        policy_ops: "PolicyOperations | None" = None,
+        audit_ops: "AuditOperations | None" = None,
+        tag_ops: "TagOperations | None" = None,
+        key_ops: "KeyOperations | None" = None,
+        policy_analyzer: "PolicyAnalyzer | None" = None,
+        analytics_ops: "AnalyticsOperations | None" = None,
+        reporting_ops: "ReportingOperations | None" = None,
+        service_ops: "ServiceOperations | None" = None,
     ):
         """Initialize tool context.
 
@@ -79,6 +81,7 @@ class ToolContext:
         self.magic_dns_manager = magic_dns_manager
         self.funnel_manager = funnel_manager
         self.config = config
+        self.api_client = api_client
         self.network_ops = network_ops
         self.policy_ops = policy_ops
         self.audit_ops = audit_ops

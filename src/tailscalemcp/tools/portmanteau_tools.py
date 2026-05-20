@@ -35,6 +35,7 @@ from .help_tool import register_help_tool
 from .integration_tool import register_integration_tool
 from .lm_link_tool import register_lm_link_tool
 from .monitor_tool import register_monitor_tool
+from .new_api_tool import register_new_api_tools
 from .network_tool import register_network_tool
 from .partner_tailnets_tool import register_partner_tailnets_tool
 from .performance_tool import register_performance_tool
@@ -98,6 +99,11 @@ class TailscalePortmanteauTools:
         self.reporting_ops = ReportingOperations(config=self.config)
         self.service_ops = ServiceOperations(config=self.config)
 
+        # Create a shared API client for tools
+        from tailscalemcp.client.api_client import TailscaleAPIClient
+
+        _api_client = TailscaleAPIClient(config=self.config)
+
         # Create tool context
         self.ctx = ToolContext(
             mcp=mcp,
@@ -108,6 +114,7 @@ class TailscalePortmanteauTools:
             magic_dns_manager=magic_dns_manager,
             funnel_manager=funnel_manager,
             config=self.config,
+            api_client=_api_client,
             network_ops=self.network_ops,
             policy_ops=self.policy_ops,
             audit_ops=self.audit_ops,
@@ -139,6 +146,6 @@ class TailscalePortmanteauTools:
         register_lm_link_tool(self.ctx)
         register_help_tool(self.ctx)
         register_status_tool(self.ctx)
-        register_partner_tailnets_tool(self.ctx)
+        register_new_api_tools(self.ctx)
 
         logger.info("All portmanteau tools registered successfully")

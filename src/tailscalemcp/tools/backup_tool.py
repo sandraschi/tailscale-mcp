@@ -28,7 +28,7 @@ def register_backup_tool(ctx: ToolContext) -> None:
         include_devices: bool = True,
         include_policies: bool = True,
         include_users: bool = True,
-        restore_point: str | None = None,  # noqa: ARG001
+        restore_point: str | None = None,
         backup_id: str | None = None,
         schedule_cron: str | None = None,
         retention_days: int = 30,

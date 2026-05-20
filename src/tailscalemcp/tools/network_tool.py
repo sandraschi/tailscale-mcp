@@ -35,7 +35,7 @@ def register_network_tool(ctx: ToolContext) -> None:
         policy_name: str | None = None,
         rules: list[dict[str, Any]] | None = None,
         priority: PolicyPriority = 100,
-        policy_id: str | None = None,  # noqa: ARG001
+        policy_id: str | None = None,
         service_id: str | None = None,
         service_payload: dict[str, Any] | None = None,
     ) -> dict[str, Any]:

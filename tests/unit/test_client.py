@@ -46,13 +46,9 @@ async def test_list_devices_success(api_client):
     }
 
     with patch.object(
-        api_client.client, "request", new_callable=AsyncMock
+        api_client, "_request", new_callable=AsyncMock
     ) as mock_request:
-        mock_response_obj = AsyncMock()
-        mock_response_obj.status_code = 200
-        mock_response_obj.json.return_value = mock_response
-        mock_response_obj.raise_for_status = AsyncMock()
-        mock_request.return_value = mock_response_obj
+        mock_request.return_value = mock_response
 
         devices = await api_client.list_devices()
         assert len(devices) == 1
@@ -71,13 +67,9 @@ async def test_get_device_success(api_client):
     }
 
     with patch.object(
-        api_client.client, "request", new_callable=AsyncMock
+        api_client, "_request", new_callable=AsyncMock
     ) as mock_request:
-        mock_response_obj = AsyncMock()
-        mock_response_obj.status_code = 200
-        mock_response_obj.json.return_value = mock_response
-        mock_response_obj.raise_for_status = AsyncMock()
-        mock_request.return_value = mock_response_obj
+        mock_request.return_value = mock_response
 
         device = await api_client.get_device("device1")
         assert device["id"] == "device1"
@@ -88,11 +80,9 @@ async def test_get_device_success(api_client):
 async def test_get_device_not_found(api_client):
     """Test device not found error."""
     with patch.object(
-        api_client.client, "request", new_callable=AsyncMock
+        api_client, "_request", new_callable=AsyncMock
     ) as mock_request:
-        mock_response_obj = AsyncMock()
-        mock_response_obj.status_code = 404
-        mock_request.return_value = mock_response_obj
+        mock_request.side_effect = NotFoundError("Device", "nonexistent")
 
         with pytest.raises(NotFoundError):
             await api_client.get_device("nonexistent")

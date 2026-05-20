@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "tailscale-mcp"
 version = "2.1.0"
-description = "FastMCP 3.1.0+ compliant Tailscale network controller with persistent storage"
+description = "FastMCP 3.2+ compliant Tailscale network controller with persistent storage"
 readme = "README.md"
 authors = [
     { name = "Sandra", email = "sandra@example.com" },
@@ -26,22 +26,16 @@ classifiers = [
     "Topic :: System :: Systems Administration",
 ]
 dependencies = [
-    "fastmcp>=3.1.0",
+    "fastmcp>=3.2.0",
     "fastapi>=0.115.0",
-    "py-key-value-aio[filetree]>=0.4.4,<0.5.0", # FastMCP 3.1
+    "py-key-value-aio[filetree]>=0.4.4,<0.5.0",  # FastMCP 3.2
     "pydantic>=2.0.0",
     "pydantic-settings>=2.0.0",
     "httpx>=0.25.0",
     "python-dotenv>=1.0.0",
     "structlog>=23.0.0",
     "prometheus-client>=0.19.0",
-    "grafana-api>=1.0.3",
     "psutil>=5.9.0",
-    "aiohttp>=3.9.0",
-    "plotly>=5.17.0",
-    "dash>=2.14.0",
-    "dash-bootstrap-components>=1.5.0",
-    "prefab-ui>=0.14.0",
 ]
 
 [project.optional-dependencies]
@@ -154,7 +148,7 @@ output = "coverage.xml"
 [tool.mcpb]
 name = "tailscalemcp"
 version = "2.0.2"
-description = "FastMCP 3.1.0+ compliant Tailscale network controller with persistent storage and optional SOTA web UI (My tailnet visualization)."
+description = "FastMCP 3.2+ compliant Tailscale network controller with persistent storage and optional SOTA web UI (My tailnet visualization)."
 author = "Sandra Schi"
 author_email = "sandra@sandraschi.dev"
 license = "MIT"

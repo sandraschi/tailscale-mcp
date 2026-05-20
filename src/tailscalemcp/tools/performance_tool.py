@@ -25,8 +25,8 @@ def register_performance_tool(ctx: ToolContext) -> None:
         operation: PerformanceOperation,
         device_id: str | None = None,
         measure_duration: int = 60,
-        bandwidth_test: bool = False,  # noqa: ARG001
-        latency_test: bool = False,  # noqa: ARG001
+        bandwidth_test: bool = False,
+        latency_test: bool = False,
         route_optimization: bool = False,
         baseline_name: str | None = None,
         baseline_duration: int = 300,

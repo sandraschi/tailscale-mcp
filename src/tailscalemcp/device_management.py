@@ -12,7 +12,6 @@ from typing import Any
 import structlog
 from pydantic import BaseModel, Field
 
-from .api_client import TailscaleAPIClient
 from .config import TailscaleConfig
 from .exceptions import TailscaleMCPError
 from .models.device import DeviceStatus
@@ -88,8 +87,8 @@ class AdvancedDeviceManager:
         )
         self.device_operations = DeviceOperations(config=config)
 
-        # Keep API client for backward compatibility (will be removed gradually)
-        self.api_client = TailscaleAPIClient(api_key=api_key, tailnet=tailnet)
+        # Reuse the client from device_operations to avoid duplicate connections
+        self.api_client = self.device_operations.client
 
         # Configurable timeout for determining if a device is online
         # Default: 1 hour - balances catching offline devices with reasonable active time

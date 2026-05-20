@@ -202,6 +202,7 @@ class TailscaleCLI:
                 "output": result.stdout.strip(),
             }
         except TailscaleMCPError as e:
+            logger.error("Tailscale file send failed", error=str(e), recipient=recipient)
             return {
                 "success": False,
                 "error": str(e),
@@ -235,6 +236,7 @@ class TailscaleCLI:
                 "save_path": save_path,
             }
         except TailscaleMCPError as e:
+            logger.error("Tailscale file receive failed", error=str(e))
             return {
                 "success": False,
                 "error": str(e),
@@ -320,6 +322,7 @@ class TailscaleCLI:
                 "output": result.stdout.strip(),
             }
         except TailscaleMCPError as e:
+            logger.error("Tailscale funnel disable failed", error=str(e), port=port)
             return {
                 "success": False,
                 "error": str(e),
@@ -339,6 +342,7 @@ class TailscaleCLI:
                 "binary": self.tailscale_binary,
             }
         except TailscaleMCPError as e:
+            logger.error("Tailscale version check failed", error=str(e))
             return {
                 "error": str(e),
                 "binary": self.tailscale_binary,
