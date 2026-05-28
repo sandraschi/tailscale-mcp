@@ -36,3 +36,5 @@ src/tailscalemcp/
 - All ports in 10700+ range
 - structlog for structured logging (JSON, stderr)
 - Prometheus metrics on separate port
+
+Install docs: follow mcp-central-docs/standards/AGENT_INSTALL_REFERENCE.md
