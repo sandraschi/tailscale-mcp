@@ -13,13 +13,27 @@ from typing import Any
 import httpx
 import requests
 import structlog
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from tailscalemcp import setup_logging
-from tailscalemcp.log_api import export_logs, filter_logs, get_status
-from tailscalemcp.mcp_server import server as tailscale_mcp_server
+# Load .env FIRST, before any imports that may trigger os.getenv calls.
+# Config.py and mcp_server.py also load it, but doing it here ensures the
+# environment is populated before the FastAPI app starts serving requests.
+_env_path = Path(__file__).parent.parent.parent / ".env"
+if _env_path.exists():
+    load_dotenv(_env_path, override=False)
+
+# Verify and log env state AFTER loading .env
+_key_check = (os.getenv("TAILSCALE_API_KEY") or "").strip()
+print(f"[server] .env loaded from {_env_path} (exists={_env_path.exists()})", flush=True)
+print(f"[server] TAILSCALE_API_KEY set={bool(_key_check)}", flush=True)
+print(f"[server] TAILSCALE_TAILNET set={bool((os.getenv('TAILSCALE_TAILNET') or '').strip())}", flush=True)
+
+from tailscalemcp import setup_logging  # noqa: E402
+from tailscalemcp.log_api import export_logs, filter_logs, get_status  # noqa: E402
+from tailscalemcp.mcp_server import server as tailscale_mcp_server  # noqa: E402
 
 setup_logging()
 
@@ -73,10 +87,16 @@ async def api_status() -> dict[str, Any]:
     """Webapp helper: credential presence (no secrets) and links to Tailscale docs."""
     key = (os.getenv("TAILSCALE_API_KEY") or "").strip()
     tailnet = (os.getenv("TAILSCALE_TAILNET") or "").strip()
+    env_file = str(_env_path)
     return {
         "tailscale_api_configured": bool(key and tailnet),
         "tailnet_set": bool(tailnet),
         "api_key_set": bool(key),
+        "env": {
+            "file": env_file,
+            "exists": _env_path.exists(),
+            "size_bytes": _env_path.stat().st_size if _env_path.exists() else 0,
+        },
         "docs": {
             "interactive_api": "https://tailscale.com/api",
             "create_api_key": "https://login.tailscale.com/admin/settings/keys",
