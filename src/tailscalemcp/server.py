@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import contextlib
 import os
+from pathlib import Path
 from typing import Any
 
 import httpx
@@ -149,6 +150,112 @@ async def call_tool(body: ToolCallRequest) -> dict[str, Any]:
             status_code=status,
             detail={"message": msg, "hint": hint, "tool": body.name},
         ) from e
+
+
+class SettingsRequest(BaseModel):
+    tailscale_api_key: str
+    tailscale_tailnet: str
+
+
+@app.post("/api/v1/settings")
+async def save_settings(body: SettingsRequest) -> dict[str, Any]:
+    """Persist Tailscale API key and tailnet to .env file.
+
+    Writes TAILSCALE_API_KEY and TAILSCALE_TAILNET to the repo root .env,
+    updates os.environ for the running process, and patches the MCP server
+    instance. MCP tools that cached configs at startup may need a restart
+    to use the new credentials.
+    """
+    env_path = Path(__file__).parent.parent.parent / ".env"
+
+    lines: list[str] = []
+    if env_path.exists():
+        lines = env_path.read_text(encoding="utf-8").splitlines(keepends=True)
+
+    found_key = False
+    found_tailnet = False
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        if stripped.startswith("TAILSCALE_API_KEY=") or stripped.startswith("TAILSCALE_API_KEY "):
+            lines[i] = f"TAILSCALE_API_KEY={body.tailscale_api_key}\n"
+            found_key = True
+        elif stripped.startswith("TAILSCALE_TAILNET=") or stripped.startswith("TAILSCALE_TAILNET "):
+            lines[i] = f"TAILSCALE_TAILNET={body.tailscale_tailnet}\n"
+            found_tailnet = True
+
+    if not found_key:
+        lines.append(f"TAILSCALE_API_KEY={body.tailscale_api_key}\n")
+    if not found_tailnet:
+        lines.append(f"TAILSCALE_TAILNET={body.tailscale_tailnet}\n")
+
+    env_path.write_text("".join(lines), encoding="utf-8")
+
+    os.environ["TAILSCALE_API_KEY"] = body.tailscale_api_key
+    os.environ["TAILSCALE_TAILNET"] = body.tailscale_tailnet
+
+    tailscale_mcp_server.api_key = body.tailscale_api_key
+    tailscale_mcp_server.tailnet = body.tailscale_tailnet
+
+    logger.info("tailscale credentials saved", tailnet=body.tailscale_tailnet)
+
+    return {
+        "success": True,
+        "message": "Credentials saved. Restart the server for all MCP tools to use the new key.",
+        "api_key_set": bool(body.tailscale_api_key.strip()),
+        "tailnet_set": bool(body.tailscale_tailnet.strip()),
+    }
+
+
+@app.post("/api/v1/settings/test")
+async def test_credentials(body: SettingsRequest) -> dict[str, Any]:
+    """Test a Tailscale API key + tailnet against the real API before saving."""
+    url = f"https://api.tailscale.com/api/v2/tailnet/{body.tailscale_tailnet}/devices"
+    headers = {
+        "Authorization": f"Bearer {body.tailscale_api_key}",
+        "Accept": "application/json",
+    }
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            r = await client.get(url, headers=headers)
+        if r.status_code == 200:
+            data = r.json()
+            device_count = len(data.get("devices", [])) if isinstance(data, dict) else 0
+            return {
+                "success": True,
+                "reachable": True,
+                "device_count": device_count,
+                "message": f"Connected to tailnet {body.tailscale_tailnet} — {device_count} device(s) found.",
+            }
+        if r.status_code == 401:
+            return {
+                "success": False,
+                "reachable": False,
+                "message": "Authentication failed — invalid API key.",
+            }
+        if r.status_code == 404:
+            return {
+                "success": False,
+                "reachable": False,
+                "message": f"Tailnet '{body.tailscale_tailnet}' not found — check the name.",
+            }
+        return {
+            "success": False,
+            "reachable": False,
+            "message": f"Tailscale API returned HTTP {r.status_code}: {r.text[:300]}",
+        }
+    except httpx.TimeoutException:
+        return {
+            "success": False,
+            "reachable": False,
+            "message": "Connection timed out — check network / tailnet name.",
+        }
+    except Exception as e:
+        logger.exception("credential test failed")
+        return {
+            "success": False,
+            "reachable": False,
+            "message": f"Connection failed: {e!s}",
+        }
 
 
 @app.get("/api/v1/sampling-status")
