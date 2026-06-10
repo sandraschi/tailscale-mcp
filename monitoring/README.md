@@ -67,34 +67,19 @@ The monitoring stack includes RebootX On-Prem integration, allowing you to monit
 
 ### Quick Start with RebootX
 
-1. **Install RebootX mobile app** from App Store/Google Play
-2. **Start RebootX On-Prem integration:**
-   ```powershell
-   .\scripts\start-rebootx-on-prem.ps1
-   ```
-3. **Configure RebootX app:**
-   - Server URL: `http://localhost:9001`
-   - API Key: `tailscale-mcp-rebootx-key-2024`
-   - Path Prefix: `tailscale-mcp`
+### RebootX Mobile Monitoring
 
-### Available Runnables
+RebootX (iPad/iPhone fleet health monitoring) has been moved to the **unified monitoring stack** at:
+- **Docs**: [`mcp-central-docs/monitoring/REBOOTX_INTEGRATION.md`]
+- **Docker Compose**: Part of `mcp-central-docs/monitoring/docker-compose.unified-monitoring.yml`
+- **Port**: `12010`
+- **API Key**: Set via `REBOOTX_API_KEY` env var (default: `unified-monitoring-rebootx-key`)
 
-- **Tailscale MCP Server** (tailscale-mcp-001)
-- **Grafana Dashboard** (grafana-001)
-- **Prometheus Metrics** (prometheus-001)
-- **Loki Log Aggregation** (loki-001)
-
-### Available Dashboards
-
-- **Tailscale Network Overview**: Active devices, network health, bandwidth usage
-- **Monitoring Infrastructure**: Grafana views, Prometheus metrics, Loki logs
-- **Security Metrics**: Security scans, failed auth attempts, blocked IPs
-- **Performance Metrics**: Network latency, bandwidth usage, CPU/memory usage
-
-For detailed information, see:
-- [RebootX On-Prem Documentation](rebootx-on-prem/README.md)
-- [RebootX On-Prem Setup Guide](REBOOTX_ON_PREM_SETUP_GUIDE.md) - Complete setup with fixed IP configuration
-- [RebootX Quick Reference](REBOOTX_QUICK_REFERENCE.md) - Quick reference for configuration
+Run via the unified stack:
+```powershell
+cd mcp-central-docs/monitoring
+.\start-unified-monitoring.ps1
+```
 
 ## 📊 Grafana Dashboards
 
