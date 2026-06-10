@@ -12,6 +12,8 @@ import {
 	AlertTriangle,
 	CheckCircle,
 	ExternalLink,
+	Eye,
+	EyeOff,
 	Loader2,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
@@ -29,6 +31,7 @@ export function Settings() {
 		message: string;
 	} | null>(null);
 	const [error, setError] = useState("");
+	const [showKey, setShowKey] = useState(false);
 	const [status, setStatus] = useState<{
 		api_key_set: boolean;
 		tailnet_set: boolean;
@@ -171,14 +174,27 @@ export function Settings() {
 							<Label className="text-slate-300" htmlFor="ts-api-key">
 								Tailscale API Key
 							</Label>
-							<Input
-								id="ts-api-key"
-								type="password"
-								className="bg-slate-900 border-slate-800 text-slate-100 placeholder:text-slate-400 font-mono"
-								placeholder="tskey-api-..."
-								value={apiKey}
-								onChange={(e) => setApiKey(e.target.value)}
-							/>
+							<div className="relative">
+								<Input
+									id="ts-api-key"
+									type={showKey ? "text" : "password"}
+									className="bg-slate-900 border-slate-800 text-slate-100 placeholder:text-slate-400 font-mono pr-10"
+									placeholder="tskey-api-..."
+									value={apiKey}
+									onChange={(e) => setApiKey(e.target.value)}
+								/>
+								<button
+									type="button"
+									onClick={() => setShowKey(!showKey)}
+									className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors"
+								>
+									{showKey ? (
+										<EyeOff className="h-4 w-4" />
+									) : (
+										<Eye className="h-4 w-4" />
+									)}
+								</button>
+							</div>
 						</div>
 
 						<div className="grid gap-2">
