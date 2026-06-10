@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
-const DEFAULT_API_URL = "http://127.0.0.1:10821";
+const API_BASE = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:10821";
 
 export function Settings() {
 	const [apiKey, setApiKey] = useState("");
@@ -36,7 +36,7 @@ export function Settings() {
 
 	const fetchStatus = useCallback(async () => {
 		try {
-			const r = await fetch(`${DEFAULT_API_URL}/api/v1/status`);
+			const r = await fetch(`${API_BASE}/api/v1/status`);
 			const d = await r.json();
 			setStatus({ api_key_set: d.api_key_set, tailnet_set: d.tailnet_set });
 		} catch {
@@ -59,7 +59,7 @@ export function Settings() {
 		setSaving(true);
 		setSaved(false);
 		try {
-			const r = await fetch(`${DEFAULT_API_URL}/api/v1/settings`, {
+			const r = await fetch(`${API_BASE}/api/v1/settings`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
@@ -95,7 +95,7 @@ export function Settings() {
 		setTestResult(null);
 		setTesting(true);
 		try {
-			const r = await fetch(`${DEFAULT_API_URL}/api/v1/settings/test`, {
+			const r = await fetch(`${API_BASE}/api/v1/settings/test`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
@@ -264,7 +264,7 @@ export function Settings() {
 							<Label className="text-slate-300">API base URL</Label>
 							<Input
 								className="bg-slate-900 border-slate-800 text-slate-100 placeholder:text-slate-400"
-								defaultValue={DEFAULT_API_URL}
+								defaultValue={API_BASE}
 								id="api-url"
 							/>
 						</div>
@@ -274,7 +274,7 @@ export function Settings() {
 							onClick={() => {
 								const url =
 									(document.getElementById("api-url") as HTMLInputElement)
-										?.value || DEFAULT_API_URL;
+										?.value || API_BASE;
 								window.open(`${url}/health`, "_blank");
 							}}
 						>
@@ -292,9 +292,7 @@ export function Settings() {
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<p className="text-sm text-slate-400 font-mono">
-							{DEFAULT_API_URL}/mcp
-						</p>
+						<p className="text-sm text-slate-400 font-mono">{API_BASE}/mcp</p>
 					</CardContent>
 				</Card>
 
@@ -344,7 +342,7 @@ export function Settings() {
 								onClick={() => {
 									const base =
 										(document.getElementById("api-url") as HTMLInputElement)
-											?.value || DEFAULT_API_URL;
+											?.value || API_BASE;
 									window.open(`${base}/api/v1/status`, "_blank");
 								}}
 							>
