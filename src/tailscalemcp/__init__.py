@@ -72,6 +72,8 @@ def setup_logging(log_level: str | None = None, log_file: str | None = None) -> 
         file_handler.setFormatter(logging.Formatter("%(message)s"))
         root_logger.addHandler(file_handler)
 
+    if sys.stderr.encoding and sys.stderr.encoding.lower() in ("ascii", "ansi_x3.4-1968"):
+        sys.stderr.reconfigure(encoding="utf-8")  # type: ignore[attr-defined]
     stderr_handler = logging.StreamHandler(sys.stderr)
     stderr_handler.setFormatter(logging.Formatter("%(message)s"))
     root_logger.addHandler(stderr_handler)

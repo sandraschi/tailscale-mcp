@@ -235,7 +235,7 @@ def _tailscale_degraded_text(has_tools: bool) -> str:
         )
     )
     return (
-        "[Tailscale MCP sampling — no reachable LLM HTTP endpoint]\n\n"
+        "[Tailscale MCP sampling - no reachable LLM HTTP endpoint]\n\n"
         f"{tool_note}\n\n"
         "Use **run_agentic_tailnet_workflow** with `available_tools` such as "
         "`manage_tailnet_devices`, `get_tailnet_status`, `manage_tailnet_network` once sampling is available."

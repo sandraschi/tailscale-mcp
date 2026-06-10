@@ -226,30 +226,31 @@ async def test_credentials(body: SettingsRequest) -> dict[str, Any]:
                 "success": True,
                 "reachable": True,
                 "device_count": device_count,
-                "message": f"Connected to tailnet {body.tailscale_tailnet} — {device_count} device(s) found.",
+                "message": f"Connected to tailnet {body.tailscale_tailnet} - {device_count} device(s) found.",
             }
         if r.status_code == 401:
             return {
                 "success": False,
                 "reachable": False,
-                "message": "Authentication failed — invalid API key.",
+                "message": "Authentication failed - invalid API key.",
             }
         if r.status_code == 404:
             return {
                 "success": False,
                 "reachable": False,
-                "message": f"Tailnet '{body.tailscale_tailnet}' not found — check the name.",
+                "message": f"Tailnet '{body.tailscale_tailnet}' not found - check the name.",
             }
+        err_body = r.text[:300].replace("\u2014", "-").replace("\u2013", "-")
         return {
             "success": False,
             "reachable": False,
-            "message": f"Tailscale API returned HTTP {r.status_code}: {r.text[:300]}",
+            "message": f"Tailscale API returned HTTP {r.status_code}: {err_body}",
         }
     except httpx.TimeoutException:
         return {
             "success": False,
             "reachable": False,
-            "message": "Connection timed out — check network / tailnet name.",
+            "message": "Connection timed out - check network / tailnet name.",
         }
     except Exception as e:
         logger.exception("credential test failed")

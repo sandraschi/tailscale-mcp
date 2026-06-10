@@ -94,7 +94,7 @@ def register_partner_tailnets_tool(ctx: ToolContext) -> None:
                 recs: list[str] = []
                 if users_error:
                     recs.append(
-                        "Users API failed — check API key scopes and tailnet admin role; "
+                        "Users API failed - check API key scopes and tailnet admin role; "
                         "device grouping still shows node owners when present."
                     )
                 if unknown_type:
