@@ -1,5 +1,6 @@
 """Tailscale Device tool module."""
 
+import re
 from typing import Annotated, Any
 
 import structlog
@@ -29,8 +30,6 @@ def register_device_tool(ctx: ToolContext) -> None:
         tags: list[str] | None = None,
         authorize: bool | None = None,
         reason: str | None = None,
-        public_key: str | None = None,
-        key_name: str | None = None,
         online_only: bool = False,
         filter_tags: list[str] | None = None,
         search_query: str | None = None,
@@ -48,8 +47,6 @@ def register_device_tool(ctx: ToolContext) -> None:
         enable_subnet_router: bool = False,
         subnets: list[str] | None = None,
         user_email: str | None = None,
-        user_role: str | None = None,
-        user_permissions: list[str] | None = None,
         auth_key_name: str | None = None,
         auth_key_expiry: str | None = None,
         auth_key_reusable: bool = False,
@@ -78,12 +75,12 @@ def register_device_tool(ctx: ToolContext) -> None:
         - ``authorize``: ``result``, ``device_id``, ``authorized``
         - ``rename``: ``result``, ``device_id``, ``new_name``
         - ``tag``: ``result``, ``device_id``, ``tags``
-        - ``ssh``: ``result``, ``device_id`` (enable vs disable reflected in ``operation`` echo)
+        - ``delete``: ``result``, ``device_id``
         - ``search``: ``results``, ``query``, ``count``
         - ``stats``: ``statistics``
         - ``exit_node`` / ``subnet_router``: ``result``, ``device_id``, routes/subnets as applicable
-        - ``user_*``: ``users`` or ``result``, ``user_email``, etc.
-        - ``auth_key_*``: ``keys`` or ``result``, ``auth_key_name``, etc.
+        - ``user_*``: ``users`` or ``result`` (list/get only — create/update/delete not in Admin API)
+        - ``auth_key_*``: ``keys`` or ``result``
 
         **Errors:** Missing required fields or API failures raise ``TailscaleMCPError`` with a
         concrete message. Retry transient HTTP errors; fix ACL/API key scope for 403.
@@ -124,11 +121,11 @@ def register_device_tool(ctx: ToolContext) -> None:
                     )
                 elif online_count == 0:
                     response["suggestion"] = (
-                        "All devices are offline. Check network connectivity or use get_tailnet_status for more details."
+                        "All devices are offline. Check network connectivity."
                     )
                 elif len(devices) > 10:
                     response["suggestion"] = (
-                        "That's a large tailnet! Consider using filter_tags or search_query to narrow results. Try: manage_tailnet_devices(operation='list', filter_tags=['tag:name'])"
+                        "Large tailnet. Use filter_tags or search_query to narrow."
                     )
 
                 return response
@@ -186,25 +183,17 @@ def register_device_tool(ctx: ToolContext) -> None:
                     "tags": tags,
                 }
 
-            elif operation == "ssh":
+            elif operation == "delete":
                 if not device_id:
-                    raise TailscaleMCPError("device_id is required for SSH operation")
-                if public_key:
-                    result = await ctx.device_manager.enable_ssh_access(
-                        device_id, public_key, key_name
+                    raise TailscaleMCPError(
+                        "device_id is required for delete operation"
                     )
-                    return {
-                        "operation": "ssh_enable",
-                        "result": result,
-                        "device_id": device_id,
-                    }
-                else:
-                    result = await ctx.device_manager.disable_ssh_access(device_id)
-                    return {
-                        "operation": "ssh_disable",
-                        "result": result,
-                        "device_id": device_id,
-                    }
+                await ctx.api_client.delete_device(device_id)
+                return {
+                    "operation": "delete",
+                    "device_id": device_id,
+                    "result": f"Device {device_id} deleted.",
+                }
 
             elif operation == "search":
                 if not search_query:
@@ -289,47 +278,6 @@ def register_device_tool(ctx: ToolContext) -> None:
                     "filters": {"user_type": user_type, "role": user_role_filter},
                 }
 
-            elif operation == "user_create":
-                if not user_email:
-                    raise TailscaleMCPError(
-                        "user_email is required for user_create operation"
-                    )
-                result = await ctx.device_manager.create_user(
-                    user_email, user_role, user_permissions
-                )
-                return {
-                    "operation": "user_create",
-                    "result": result,
-                    "user_email": user_email,
-                    "user_role": user_role,
-                }
-
-            elif operation == "user_update":
-                if not user_email:
-                    raise TailscaleMCPError(
-                        "user_email is required for user_update operation"
-                    )
-                result = await ctx.device_manager.update_user(
-                    user_email, user_role, user_permissions
-                )
-                return {
-                    "operation": "user_update",
-                    "result": result,
-                    "user_email": user_email,
-                }
-
-            elif operation == "user_delete":
-                if not user_email:
-                    raise TailscaleMCPError(
-                        "user_email is required for user_delete operation"
-                    )
-                result = await ctx.device_manager.delete_user(user_email)
-                return {
-                    "operation": "user_delete",
-                    "result": result,
-                    "user_email": user_email,
-                }
-
             elif operation == "user_details":
                 if not user_email:
                     raise TailscaleMCPError(
@@ -343,7 +291,9 @@ def register_device_tool(ctx: ToolContext) -> None:
                 }
 
             elif operation == "auth_key_list":
-                keys = await ctx.device_manager.list_auth_keys()
+                if ctx.key_ops is None:
+                    raise TailscaleMCPError("Key operations not available")
+                keys = await ctx.key_ops.list_auth_keys()
                 return {
                     "operation": "auth_key_list",
                     "keys": keys,
@@ -351,41 +301,44 @@ def register_device_tool(ctx: ToolContext) -> None:
                 }
 
             elif operation == "auth_key_create":
-                if not auth_key_name:
-                    raise TailscaleMCPError(
-                        "auth_key_name is required for auth_key_create operation"
-                    )
-                result = await ctx.device_manager.create_auth_key(
-                    auth_key_name,
-                    auth_key_expiry,
-                    auth_key_reusable,
-                    auth_key_ephemeral,
-                    auth_key_preauthorized,
-                    auth_key_tags,
+                if ctx.key_ops is None:
+                    raise TailscaleMCPError("Key operations not available")
+                capabilities: dict[str, Any] = {
+                    "devices": {
+                        "create": {
+                            "reusable": auth_key_reusable,
+                            "ephemeral": auth_key_ephemeral,
+                            "preauthorized": auth_key_preauthorized,
+                            "tags": auth_key_tags or [],
+                        }
+                    }
+                }
+                expires_seconds = None
+                if auth_key_expiry:
+                    match = re.match(r"(\d+)", auth_key_expiry)
+                    if match:
+                        expires_seconds = int(match.group(1))
+                result = await ctx.key_ops.create_auth_key(
+                    capabilities=capabilities,
+                    expires_seconds=expires_seconds,
+                    reusable=auth_key_reusable,
                 )
                 return {
                     "operation": "auth_key_create",
                     "result": result,
-                    "auth_key_name": auth_key_name,
                 }
 
             elif operation == "auth_key_revoke":
+                if ctx.key_ops is None:
+                    raise TailscaleMCPError("Key operations not available")
                 if not auth_key_name:
                     raise TailscaleMCPError(
                         "auth_key_name is required for auth_key_revoke operation"
                     )
-                result = await ctx.device_manager.revoke_auth_key(auth_key_name)
+                await ctx.key_ops.revoke_auth_key(auth_key_name)
                 return {
                     "operation": "auth_key_revoke",
-                    "result": result,
-                    "auth_key_name": auth_key_name,
-                }
-
-            elif operation == "auth_key_rotate":
-                result = await ctx.device_manager.rotate_auth_keys()
-                return {
-                    "operation": "auth_key_rotate",
-                    "result": result,
+                    "result": f"Auth key {auth_key_name} revoked.",
                 }
 
             else:

@@ -33,20 +33,16 @@ DeviceOperation = Literal[
     "authorize",
     "rename",
     "tag",
-    "ssh",
+    "delete",
     "search",
     "stats",
     "exit_node",
     "subnet_router",
     "user_list",
-    "user_create",
-    "user_update",
-    "user_delete",
     "user_details",
     "auth_key_list",
     "auth_key_create",
     "auth_key_revoke",
-    "auth_key_rotate",
 ]
 
 # --- Network / DNS / services ---
@@ -89,16 +85,7 @@ FileOperation = Literal[
 ]
 
 SecurityOperation = Literal[
-    "scan",
-    "compliance",
     "audit",
-    "report",
-    "monitor",
-    "block",
-    "quarantine",
-    "alert",
-    "policy",
-    "threat",
 ]
 
 AutomationOperation = Literal[

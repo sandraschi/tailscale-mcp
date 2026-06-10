@@ -103,7 +103,7 @@ class AdvancedDeviceManager:
         logger.info("Advanced device manager initialized", tailnet=tailnet)
 
     # -----------------------
-    # Unsupported Admin API endpoints (explicit)
+    # Supported Admin API endpoints
     # -----------------------
     async def list_users(
         self,
@@ -132,34 +132,6 @@ class AdvancedDeviceManager:
             logger.error("Error listing users", error=str(e))
             raise TailscaleMCPError(f"Failed to list users: {e}") from e
 
-    async def create_user(
-        self,
-        user_email: str,
-        user_role: str | None = None,
-        user_permissions: list[str] | None = None,
-    ) -> dict[str, Any]:
-        """Create user (not supported via Admin API)."""
-        raise TailscaleMCPError(
-            "Creating users is not supported via the Tailscale Admin API."
-        )
-
-    async def update_user(
-        self,
-        user_email: str,
-        user_role: str | None = None,
-        user_permissions: list[str] | None = None,
-    ) -> dict[str, Any]:
-        """Update user (not supported via Admin API)."""
-        raise TailscaleMCPError(
-            "Updating users is not supported via the Tailscale Admin API."
-        )
-
-    async def delete_user(self, user_email: str) -> dict[str, Any]:
-        """Delete user (not supported via Admin API)."""
-        raise TailscaleMCPError(
-            "Deleting users is not supported via the Tailscale Admin API."
-        )
-
     async def get_user_details(self, user_id: str) -> dict[str, Any]:
         """Get one user by ID (from ``list_users`` ``id`` field)."""
         try:
@@ -167,38 +139,6 @@ class AdvancedDeviceManager:
         except Exception as e:
             logger.error("Error getting user", user_id=user_id, error=str(e))
             raise TailscaleMCPError(f"Failed to get user: {e}") from e
-
-    async def auth_key_list(self) -> list[dict[str, Any]]:
-        """List auth keys (not supported via Admin API)."""
-        raise TailscaleMCPError(
-            "Listing authentication keys is not supported via the Tailscale Admin API."
-        )
-
-    async def auth_key_create(
-        self,
-        auth_key_name: str | None = None,
-        auth_key_expiry: str | None = None,
-        auth_key_reusable: bool | None = None,
-        auth_key_ephemeral: bool | None = None,
-        auth_key_preauthorized: bool | None = None,
-        auth_key_tags: list[str] | None = None,
-    ) -> dict[str, Any]:
-        """Create auth key (not supported via Admin API)."""
-        raise TailscaleMCPError(
-            "Creating authentication keys is not supported via the Tailscale Admin API."
-        )
-
-    async def auth_key_revoke(self, auth_key_name: str) -> dict[str, Any]:
-        """Revoke auth key (not supported via Admin API)."""
-        raise TailscaleMCPError(
-            "Revoking authentication keys is not supported via the Tailscale Admin API."
-        )
-
-    async def auth_key_rotate(self) -> dict[str, Any]:
-        """Rotate expired keys (not supported via Admin API)."""
-        raise TailscaleMCPError(
-            "Rotating authentication keys is not supported via the Tailscale Admin API."
-        )
 
     async def get_device(self, device_id: str) -> dict[str, Any]:
         """Get device details using real Tailscale API.
@@ -412,24 +352,6 @@ class AdvancedDeviceManager:
         except Exception as e:
             logger.error("Error updating device tags", error=str(e))
             raise TailscaleMCPError(f"Failed to update device tags: {e}") from e
-
-    async def enable_ssh_access(
-        self, device_id: str, public_key: str, key_name: str | None = None
-    ) -> dict[str, Any]:
-        """Enable SSH access for a device (not supported via Admin API).
-
-        Raises:
-            TailscaleMCPError: Always; not supported by public Admin API.
-        """
-        raise TailscaleMCPError(
-            "Enabling SSH access is not supported via the Tailscale Admin API."
-        )
-
-    async def disable_ssh_access(self, device_id: str) -> dict[str, Any]:
-        """Disable SSH access (not supported via Admin API)."""
-        raise TailscaleMCPError(
-            "Disabling SSH access is not supported via the Tailscale Admin API."
-        )
 
     async def list_devices(
         self,

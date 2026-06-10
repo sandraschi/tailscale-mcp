@@ -79,7 +79,7 @@ async def generate_help_content(
         "examples": {
             "basic_device_list": "manage_tailnet_devices(operation='list', online_only=True)",
             "advanced_monitoring": "monitor_tailnet(operation='metrics')",
-            "security_scan": "run_tailnet_security(operation='scan', scan_type='comprehensive')",
+            "security_audit": "run_tailnet_security(operation='audit')",
             "file_transfer": "manage_taildrop(operation='send', file_path='/path/to/file', recipient_device='device-id')",
             "funnel_enable": "manage_funnel(operation='funnel_enable', port=8080)",
             "funnel_status": "manage_funnel(operation='funnel_status')",
