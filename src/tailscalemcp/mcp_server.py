@@ -279,6 +279,60 @@ class TailscaleMCPServer:
 
         logger.info("Portmanteau tools initialized successfully")
 
+    def reload_credentials(self, api_key: str, tailnet: str) -> None:
+        """Hot-reload API credentials across all cached clients and configs.
+
+        Called after the user updates credentials via the webapp settings page.
+        Updates every TailscaleAPIClient, TailscaleConfig, and manager that
+        holds a reference to the old credentials.
+        """
+        self.api_key = api_key
+        self.tailnet = tailnet
+        base_url = f"https://api.tailscale.com/api/v2/tailnet/{tailnet}"
+
+        def _patch(client: object) -> None:
+            for attr in ("api_key", "tailnet", "api_base_url", "config"):
+                if not hasattr(client, attr):
+                    continue
+                if attr == "api_key":
+                    client.api_key = api_key  # type: ignore[attr-defined]
+                elif attr == "tailnet":
+                    client.tailnet = tailnet  # type: ignore[attr-defined]
+                elif attr == "api_base_url":
+                    client.api_base_url = base_url  # type: ignore[attr-defined]
+                elif attr == "config":
+                    cfg = client.config  # type: ignore[attr-defined]
+                    if hasattr(cfg, "tailscale_api_key"):
+                        cfg.tailscale_api_key = api_key
+                    if hasattr(cfg, "tailscale_tailnet"):
+                        cfg.tailscale_tailnet = tailnet
+
+        # Device manager + its internal client
+        _patch(self.device_manager)
+        _patch(self.device_manager.api_client)
+        _patch(self.device_manager.device_operations.client)
+
+        # Portmanteau tools config + ctx client
+        _patch(self.portmanteau_tools.config)
+        _patch(self.portmanteau_tools.ctx.api_client)
+
+        # All operations classes
+        for name in (
+            "network_ops", "policy_ops", "audit_ops", "tag_ops", "key_ops",
+            "policy_analyzer", "analytics_ops", "reporting_ops", "service_ops",
+        ):
+            ops = getattr(self.portmanteau_tools, name, None)
+            if ops is None:
+                continue
+            _patch(ops.config)
+            _patch(ops.client)
+
+        # Monitor + MagicDNS
+        _patch(self.monitor)
+        _patch(self.magic_dns_manager)
+
+        logger.info("Credentials reloaded across all clients", tailnet=tailnet)
+
     def _register_prompts_and_resources(self) -> None:
         """Register prompts and resources directly on mcp instance (like tools)."""
 

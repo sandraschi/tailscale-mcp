@@ -196,14 +196,13 @@ async def save_settings(body: SettingsRequest) -> dict[str, Any]:
     os.environ["TAILSCALE_API_KEY"] = body.tailscale_api_key
     os.environ["TAILSCALE_TAILNET"] = body.tailscale_tailnet
 
-    tailscale_mcp_server.api_key = body.tailscale_api_key
-    tailscale_mcp_server.tailnet = body.tailscale_tailnet
+    tailscale_mcp_server.reload_credentials(body.tailscale_api_key, body.tailscale_tailnet)
 
     logger.info("tailscale credentials saved", tailnet=body.tailscale_tailnet)
 
     return {
         "success": True,
-        "message": "Credentials saved. Restart the server for all MCP tools to use the new key.",
+        "message": "Credentials saved and applied to all running clients.",
         "api_key_set": bool(body.tailscale_api_key.strip()),
         "tailnet_set": bool(body.tailscale_tailnet.strip()),
     }
