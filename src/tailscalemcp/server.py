@@ -240,7 +240,7 @@ async def test_credentials(body: SettingsRequest) -> dict[str, Any]:
                 "reachable": False,
                 "message": f"Tailnet '{body.tailscale_tailnet}' not found - check the name.",
             }
-        err_body = r.text[:300].replace("\u2014", "-").replace("\u2013", "-")
+        err_body = r.content[:300].decode("utf-8", errors="replace")
         return {
             "success": False,
             "reachable": False,
@@ -253,11 +253,14 @@ async def test_credentials(body: SettingsRequest) -> dict[str, Any]:
             "message": "Connection timed out - check network / tailnet name.",
         }
     except Exception as e:
+        msg = str(e)
+        if any(c > "\x7f" for c in msg):
+            msg = msg.encode("ascii", errors="replace").decode("ascii")
         logger.exception("credential test failed")
         return {
             "success": False,
             "reachable": False,
-            "message": f"Connection failed: {e!s}",
+            "message": f"Connection failed: {msg}",
         }
 
 
