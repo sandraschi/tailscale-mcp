@@ -74,8 +74,6 @@ export function Settings() {
 				);
 			}
 			setSaved(true);
-			setApiKey("");
-			setTailnet("");
 			fetchStatus();
 		} catch (e) {
 			setError(e instanceof Error ? e.message : "Failed to save settings.");
