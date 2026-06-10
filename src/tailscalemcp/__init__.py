@@ -26,7 +26,8 @@ def setup_logging(log_level: str | None = None, log_file: str | None = None) -> 
 
     Args:
         log_level: Logging level string (default: from LOG_LEVEL env or INFO)
-        log_file: Optional path to log file (default: logs/tailscale-mcp.log)
+        log_file: Path to log file (default: logs/tailscale-mcp.log).
+                  Pass empty string to disable file logging.
     """
     global _LOG_CONFIGURED
     if _LOG_CONFIGURED:
@@ -58,9 +59,16 @@ def setup_logging(log_level: str | None = None, log_file: str | None = None) -> 
     root_logger = logging.getLogger()
     root_logger.setLevel(getattr(logging, level))
 
+    if log_file is None:
+        log_file = os.getenv("LOG_FILE", "logs/tailscale-mcp.log")
     if log_file:
-        Path(log_file).parent.mkdir(parents=True, exist_ok=True)
-        file_handler = logging.FileHandler(log_file)
+        from logging.handlers import RotatingFileHandler
+
+        log_path = Path(log_file)
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        file_handler = RotatingFileHandler(
+            log_file, maxBytes=10 * 1024 * 1024, backupCount=5, encoding="utf-8"
+        )
         file_handler.setFormatter(logging.Formatter("%(message)s"))
         root_logger.addHandler(file_handler)
 

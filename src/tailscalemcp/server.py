@@ -17,6 +17,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from tailscalemcp import setup_logging
+from tailscalemcp.log_api import export_logs, filter_logs, get_status
 from tailscalemcp.mcp_server import server as tailscale_mcp_server
 
 setup_logging()
@@ -406,3 +407,43 @@ async def chat_completions(body: ChatRequest) -> dict[str, Any]:
         "model": data.get("model") or model,
         "raw": data,
     }
+
+
+class LogSearchRequest(BaseModel):
+    lines: int = 200
+    min_level: str | None = None
+    logger_name: str | None = None
+    search: str | None = None
+    tail: bool = True
+    offset: int = 0
+
+
+@app.get("/api/v1/logs/status")
+async def log_status() -> dict[str, Any]:
+    """Log rotation status, file sizes, line count."""
+    return get_status()
+
+
+@app.post("/api/v1/logs/search")
+async def log_search(body: LogSearchRequest) -> dict[str, Any]:
+    """Search/filter logs with JSONL parsing."""
+    return filter_logs(
+        lines=body.lines,
+        min_level=body.min_level,
+        logger_name=body.logger_name,
+        search=body.search,
+        tail=body.tail,
+        offset=body.offset,
+    )
+
+
+@app.get("/api/v1/logs/export")
+async def log_export(
+    format: str = "jsonl",
+    min_level: str | None = None,
+    logger_name: str | None = None,
+    search: str | None = None,
+) -> dict[str, Any]:
+    """Export filtered logs as downloadable text."""
+    text = export_logs(format=format, min_level=min_level, logger_name=logger_name, search=search)
+    return {"text": text, "format": format, "line_count": len(text.splitlines()) if text else 0}
