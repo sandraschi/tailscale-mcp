@@ -6,14 +6,12 @@ Serves /health, /api/v1/tools, /api/v1/tools/call, sampling/LLM helpers, optiona
 from __future__ import annotations
 
 import contextlib
-import json as json_mod
 import os
-import urllib.error
-import urllib.request
 from pathlib import Path
 from typing import Any
 
 import httpx
+import requests
 import structlog
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -215,39 +213,29 @@ async def save_settings(body: SettingsRequest) -> dict[str, Any]:
 def test_credentials(body: SettingsRequest) -> dict[str, Any]:
     """Test a Tailscale API key + tailnet against the real API before saving."""
     url = f"https://api.tailscale.com/api/v2/tailnet/{body.tailscale_tailnet}/devices"
-    auth = f"Bearer {body.tailscale_api_key}"
     try:
-        req = urllib.request.Request(url, method="GET")  # noqa: S310
-        req.add_header("Authorization", auth)
-        req.add_header("Accept", "application/json")
-        try:
-            with urllib.request.urlopen(req, timeout=15) as resp:  # noqa: S310
-                raw = resp.read()
-        except urllib.error.HTTPError as e:
-            raw = e.read()
-            status = e.code
-            decoded = raw.decode("utf-8", errors="replace")
-            if status == 401:
-                return {"success": False, "reachable": False, "message": "Authentication failed - invalid API key."}
-            if status == 404:
-                net = body.tailscale_tailnet
-                msg = f"Tailnet '{net}' not found - check the name."
-                return {"success": False, "reachable": False, "message": msg}
-            msg = f"Tailscale API returned HTTP {status}: {decoded[:300]}"
+        r = requests.get(
+            url,
+            headers={"Authorization": f"Bearer {body.tailscale_api_key}"},
+            timeout=15,
+        )
+        if r.status_code == 200:
+            devices = r.json().get("devices", [])
+            return {
+                "success": True,
+                "reachable": True,
+                "device_count": len(devices),
+                "message": f"Connected to tailnet {body.tailscale_tailnet} - {len(devices)} device(s) found.",
+            }
+        if r.status_code == 401:
+            return {"success": False, "reachable": False, "message": "Authentication failed - invalid API key."}
+        if r.status_code == 404:
+            msg = f"Tailnet '{body.tailscale_tailnet}' not found - check the name."
             return {"success": False, "reachable": False, "message": msg}
-        except urllib.error.URLError as e:
-            reason = str(e.reason) if hasattr(e, "reason") else str(e)
-            return {"success": False, "reachable": False, "message": f"Connection failed: {reason}"}
-
-        decoded = raw.decode("utf-8", errors="replace")
-        data = json_mod.loads(decoded)
-        device_count = len(data.get("devices", []))
-        return {
-            "success": True,
-            "reachable": True,
-            "device_count": device_count,
-            "message": f"Connected to tailnet {body.tailscale_tailnet} - {device_count} device(s) found.",
-        }
+        msg = f"Tailscale API returned HTTP {r.status_code}: {r.text[:300]}"
+        return {"success": False, "reachable": False, "message": msg}
+    except requests.exceptions.Timeout:
+        return {"success": False, "reachable": False, "message": "Connection timed out - check network / tailnet name."}
     except Exception as e:
         safe = str(e).encode("ascii", errors="replace").decode("ascii")
         return {"success": False, "reachable": False, "message": f"Connection failed: {safe}"}
