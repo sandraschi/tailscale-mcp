@@ -54,6 +54,10 @@ class Device(BaseModel):
         Returns:
             Device instance
         """
+        def _safe(s: Any) -> str:
+            if not isinstance(s, str):
+                return str(s) if s is not None else ""
+            return s.replace("\u2014", "-").replace("\u2013", "-")
         # Handle lastSeen timestamp
         last_seen = None
         if data.get("lastSeen"):
@@ -72,21 +76,21 @@ class Device(BaseModel):
 
         user_raw = data.get("user")
         if isinstance(user_raw, str):
-            user_val: str | None = user_raw or None
+            user_val = _safe(user_raw) or None
         elif isinstance(user_raw, dict):
-            user_val = user_raw.get("loginName") or user_raw.get("id") or None
+            user_val = _safe(user_raw.get("loginName") or user_raw.get("id")) or None
         else:
             user_val = None
 
         return cls(
-            id=data.get("id", ""),
-            node_key=data.get("nodeKey"),
-            machine_key=data.get("machineKey"),
-            name=data.get("name", ""),
-            hostname=data.get("hostname", ""),
-            os=data.get("os", "unknown"),
-            os_version=data.get("osVersion"),
-            client_version=data.get("clientVersion"),
+            id=_safe(data.get("id")),
+            node_key=_safe(data.get("nodeKey")),
+            machine_key=_safe(data.get("machineKey")),
+            name=_safe(data.get("name")),
+            hostname=_safe(data.get("hostname")),
+            os=_safe(data.get("os", "unknown")),
+            os_version=_safe(data.get("osVersion")),
+            client_version=_safe(data.get("clientVersion")),
             ipv4=v4,
             ipv6=v6,
             tags=data.get("tags", []),
