@@ -249,7 +249,8 @@ def test_credentials(body: SettingsRequest) -> dict[str, Any]:
             "message": f"Connected to tailnet {body.tailscale_tailnet} - {device_count} device(s) found.",
         }
     except Exception as e:
-        return {"success": False, "reachable": False, "message": f"Connection failed: {e!s}"}
+        safe = str(e).encode("ascii", errors="replace").decode("ascii")
+        return {"success": False, "reachable": False, "message": f"Connection failed: {safe}"}
 
 
 @app.get("/api/v1/sampling-status")
