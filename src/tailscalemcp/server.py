@@ -27,16 +27,17 @@ logger = structlog.get_logger(__name__)
 mcp_app = tailscale_mcp_server.mcp.http_app(path="/mcp")
 
 # Reusable FastMCP Client — created once, not per-request
-_fastmcp_client = None
+_fastmcp_client: Any = None
 
 
-def _get_client():
-    """Get or create the shared FastMCP Client."""
+async def _get_client():
+    """Get or create the shared FastMCP Client (async — enters context manager)."""
     global _fastmcp_client
     if _fastmcp_client is None:
         from fastmcp.client import Client
 
         _fastmcp_client = Client(tailscale_mcp_server.mcp)
+        await _fastmcp_client.__aenter__()
     return _fastmcp_client
 
 app = FastAPI(
@@ -85,7 +86,7 @@ async def api_status() -> dict[str, Any]:
 @app.get("/api/v1/tools")
 async def list_tools() -> dict[str, Any]:
     try:
-        client = _get_client()
+        client = await _get_client()
         tools = await client.list_tools()
         return {
             "tools": [
@@ -116,7 +117,7 @@ class ToolCallRequest(BaseModel):
 @app.post("/api/v1/tools/call")
 async def call_tool(body: ToolCallRequest) -> dict[str, Any]:
     try:
-        client = _get_client()
+        client = await _get_client()
         result = await client.call_tool(body.name, body.arguments or {})
         content = result.content or []
         text_parts = [getattr(c, "text", str(c)) for c in content]
