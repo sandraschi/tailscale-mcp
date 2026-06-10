@@ -5,8 +5,12 @@ Serves /health, /api/v1/tools, /api/v1/tools/call, sampling/LLM helpers, optiona
 
 from __future__ import annotations
 
+import asyncio
 import contextlib
+import json as json_mod
 import os
+import urllib.error
+import urllib.request
 from pathlib import Path
 from typing import Any
 
@@ -212,56 +216,42 @@ async def save_settings(body: SettingsRequest) -> dict[str, Any]:
 async def test_credentials(body: SettingsRequest) -> dict[str, Any]:
     """Test a Tailscale API key + tailnet against the real API before saving."""
     url = f"https://api.tailscale.com/api/v2/tailnet/{body.tailscale_tailnet}/devices"
-    headers = {
-        "Authorization": f"Bearer {body.tailscale_api_key}",
-        "Accept": "application/json",
-    }
+    auth = f"Bearer {body.tailscale_api_key}"
+
+    def _probe() -> dict[str, Any]:
+        req = urllib.request.Request(url, method="GET")  # noqa: S310
+        req.add_header("Authorization", auth)
+        req.add_header("Accept", "application/json")
+        try:
+            with urllib.request.urlopen(req, timeout=15) as resp:  # noqa: S310
+                body = resp.read().decode("utf-8", errors="replace")
+                data = json_mod.loads(body)
+                device_count = len(data.get("devices", []))
+                return {
+                    "success": True,
+                    "reachable": True,
+                    "device_count": device_count,
+                    "message": f"Connected to tailnet {body.tailscale_tailnet} - {device_count} device(s) found.",
+                }
+        except urllib.error.HTTPError as e:
+            raw = e.read().decode("utf-8", errors="replace")
+            status = e.code
+            if status == 401:
+                return {"success": False, "reachable": False, "message": "Authentication failed - invalid API key."}
+            if status == 404:
+                net = body.tailscale_tailnet
+                return {"success": False, "reachable": False, "message": f"Tailnet '{net}' not found - check the name."}
+            msg = f"Tailscale API returned HTTP {status}: {raw[:300]}"
+            return {"success": False, "reachable": False, "message": msg}
+        except urllib.error.URLError as e:
+            reason = str(e.reason) if hasattr(e, "reason") else str(e)
+            return {"success": False, "reachable": False, "message": f"Connection failed: {reason}"}
+
     try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
-            r = await client.get(url, headers=headers)
-        if r.status_code == 200:
-            data = r.json()
-            device_count = len(data.get("devices", [])) if isinstance(data, dict) else 0
-            return {
-                "success": True,
-                "reachable": True,
-                "device_count": device_count,
-                "message": f"Connected to tailnet {body.tailscale_tailnet} - {device_count} device(s) found.",
-            }
-        if r.status_code == 401:
-            return {
-                "success": False,
-                "reachable": False,
-                "message": "Authentication failed - invalid API key.",
-            }
-        if r.status_code == 404:
-            return {
-                "success": False,
-                "reachable": False,
-                "message": f"Tailnet '{body.tailscale_tailnet}' not found - check the name.",
-            }
-        err_body = r.content[:300].decode("utf-8", errors="replace")
-        return {
-            "success": False,
-            "reachable": False,
-            "message": f"Tailscale API returned HTTP {r.status_code}: {err_body}",
-        }
-    except httpx.TimeoutException:
-        return {
-            "success": False,
-            "reachable": False,
-            "message": "Connection timed out - check network / tailnet name.",
-        }
+        return await asyncio.to_thread(_probe)
     except Exception as e:
-        msg = str(e)
-        if any(c > "\x7f" for c in msg):
-            msg = msg.encode("ascii", errors="replace").decode("ascii")
         logger.exception("credential test failed")
-        return {
-            "success": False,
-            "reachable": False,
-            "message": f"Connection failed: {msg}",
-        }
+        return {"success": False, "reachable": False, "message": f"Connection failed: {e!s}"}
 
 
 @app.get("/api/v1/sampling-status")
