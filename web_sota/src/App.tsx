@@ -6,7 +6,7 @@ import { Dashboard } from "@/pages/dashboard";
 import { Funnels } from "@/pages/funnels";
 import { LlmStatus } from "@/pages/llm-status";
 import { LmLink } from "@/pages/lm-link";
-import { Logs } from "@/pages/logs";
+import Logs from "@/pages/logs";
 import { McpConnection } from "@/pages/mcp-connection";
 import { Nets } from "@/pages/nets";
 import { Runbook } from "@/pages/runbook";
