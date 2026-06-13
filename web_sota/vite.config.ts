@@ -15,7 +15,7 @@ export default defineConfig({
     strictPort: true,
     host: "127.0.0.1",
     proxy: {
-      "/api/logs": {
+      "/api": {
         target: "http://127.0.0.1:11060",
         changeOrigin: true,
       },
