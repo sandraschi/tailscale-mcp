@@ -1,3 +1,4 @@
+import { API_BASE } from "../lib/api";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -15,19 +16,16 @@ import {
 	Eye,
 	EyeOff,
 	Loader2,
-	Zap,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:10821";
 
 function LLMSettings() {
 	const [providers, setProviders] = useState<Record<string, {name:string}[]>>({});
 	const [selectedProvider, setSelectedProvider] = useState("ollama");
 	const [selectedModel, setSelectedModel] = useState("");
-	const [status, setStatus] = useState<"loading"|"ready"|"error">("loading");
+	const [_status, setStatus] = useState<"loading"|"ready"|"error">("loading");
 	useEffect(() => {
-		fetch("/api/llm/providers").then(r => r.json()).then(d => {
+		fetch(API_BASE + "/api/llm/providers").then(r => r.json()).then(d => {
 			setProviders(d);
 			const savedP = localStorage.getItem("llm_provider") || "ollama";
 			const savedM = localStorage.getItem("llm_model") || "";

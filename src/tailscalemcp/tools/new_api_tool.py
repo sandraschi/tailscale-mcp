@@ -1,5 +1,6 @@
 """New Tailscale Admin API features: invites, posture, device keys, logging, webhooks, settings, contacts."""
 
+import time
 from typing import Any
 
 import structlog
@@ -7,6 +8,7 @@ import structlog
 from tailscalemcp.exceptions import TailscaleMCPError
 
 from ._base import ToolContext
+from ._helpers import build_auth_error_response, is_auth_error
 from ._tool_types import (
     ContactOperation,
     DeviceInviteOperation,
@@ -28,6 +30,34 @@ from .mcp_tool_names import (
 )
 
 logger = structlog.get_logger(__name__)
+
+_TOOL_PROCESS_STARTED_AT = time.time()
+
+
+def _raise_auth_aware(
+    operation: str, exc: Exception, fallback_message: str
+) -> None:
+    """Shared 401-aware raise for the seven tool functions in this module.
+
+    All seven (tailnet_invites, tailnet_posture_attributes, tailnet_device_keys,
+    tailnet_logging, tailnet_webhooks, tailnet_settings, tailnet_contacts) call
+    ``ctx.api_client`` directly and share the same exception-boundary shape, so
+    this is factored once rather than duplicated 7 times in this file.
+    """
+    if is_auth_error(exc):
+        payload = build_auth_error_response(
+            operation, exc, server_started_at=_TOOL_PROCESS_STARTED_AT
+        )
+        raise TailscaleMCPError(
+            message=(
+                "Tailscale API authentication failed (HTTP 401). This may "
+                "be a stale key cached by this running server process - "
+                "see details.recovery_options."
+            ),
+            code=401,
+            details=payload,
+        ) from exc
+    raise TailscaleMCPError(fallback_message) from exc
 
 
 def register_new_api_tools(ctx: ToolContext) -> None:
@@ -121,7 +151,7 @@ def register_new_api_tools(ctx: ToolContext) -> None:
                 raise TailscaleMCPError(f"Unknown operation: {operation}")
         except Exception as e:
             logger.error("Error in tailnet_invites", operation=operation, error=str(e))
-            raise TailscaleMCPError(f"Invite operation failed: {e}") from e
+            _raise_auth_aware(operation, e, f"Invite operation failed: {e}")
 
     @ctx.mcp.tool(name=MANAGE_POSTURE_ATTRIBUTES)
     async def tailnet_posture_attributes(
@@ -163,7 +193,7 @@ def register_new_api_tools(ctx: ToolContext) -> None:
             raise TailscaleMCPError(f"Unknown operation: {operation}")
         except Exception as e:
             logger.error("Error in tailnet_posture_attributes", operation=operation, error=str(e))
-            raise TailscaleMCPError(f"Posture attribute operation failed: {e}") from e
+            _raise_auth_aware(operation, e, f"Posture attribute operation failed: {e}")
 
     @ctx.mcp.tool(name=MANAGE_DEVICE_KEYS)
     async def tailnet_device_keys(
@@ -200,7 +230,7 @@ def register_new_api_tools(ctx: ToolContext) -> None:
             raise TailscaleMCPError(f"Unknown operation: {operation}")
         except Exception as e:
             logger.error("Error in tailnet_device_keys", operation=operation, error=str(e))
-            raise TailscaleMCPError(f"Device key operation failed: {e}") from e
+            _raise_auth_aware(operation, e, f"Device key operation failed: {e}")
 
     @ctx.mcp.tool(name=MANAGE_TAILNET_LOGGING)
     async def tailnet_logging(
@@ -246,7 +276,7 @@ def register_new_api_tools(ctx: ToolContext) -> None:
             raise TailscaleMCPError(f"Unknown operation: {operation}")
         except Exception as e:
             logger.error("Error in tailnet_logging", operation=operation, error=str(e))
-            raise TailscaleMCPError(f"Logging operation failed: {e}") from e
+            _raise_auth_aware(operation, e, f"Logging operation failed: {e}")
 
     @ctx.mcp.tool(name=MANAGE_TAILNET_WEBHOOKS)
     async def tailnet_webhooks(
@@ -296,7 +326,7 @@ def register_new_api_tools(ctx: ToolContext) -> None:
             raise TailscaleMCPError(f"Unknown operation: {operation}")
         except Exception as e:
             logger.error("Error in tailnet_webhooks", operation=operation, error=str(e))
-            raise TailscaleMCPError(f"Webhook operation failed: {e}") from e
+            _raise_auth_aware(operation, e, f"Webhook operation failed: {e}")
 
     @ctx.mcp.tool(name=MANAGE_TAILNET_SETTINGS)
     async def tailnet_settings(
@@ -321,7 +351,7 @@ def register_new_api_tools(ctx: ToolContext) -> None:
             raise TailscaleMCPError(f"Unknown operation: {operation}")
         except Exception as e:
             logger.error("Error in tailnet_settings", operation=operation, error=str(e))
-            raise TailscaleMCPError(f"Settings operation failed: {e}") from e
+            _raise_auth_aware(operation, e, f"Settings operation failed: {e}")
 
     @ctx.mcp.tool(name=MANAGE_TAILNET_CONTACTS)
     async def tailnet_contacts(
@@ -346,7 +376,7 @@ def register_new_api_tools(ctx: ToolContext) -> None:
             raise TailscaleMCPError(f"Unknown operation: {operation}")
         except Exception as e:
             logger.error("Error in tailnet_contacts", operation=operation, error=str(e))
-            raise TailscaleMCPError(f"Contact operation failed: {e}") from e
+            _raise_auth_aware(operation, e, f"Contact operation failed: {e}")
 
     logger.info("New API tools registered (invites, posture, device keys, logging, webhooks, settings, contacts)")
 

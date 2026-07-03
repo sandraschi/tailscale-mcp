@@ -1,6 +1,7 @@
 """SEP-1577 agentic workflows: sampling with tools (no mock tool paths)."""
 
 import logging
+import time
 from typing import Any
 
 import structlog
@@ -9,6 +10,7 @@ from fastmcp import Context
 from tailscalemcp.exceptions import TailscaleMCPError
 
 from ._base import ToolContext
+from ._helpers import build_auth_error_response, is_auth_error
 from ._tool_types import MaxAgenticIterations
 from .mcp_tool_names import (
     RUN_AGENTIC_TAILNET_WORKFLOW,
@@ -16,6 +18,8 @@ from .mcp_tool_names import (
 
 logger = structlog.get_logger(__name__)
 _log = logging.getLogger(__name__)
+
+_TOOL_PROCESS_STARTED_AT = time.time()
 
 
 def _success(
@@ -196,6 +200,24 @@ def register_sampling_tool(ctx: ToolContext) -> None:
             )
         except Exception as e:
             logger.exception("run_agentic_tailnet_workflow failed")
+            if is_auth_error(e):
+                payload = build_auth_error_response(
+                    "run_agentic_tailnet_workflow",
+                    e,
+                    server_started_at=_TOOL_PROCESS_STARTED_AT,
+                )
+                return _error(
+                    (
+                        "Tailscale API authentication failed (HTTP 401) during "
+                        "a tool call within the agentic workflow. This may be "
+                        "a stale key cached by this running server process "
+                        "rather than a bad key on disk."
+                    ),
+                    error_code="TAILSCALE_AUTH_FAILED",
+                    recovery_options=[
+                        opt["fix"] for opt in payload["recovery_options"]
+                    ],
+                )
             raise TailscaleMCPError(f"Agentic workflow failed: {e}") from e
 
     @mcp.tool()

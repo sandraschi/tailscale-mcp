@@ -1,10 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { type ToolInfo, callTool, listTools } from "@/common/api";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { listTools, callTool, type ToolInfo } from "@/common/api";
 import { Loader2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 export function ToolsExplorer() {
   const [tools, setTools] = useState<ToolInfo[]>([]);
@@ -28,7 +34,8 @@ export function ToolsExplorer() {
           if (data.tools?.length) setSelected(data.tools[0].name);
         }
       } catch (e) {
-        if (!cancelled) setListError(e instanceof Error ? e.message : String(e));
+        if (!cancelled)
+          setListError(e instanceof Error ? e.message : String(e));
       } finally {
         if (!cancelled) setListLoading(false);
       }
@@ -43,7 +50,8 @@ export function ToolsExplorer() {
     if (!q) return tools;
     return tools.filter(
       (t) =>
-        t.name.toLowerCase().includes(q) || (t.description || "").toLowerCase().includes(q)
+        t.name.toLowerCase().includes(q) ||
+        (t.description || "").toLowerCase().includes(q),
     );
   }, [tools, filter]);
 
@@ -72,16 +80,21 @@ export function ToolsExplorer() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-white">Tool explorer</h2>
+        <h2 className="text-2xl font-bold tracking-tight text-white">
+          Tool explorer
+        </h2>
         <p className="text-slate-400">
-          List MCP tools from the backend and invoke <span className="font-mono">/api/v1/tools/call</span>.
+          List MCP tools from the backend and invoke{" "}
+          <span className="font-mono">/api/v1/tools/call</span>.
         </p>
       </div>
 
       <Card className="border-slate-800 bg-slate-950/50">
         <CardHeader>
           <CardTitle className="text-white">Tools</CardTitle>
-          <CardDescription className="text-slate-400">Search and select a tool name.</CardDescription>
+          <CardDescription className="text-slate-400">
+            Search and select a tool name.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {listLoading && (
@@ -116,7 +129,9 @@ export function ToolsExplorer() {
                 </select>
               </div>
               {selectedTool && (
-                <p className="text-sm text-slate-400">{selectedTool.description}</p>
+                <p className="text-sm text-slate-400">
+                  {selectedTool.description}
+                </p>
               )}
               {selectedTool?.inputSchema != null && (
                 <div>
@@ -127,7 +142,9 @@ export function ToolsExplorer() {
                 </div>
               )}
               <div className="grid gap-2">
-                <Label className="text-slate-300">Arguments (JSON object)</Label>
+                <Label className="text-slate-300">
+                  Arguments (JSON object)
+                </Label>
                 <textarea
                   className="min-h-[120px] rounded-md border border-slate-800 bg-slate-900 px-3 py-2 font-mono text-sm text-slate-100"
                   value={argsJson}

@@ -1,6 +1,12 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { copyToClipboard } from "@/common/clipboard";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 const SNIPPETS: { title: string; description: string; body: string }[] = [
   {
@@ -12,7 +18,7 @@ const SNIPPETS: { title: string; description: string; body: string }[] = [
         arguments: { operation: "list", online_only: false },
       },
       null,
-      2
+      2,
     ),
   },
   {
@@ -28,7 +34,7 @@ const SNIPPETS: { title: string; description: string; body: string }[] = [
         },
       },
       null,
-      2
+      2,
     ),
   },
   {
@@ -40,7 +46,7 @@ const SNIPPETS: { title: string; description: string; body: string }[] = [
         arguments: { topic: "sampling", level: "intermediate" },
       },
       null,
-      2
+      2,
     ),
   },
   {
@@ -59,15 +65,18 @@ export function Runbook() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-white">Runbook</h2>
+        <h2 className="text-2xl font-bold tracking-tight text-white">
+          Runbook
+        </h2>
         <p className="text-slate-400">
-          <span className="text-slate-300">Runbook</span> is an ops term for a small cheat sheet: steps
-          and copy-paste commands you reuse when something needs doing (here: calling the API
-          without looking up JSON each time).
+          <span className="text-slate-300">Runbook</span> is an ops term for a
+          small cheat sheet: steps and copy-paste commands you reuse when
+          something needs doing (here: calling the API without looking up JSON
+          each time).
         </p>
         <p className="mt-2 text-slate-500 text-sm">
-          Agentic / SEP-1577 flows still need a client with sampling (see Help)—not everything here
-          maps 1:1 to REST.
+          Agentic / SEP-1577 flows still need a client with sampling (see
+          Help)—not everything here maps 1:1 to REST.
         </p>
       </div>
 
@@ -76,7 +85,9 @@ export function Runbook() {
           <Card key={s.title} className="border-slate-800 bg-slate-950/50">
             <CardHeader>
               <CardTitle className="text-lg text-white">{s.title}</CardTitle>
-              <CardDescription className="text-slate-400">{s.description}</CardDescription>
+              <CardDescription className="text-slate-400">
+                {s.description}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <pre className="max-h-64 overflow-auto rounded-md border border-slate-800 bg-slate-950 p-3 text-xs text-slate-300 whitespace-pre-wrap">

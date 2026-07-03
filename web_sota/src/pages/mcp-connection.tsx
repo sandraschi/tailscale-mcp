@@ -1,7 +1,13 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { API_BASE } from "@/common/api";
 import { copyToClipboard } from "@/common/clipboard";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { ExternalLink } from "lucide-react";
 
 const MCP_URL = `${API_BASE}/mcp`;
@@ -11,18 +17,23 @@ export function McpConnection() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-white">MCP &amp; API</h2>
+        <h2 className="text-2xl font-bold tracking-tight text-white">
+          MCP &amp; API
+        </h2>
         <p className="text-slate-400">
-          Backend base URL from <span className="font-mono">VITE_API_URL</span> (default{" "}
-          <span className="font-mono">http://127.0.0.1:10821</span>). Override in{" "}
-          <span className="font-mono">web_sota/.env</span> for local dev.
+          Backend base URL from <span className="font-mono">VITE_API_URL</span>{" "}
+          (default <span className="font-mono">http://127.0.0.1:10821</span>).
+          Override in <span className="font-mono">web_sota/.env</span> for local
+          dev.
         </p>
       </div>
 
       <Card className="border-slate-800 bg-slate-950/50">
         <CardHeader>
           <CardTitle className="text-white">Endpoints</CardTitle>
-          <CardDescription className="text-slate-400">Copy for MCP clients and REST tooling.</CardDescription>
+          <CardDescription className="text-slate-400">
+            Copy for MCP clients and REST tooling.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <EndpointRow label="API base" value={API_BASE} />
@@ -47,9 +58,12 @@ export function McpConnection() {
           </CardDescription>
         </CardHeader>
         <CardContent className="text-sm text-slate-400 font-mono break-all">
-          <code className="text-slate-300">uv run python -m tailscalemcp.transport</code>
+          <code className="text-slate-300">
+            uv run python -m tailscalemcp.transport
+          </code>
           <p className="mt-2 text-slate-500">
-            See repo README for full <span className="font-mono">mcp.json</span> examples.
+            See repo README for full <span className="font-mono">mcp.json</span>{" "}
+            examples.
           </p>
         </CardContent>
       </Card>

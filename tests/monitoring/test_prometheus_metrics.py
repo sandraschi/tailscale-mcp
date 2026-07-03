@@ -2,7 +2,6 @@
 Tests for Prometheus metrics functionality in the Tailscale MCP server.
 """
 
-import builtins
 import contextlib
 import sys
 from unittest.mock import MagicMock, patch
@@ -29,7 +28,7 @@ class TestPrometheusMetrics:
             with contextlib.suppress(Exception):
                 try:
                     registry.unregister(collector)
-                except Exception:
+                except Exception:  # noqa: S110
                     pass
         pc.REGISTRY._names_to_collectors.clear()
         pc.REGISTRY._collector_to_names.clear()

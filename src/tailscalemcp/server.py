@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import contextlib
 import os
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -19,11 +20,35 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 # Load .env FIRST, before any imports that may trigger os.getenv calls.
-# Config.py and mcp_server.py also load it, but doing it here ensures the
-# environment is populated before the FastAPI app starts serving requests.
-_env_path = Path(__file__).parent.parent.parent / ".env"
+# In frozen exe (_MEIPASS), resolve .env relative to cwd (install dir).
+# Also check the app data settings file for saved credentials.
+_env_path = Path.cwd() / ".env" if getattr(sys, "frozen", False) else Path(__file__).resolve().parent.parent.parent / ".env"
+if getattr(sys, "frozen", False) and not _env_path.exists():
+    # First run: copy .env.example → .env if available
+    _example = Path.cwd() / ".env.example"
+    if _example.exists():
+        _env_path.write_text(_example.read_text(encoding="utf-8"), encoding="utf-8")
+        print(f"[server] Created .env from .env.example at {_env_path}", flush=True)
+    else:
+        _repo_env = Path(__file__).resolve().parent.parent.parent / ".env"
+        if _repo_env.exists():
+            _env_path = _repo_env
+
 if _env_path.exists():
     load_dotenv(_env_path, override=False)
+
+# Also load from app data settings.json (written by Settings page)
+_settings_path = Path(os.environ.get("LOCALAPPDATA", ".")) / "com.sandraschi.tailscale-mcp" / "settings.json"
+if _settings_path.exists():
+    try:
+        import json
+        _settings = json.loads(_settings_path.read_text(encoding="utf-8"))
+        for k, v in _settings.items():
+            if v and not os.environ.get(k):
+                os.environ[k] = str(v)
+        print(f"[server] loaded {len(_settings)} settings from {_settings_path}", flush=True)
+    except Exception as exc:
+        print(f"[server] settings load failed: {exc}", flush=True)
 
 # Verify and log env state AFTER loading .env
 _key_check = (os.getenv("TAILSCALE_API_KEY") or "").strip()
@@ -40,41 +65,55 @@ setup_logging()
 logger = structlog.get_logger(__name__)
 
 # Build MCP ASGI app and capture lifespan for FastAPI
-mcp_app = tailscale_mcp_server.mcp.http_app(path="/mcp")
+if tailscale_mcp_server is not None:
+    mcp_app = tailscale_mcp_server.mcp.http_app(path="/mcp")
+else:
+    mcp_app = None
+    logger.warning("MCP server unavailable - running in degraded mode (no API key or tailnet configured)")
 
 # Reusable FastMCP Client — created once, not per-request
 _fastmcp_client: Any = None
 
 
 async def _get_client():
-    """Get or create the shared FastMCP Client (async — enters context manager)."""
+    """Get or create the shared FastMCP Client (async -- enters context manager)."""
     global _fastmcp_client
-    if _fastmcp_client is None:
-        from fastmcp.client import Client
+    if _fastmcp_client is not None:
+        return _fastmcp_client
+    if tailscale_mcp_server is None:
+        raise HTTPException(status_code=503, detail="MCP server not initialized - set API key in Settings")
+    from fastmcp.client import Client
 
-        _fastmcp_client = Client(tailscale_mcp_server.mcp)
-        await _fastmcp_client.__aenter__()
+    _fastmcp_client = Client(tailscale_mcp_server.mcp)
+    await _fastmcp_client.__aenter__()
     return _fastmcp_client
 
 app = FastAPI(
     title="Tailscale MCP Webapp Backend",
     version="2.0.2",
     description="REST API and MCP mount for Tailscale network controller",
-    lifespan=mcp_app.lifespan,
+    lifespan=mcp_app.lifespan if mcp_app is not None else None,
 )
+
+_tauri_desktop = os.environ.get("TAILSCALE_MCP_TAURI", "").lower() in ("1", "true", "yes")
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://127.0.0.1:10820",
         "http://localhost:10820",
+        "http://tauri.localhost",
+        "https://tauri.localhost",
+        "tauri://localhost",
     ],
+    allow_origin_regex=r"https?://tauri\.localhost(:\d+)?" if _tauri_desktop else None,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.mount("/mcp", mcp_app)
+if mcp_app is not None:
+    app.mount("/mcp", mcp_app)
 
 
 @app.get("/health")
@@ -184,12 +223,16 @@ class SettingsRequest(BaseModel):
 async def save_settings(body: SettingsRequest) -> dict[str, Any]:
     """Persist Tailscale API key and tailnet to .env file.
 
-    Writes TAILSCALE_API_KEY and TAILSCALE_TAILNET to the repo root .env,
-    updates os.environ for the running process, and patches the MCP server
-    instance. MCP tools that cached configs at startup may need a restart
+    Writes TAILSCALE_API_KEY and TAILSCALE_TAILNET to .env in the install
+    directory (cwd in frozen exe, repo root in dev), updates os.environ
+    for the running process, and patches the MCP server instance.
+    MCP tools that cached configs at startup may need a restart
     to use the new credentials.
     """
-    env_path = Path(__file__).parent.parent.parent / ".env"
+    if getattr(sys, "frozen", False):
+        env_path = Path.cwd() / ".env"
+    else:
+        env_path = Path(__file__).resolve().parent.parent.parent / ".env"
 
     lines: list[str] = []
     if env_path.exists():
@@ -213,10 +256,22 @@ async def save_settings(body: SettingsRequest) -> dict[str, Any]:
 
     env_path.write_text("".join(lines), encoding="utf-8")
 
+    # Also persist to app data dir (survives reinstall/temp cleanup)
+    _settings_dir = Path(os.environ.get("LOCALAPPDATA", ".")) / "com.sandraschi.tailscale-mcp"
+    _settings_dir.mkdir(parents=True, exist_ok=True)
+    (_settings_dir / "settings.json").write_text(
+        __import__("json").dumps({
+            "TAILSCALE_API_KEY": body.tailscale_api_key,
+            "TAILSCALE_TAILNET": body.tailscale_tailnet,
+        }, indent=2),
+        encoding="utf-8",
+    )
+
     os.environ["TAILSCALE_API_KEY"] = body.tailscale_api_key
     os.environ["TAILSCALE_TAILNET"] = body.tailscale_tailnet
 
-    tailscale_mcp_server.reload_credentials(body.tailscale_api_key, body.tailscale_tailnet)
+    if tailscale_mcp_server is not None:
+        tailscale_mcp_server.reload_credentials(body.tailscale_api_key, body.tailscale_tailnet)
 
     logger.info("tailscale credentials saved", tailnet=body.tailscale_tailnet)
 
@@ -260,6 +315,28 @@ def test_credentials(body: SettingsRequest) -> dict[str, Any]:
         return {"success": False, "reachable": False, "message": f"Connection failed: {safe}"}
 
 
+@app.get("/api/llm/providers")
+async def llm_providers() -> dict[str, Any]:
+    """Auto-discover local LLM providers (Ollama and LM Studio)."""
+    result: dict[str, list[dict[str, str]]] = {}
+    async with httpx.AsyncClient(timeout=5.0) as client:
+        for name, url in [("ollama", "http://127.0.0.1:11434/api/tags"), ("lm_studio", "http://127.0.0.1:1234/v1/models")]:
+            try:
+                r = await client.get(url)
+                if r.status_code == 200:
+                    data = r.json()
+                    models = data.get("models") or data.get("data") or []
+                    result[name] = [
+                        {"name": m.get("name") or m.get("id", f"model-{i}")}
+                        for i, m in enumerate(models[:20])
+                    ]
+                else:
+                    result[name] = []
+            except Exception:
+                result[name] = []
+    return result
+
+
 @app.get("/api/v1/sampling-status")
 async def sampling_status() -> dict[str, Any]:
     """Redacted sampling configuration for the webapp (no secrets)."""
@@ -278,6 +355,30 @@ async def sampling_status() -> dict[str, Any]:
         "sampling_model": model,
         "sampling_api_key_configured": bool(key),
         "use_client_llm": use_client,
+    }
+
+
+@app.get("/api/v1/diagnostics")
+async def diagnostics() -> dict[str, Any]:
+    """Comprehensive server diagnostics for CUA-NSIS and user-facing health."""
+    import time
+
+    import psutil
+    return {
+        "success": True,
+        "backend": {
+            "version": "2.1.0",
+            "port": 10821,
+            "api_key_configured": bool((os.getenv("TAILSCALE_API_KEY") or "").strip()),
+            "tailnet_configured": bool((os.getenv("TAILSCALE_TAILNET") or "").strip()),
+            "mcp_server_initialized": tailscale_mcp_server is not None,
+            "startup_time": time.time(),
+        },
+        "system": {
+            "cpu_percent": psutil.cpu_percent(interval=0.1),
+            "memory_percent": psutil.virtual_memory().percent,
+            "disk_percent": psutil.disk_usage("/").percent,
+        },
     }
 
 

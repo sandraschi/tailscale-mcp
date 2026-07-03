@@ -26,7 +26,7 @@ classifiers = [
     "Topic :: System :: Systems Administration",
 ]
 dependencies = [
-    "fastmcp>=3.2.0",
+    "fastmcp>=3.4.2,<4",
     "fastapi>=0.115.0",
     "py-key-value-aio[filetree]>=0.4.4,<0.5.0",  # FastMCP 3.2
     "pydantic>=2.0.0",
@@ -48,6 +48,7 @@ dev = [
     "ruff>=0.1.0",
     "mypy>=1.8.0",
     "pre-commit>=3.6.0",
+    "pyinstaller>=6.0.0",
     "types-requests>=2.32.0",
 ]
 
@@ -61,6 +62,7 @@ dev = [
     "ruff>=0.1.0",
     "mypy>=1.8.0",
     "pre-commit>=3.6.0",
+    "pyinstaller>=6.0.0",
     "types-requests>=2.32.0",
 ]
 
@@ -178,6 +180,14 @@ target-version = "py312"
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "S", "UP", "RUF"]
 ignore = ["S101", "B008"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S104", "S105", "S603", "S607", "E501", "E701", "E741"]
+"scripts/*" = ["S110", "S310", "S603", "S607", "E501", "E741"]
+"mcpb/src/*" = ["E501", "F821", "S110"]
+"src/tailscalemcp/utils/*" = ["S603"]
+"src/tailscalemcp/**" = ["E501"]
+"web_sota/backend/*" = ["E501", "E741"]
 
 [tool.ruff.format]
 quote-style = "double"

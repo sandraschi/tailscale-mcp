@@ -16,7 +16,23 @@ export default defineConfig({
     host: "127.0.0.1",
     proxy: {
       "/api": {
-        target: "http://127.0.0.1:11060",
+        target: "http://127.0.0.1:10821",
+        changeOrigin: true,
+      },
+      "/mcp": {
+        target: "http://127.0.0.1:10821",
+        changeOrigin: true,
+      },
+      "/docs": {
+        target: "http://127.0.0.1:10821",
+        changeOrigin: true,
+      },
+      "/openapi.json": {
+        target: "http://127.0.0.1:10821",
+        changeOrigin: true,
+      },
+      "/redoc": {
+        target: "http://127.0.0.1:10821",
         changeOrigin: true,
       },
     },

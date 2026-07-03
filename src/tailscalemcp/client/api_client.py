@@ -57,16 +57,22 @@ class TailscaleAPIClient:
             self.base_url = self.BASE_URL
 
         if not self.api_key:
-            raise ValueError(
-                "Tailscale API key is required. Set TAILSCALE_API_KEY environment "
+            logger.warning(
+                "Tailscale API key not set. Set TAILSCALE_API_KEY environment "
                 "variable, pass api_key parameter, or provide config."
             )
+            self.api_key = ""
+
+        self.api_key = self.api_key.strip()
 
         if not self.tailnet:
-            raise ValueError(
-                "Tailnet name is required. Set TAILSCALE_TAILNET environment "
+            logger.warning(
+                "Tailnet name not set. Set TAILSCALE_TAILNET environment "
                 "variable, pass tailnet parameter, or provide config."
             )
+            self.tailnet = ""
+
+        self.tailnet = self.tailnet.strip()
 
         self.api_base_url = f"{self.base_url}/api/v2/tailnet/{self.tailnet}"
 
@@ -130,6 +136,15 @@ class TailscaleAPIClient:
             TailscaleAPIError: If API request fails
         """
         url = f"{self.api_base_url}/{endpoint.lstrip('/')}"
+
+        if not self.api_key:
+            raise AuthenticationError(
+                "Tailscale API key not configured — set TAILSCALE_API_KEY in Settings or .env"
+            )
+        if not self.tailnet:
+            raise AuthenticationError(
+                "Tailnet not configured — set TAILSCALE_TAILNET in Settings or .env"
+            )
 
         headers = {
             "Authorization": f"Bearer {self.api_key}",
@@ -507,11 +522,16 @@ class TailscaleAPIClient:
         """List configuration audit logs for a tailnet."""
         t = tailnet or self.tailnet
         params: dict[str, str] = {}
-        if start: params["start"] = start
-        if end: params["end"] = end
-        if actor: params["actor"] = actor
-        if target: params["target"] = target
-        if event: params["event"] = event
+        if start:
+            params["start"] = start
+        if end:
+            params["end"] = end
+        if actor:
+            params["actor"] = actor
+        if target:
+            params["target"] = target
+        if event:
+            params["event"] = event
         data = await self._request("GET", f"/tailnet/{t}/logging/configuration", params=params or None)
         logs = data.get("logs", []) if isinstance(data, dict) else []
         logger.info("Configuration audit logs retrieved", count=len(logs))
@@ -526,8 +546,10 @@ class TailscaleAPIClient:
         """List network flow logs for a tailnet."""
         t = tailnet or self.tailnet
         params: dict[str, str] = {}
-        if start: params["start"] = start
-        if end: params["end"] = end
+        if start:
+            params["start"] = start
+        if end:
+            params["end"] = end
         data = await self._request("GET", f"/tailnet/{t}/logging/network", params=params or None)
         logs = data.get("logs", []) if isinstance(data, dict) else []
         logger.info("Network flow logs retrieved", count=len(logs))

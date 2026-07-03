@@ -1,8 +1,8 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { RefreshCw, Globe } from "lucide-react";
-import { useState, useEffect } from "react";
 import { callTool } from "@/common/api";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Globe, RefreshCw } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export function Funnels() {
   const [list, setList] = useState<unknown[]>([]);
@@ -40,18 +40,31 @@ export function Funnels() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-white">Funnels</h2>
-          <p className="text-slate-400">Public HTTPS exposure for local services</p>
+          <h2 className="text-2xl font-bold tracking-tight text-white">
+            Funnels
+          </h2>
+          <p className="text-slate-400">
+            Public HTTPS exposure for local services
+          </p>
         </div>
-        <Button variant="outline" className="border-slate-800 bg-slate-900/50 hover:bg-slate-800" onClick={fetchFunnels} disabled={loading}>
-          <RefreshCw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+        <Button
+          variant="outline"
+          className="border-slate-800 bg-slate-900/50 hover:bg-slate-800"
+          onClick={fetchFunnels}
+          disabled={loading}
+        >
+          <RefreshCw
+            className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`}
+          />
           Refresh
         </Button>
       </div>
 
       {error && (
         <Card className="border-amber-800 bg-amber-950/30">
-          <CardContent className="py-3 text-amber-200 text-sm">{error}</CardContent>
+          <CardContent className="py-3 text-amber-200 text-sm">
+            {error}
+          </CardContent>
         </Card>
       )}
 
@@ -65,7 +78,9 @@ export function Funnels() {
           </CardHeader>
           <CardContent>
             {list.length === 0 ? (
-              <p className="text-slate-400 text-sm">No funnels listed. Enable via Tailscale CLI or ACL.</p>
+              <p className="text-slate-400 text-sm">
+                No funnels listed. Enable via Tailscale CLI or ACL.
+              </p>
             ) : (
               <pre className="text-xs text-slate-300 overflow-auto max-h-64 rounded bg-slate-900/50 p-3">
                 {JSON.stringify(list, null, 2)}
@@ -76,7 +91,9 @@ export function Funnels() {
         {status && (
           <Card className="border-slate-800 bg-slate-950/50">
             <CardHeader>
-              <CardTitle className="text-sm font-medium text-slate-200">Funnel status</CardTitle>
+              <CardTitle className="text-sm font-medium text-slate-200">
+                Funnel status
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <pre className="text-xs text-slate-300 overflow-auto max-h-48 rounded bg-slate-900/50 p-3">

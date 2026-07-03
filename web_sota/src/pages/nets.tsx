@@ -1,12 +1,16 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { RefreshCw, Network, Globe } from "lucide-react";
-import { useState, useEffect } from "react";
 import { callTool } from "@/common/api";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Globe, Network, RefreshCw } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export function Nets() {
-  const [dnsConfig, setDnsConfig] = useState<Record<string, unknown> | null>(null);
-  const [topology, setTopology] = useState<Record<string, unknown> | null>(null);
+  const [dnsConfig, setDnsConfig] = useState<Record<string, unknown> | null>(
+    null,
+  );
+  const [topology, setTopology] = useState<Record<string, unknown> | null>(
+    null,
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,7 +24,9 @@ export function Nets() {
       ]);
       const dns = dnsRes.data as Record<string, unknown> | undefined;
       const topo = topoRes.data as Record<string, unknown> | undefined;
-      setDnsConfig((dns?.configuration as Record<string, unknown>) ?? dns ?? null);
+      setDnsConfig(
+        (dns?.configuration as Record<string, unknown>) ?? dns ?? null,
+      );
       setTopology((topo?.topology as Record<string, unknown>) ?? topo ?? null);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load network");
@@ -39,18 +45,29 @@ export function Nets() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-white">Networks</h2>
+          <h2 className="text-2xl font-bold tracking-tight text-white">
+            Networks
+          </h2>
           <p className="text-slate-400">DNS config and topology</p>
         </div>
-        <Button variant="outline" className="border-slate-800 bg-slate-900/50 hover:bg-slate-800" onClick={fetchNets} disabled={loading}>
-          <RefreshCw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+        <Button
+          variant="outline"
+          className="border-slate-800 bg-slate-900/50 hover:bg-slate-800"
+          onClick={fetchNets}
+          disabled={loading}
+        >
+          <RefreshCw
+            className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`}
+          />
           Refresh
         </Button>
       </div>
 
       {error && (
         <Card className="border-amber-800 bg-amber-950/30">
-          <CardContent className="py-3 text-amber-200 text-sm">{error}</CardContent>
+          <CardContent className="py-3 text-amber-200 text-sm">
+            {error}
+          </CardContent>
         </Card>
       )}
 

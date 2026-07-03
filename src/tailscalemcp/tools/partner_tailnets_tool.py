@@ -1,5 +1,6 @@
 """Partner tailnets / people & sharing — portmanteau tool."""
 
+import time
 from collections import defaultdict
 from typing import Any
 
@@ -8,10 +9,13 @@ import structlog
 from tailscalemcp.exceptions import TailscaleMCPError
 
 from ._base import ToolContext
+from ._helpers import build_auth_error_response, is_auth_error
 from ._tool_types import PartnerTailnetsOperation
 from .mcp_tool_names import SUMMARIZE_PARTNER_TAILNETS
 
 logger = structlog.get_logger(__name__)
+
+_TOOL_PROCESS_STARTED_AT = time.time()
 
 
 def _group_devices_by_login(
@@ -63,6 +67,7 @@ def register_partner_tailnets_tool(ctx: ToolContext) -> None:
             if operation == "summary":
                 users: list[dict[str, Any]] = []
                 users_error: str | None = None
+                users_error_recovery: dict[str, Any] | None = None
                 try:
                     users = await ctx.device_manager.list_users()
                 except Exception as e:
@@ -70,6 +75,10 @@ def register_partner_tailnets_tool(ctx: ToolContext) -> None:
                     logger.warning(
                         "partner_tailnets summary: users API failed", error=users_error
                     )
+                    if is_auth_error(e):
+                        users_error_recovery = build_auth_error_response(
+                            "summary", e, server_started_at=_TOOL_PROCESS_STARTED_AT
+                        )
 
                 devices = await ctx.device_manager.list_devices()
                 by_login = _group_devices_by_login(devices)
@@ -97,6 +106,12 @@ def register_partner_tailnets_tool(ctx: ToolContext) -> None:
                         "Users API failed - check API key scopes and tailnet admin role; "
                         "device grouping still shows node owners when present."
                     )
+                    if users_error_recovery:
+                        recs.append(
+                            "Users API failure looks like an auth error (HTTP 401) - "
+                            "see users_api_error_recovery.recovery_options to determine "
+                            "whether this is a stale-in-process key or a genuinely bad one."
+                        )
                 if unknown_type:
                     recs.append(
                         f"{len(unknown_type)} user(s) have nonstandard type values; "
@@ -126,6 +141,7 @@ def register_partner_tailnets_tool(ctx: ToolContext) -> None:
                     "tailnet": ctx.device_manager.tailnet,
                     "users": users,
                     "users_api_error": users_error,
+                    "users_api_error_recovery": users_error_recovery,
                     "counts": {
                         "users_total": len(users),
                         "users_member": len(members),
@@ -190,4 +206,17 @@ def register_partner_tailnets_tool(ctx: ToolContext) -> None:
             raise
         except Exception as e:
             logger.exception("tailscale_partner_tailnets failed")
+            if is_auth_error(e):
+                payload = build_auth_error_response(
+                    operation, e, server_started_at=_TOOL_PROCESS_STARTED_AT
+                )
+                raise TailscaleMCPError(
+                    message=(
+                        "Tailscale API authentication failed (HTTP 401). "
+                        "This may be a stale key cached by this running "
+                        "server process - see details.recovery_options."
+                    ),
+                    code=401,
+                    details=payload,
+                ) from e
             raise TailscaleMCPError(f"partner_tailnets failed: {e}") from e

@@ -1,0 +1,14 @@
+{
+    "product_name": "Tailscale MCP",
+    "install_dir": "%LOCALAPPDATA%\\Tailscale MCP",
+    "operator_exe": "tailscale-mcp-native.exe",
+    "backend_process_names": ["tailscale-mcp-native", "tailscale-mcp-backend"],
+    "backend_port": 10821,
+    "health_path": "/health",
+    "diagnostics_path": "/api/v1/diagnostics",
+    "feature_smoke_path": "/api/v1/status",
+    "window_title_re": "Tailscale MCP",
+    "nsis_glob": "native/target/release/bundle/nsis/Tailscale MCP_*_x64-setup.exe",
+    "bridge_ok_text": "REST bridge reachable",
+    "uninstall_registry_filter": "*Tailscale MCP*"
+}

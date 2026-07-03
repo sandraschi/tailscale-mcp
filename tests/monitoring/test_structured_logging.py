@@ -2,8 +2,6 @@
 Tests for structured logging functionality in the Tailscale MCP server.
 """
 
-import builtins
-import contextlib
 import json
 import logging
 import sys
@@ -129,7 +127,7 @@ class TestStructuredLogging:
             with open(log_file) as f:
                 lines = [line for line in f if line.strip()]
             assert len(lines) == 3
-            for i, line in enumerate(lines):
+            for _i, line in enumerate(lines):
                 log_data = json.loads(line.strip())
                 assert "timestamp" in log_data
                 assert "event" in log_data

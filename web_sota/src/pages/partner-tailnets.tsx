@@ -1,11 +1,17 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import * as Tabs from "@radix-ui/react-tabs";
-import { RefreshCw, Loader2, Users, Share2, Laptop } from "lucide-react";
 import { callTool } from "@/common/api";
 import { MermaidBlock } from "@/components/tailnet/mermaid-block";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import * as Tabs from "@radix-ui/react-tabs";
+import { Laptop, Loader2, RefreshCw, Share2, Users } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 
 function parseRecord(data: unknown): Record<string, unknown> | null {
   if (!data || typeof data !== "object") return null;
@@ -16,7 +22,8 @@ function devDataFromContent(res: {
   data?: unknown;
   content?: Array<{ text?: string }>;
 }): Record<string, unknown> | null {
-  if (res.data && typeof res.data === "object") return res.data as Record<string, unknown>;
+  if (res.data && typeof res.data === "object")
+    return res.data as Record<string, unknown>;
   const parts = res.content;
   if (!Array.isArray(parts)) return null;
   const text = parts.map((c) => c?.text).join("");
@@ -45,7 +52,9 @@ function buildPartnerMermaid(summary: Record<string, unknown> | null): string {
   if (Array.isArray(members)) {
     members.slice(0, 12).forEach((u, i) => {
       if (u && typeof u === "object") {
-        const login = String((u as Record<string, unknown>).loginName ?? `m${i}`).slice(0, 32);
+        const login = String(
+          (u as Record<string, unknown>).loginName ?? `m${i}`,
+        ).slice(0, 32);
         const id = `M${i}`;
         lines.push(`  ${id}["${login.replace(/"/g, "'")}"]`);
         lines.push(`  M --> ${id}`);
@@ -55,7 +64,9 @@ function buildPartnerMermaid(summary: Record<string, unknown> | null): string {
   if (Array.isArray(shared)) {
     shared.slice(0, 12).forEach((u, i) => {
       if (u && typeof u === "object") {
-        const login = String((u as Record<string, unknown>).loginName ?? `s${i}`).slice(0, 32);
+        const login = String(
+          (u as Record<string, unknown>).loginName ?? `s${i}`,
+        ).slice(0, 32);
         const id = `S${i}`;
         lines.push(`  ${id}["${login.replace(/"/g, "'")}"]`);
         lines.push(`  S --> ${id}`);
@@ -74,7 +85,9 @@ export function PartnerTailnets() {
     setLoading(true);
     setError(null);
     try {
-      const res = await callTool("summarize_partner_tailnets", { operation: "summary" });
+      const res = await callTool("summarize_partner_tailnets", {
+        operation: "summary",
+      });
       const raw = parseRecord(res.data) ?? devDataFromContent(res);
       if (raw && raw.success === false) {
         setError(String(raw.error ?? "Unknown error"));
@@ -104,10 +117,13 @@ export function PartnerTailnets() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-white">Partner tailnets</h2>
+          <h2 className="text-2xl font-bold tracking-tight text-white">
+            Partner tailnets
+          </h2>
           <p className="text-slate-400">
-            Members vs tailnet-shared users (Admin API), plus devices grouped by node owner. Pending
-            invites live in the console — not always in the API.
+            Members vs tailnet-shared users (Admin API), plus devices grouped by
+            node owner. Pending invites live in the console — not always in the
+            API.
           </p>
         </div>
         <Button
@@ -117,18 +133,26 @@ export function PartnerTailnets() {
           disabled={loading}
           onClick={() => void load()}
         >
-          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+          {loading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <RefreshCw className="h-4 w-4" />
+          )}
           <span className="ml-2">Refresh</span>
         </Button>
       </div>
 
       {error && (
         <Card className="border-amber-800 bg-amber-950/20">
-          <CardContent className="py-3 text-sm text-amber-200">{error}</CardContent>
+          <CardContent className="py-3 text-sm text-amber-200">
+            {error}
+          </CardContent>
         </Card>
       )}
 
-      {summary && summary.users_api_error != null && String(summary.users_api_error) !== "" ? (
+      {summary &&
+      summary.users_api_error != null &&
+      String(summary.users_api_error) !== "" ? (
         <Card className="border-amber-800 bg-amber-950/20">
           <CardContent className="py-3 text-sm text-amber-200">
             Users API: {String(summary.users_api_error)}
@@ -143,11 +167,16 @@ export function PartnerTailnets() {
               <Users className="h-5 w-5 text-emerald-400" />
               Members
             </CardTitle>
-            <CardDescription className="text-slate-500">type=member</CardDescription>
+            <CardDescription className="text-slate-500">
+              type=member
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-semibold text-white">
-              {String((summary?.counts as Record<string, unknown> | undefined)?.users_member ?? "—")}
+              {String(
+                (summary?.counts as Record<string, unknown> | undefined)
+                  ?.users_member ?? "—",
+              )}
             </p>
           </CardContent>
         </Card>
@@ -157,11 +186,16 @@ export function PartnerTailnets() {
               <Share2 className="h-5 w-5 text-sky-400" />
               Shared into tailnet
             </CardTitle>
-            <CardDescription className="text-slate-500">type=shared</CardDescription>
+            <CardDescription className="text-slate-500">
+              type=shared
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-semibold text-white">
-              {String((summary?.counts as Record<string, unknown> | undefined)?.users_shared ?? "—")}
+              {String(
+                (summary?.counts as Record<string, unknown> | undefined)
+                  ?.users_shared ?? "—",
+              )}
             </p>
           </CardContent>
         </Card>
@@ -171,11 +205,16 @@ export function PartnerTailnets() {
               <Laptop className="h-5 w-5 text-violet-400" />
               Devices
             </CardTitle>
-            <CardDescription className="text-slate-500">All nodes</CardDescription>
+            <CardDescription className="text-slate-500">
+              All nodes
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-semibold text-white">
-              {String((summary?.counts as Record<string, unknown> | undefined)?.devices ?? "—")}
+              {String(
+                (summary?.counts as Record<string, unknown> | undefined)
+                  ?.devices ?? "—",
+              )}
             </p>
           </CardContent>
         </Card>
@@ -215,15 +254,22 @@ export function PartnerTailnets() {
               <CardTitle className="text-white">Mermaid overview</CardTitle>
               <CardDescription>
                 High-level map — not a geographic map. For full topology see{" "}
-                <Link to="/my-tailnet" className="text-blue-400 hover:text-blue-300">
+                <Link
+                  to="/my-tailnet"
+                  className="text-blue-400 hover:text-blue-300"
+                >
                   My tailnet
                 </Link>
                 .
               </CardDescription>
             </CardHeader>
             <CardContent className="min-h-[280px] overflow-auto">
-              {mermaid ? <MermaidBlock chart={mermaid} /> : (
-                <p className="text-slate-500">Load data to render the diagram.</p>
+              {mermaid ? (
+                <MermaidBlock chart={mermaid} />
+              ) : (
+                <p className="text-slate-500">
+                  Load data to render the diagram.
+                </p>
               )}
             </CardContent>
           </Card>
@@ -261,7 +307,9 @@ export function PartnerTailnets() {
                   ))}
                 </ul>
               ) : (
-                <p className="text-slate-500">No hints — data looks consistent.</p>
+                <p className="text-slate-500">
+                  No hints — data looks consistent.
+                </p>
               )}
             </CardContent>
           </Card>

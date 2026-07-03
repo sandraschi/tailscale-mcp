@@ -176,8 +176,8 @@ class TailscaleMCPServer:
                     try:
                         self.mcp.add_provider(create_proxy(url))
                         _bridge_proxies.append(url)
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        logger.warning("Bridge proxy failed", url=url, error=str(e))
 
         # Configure DiskStore for persistent storage (if available)
         # FastMCP may provide its own storage, but we'll use DiskStore directly for guaranteed persistence
@@ -545,13 +545,22 @@ class TailscaleMCPServer:
 
 
 # Server instance for direct execution
-server = TailscaleMCPServer()
+server = None
+_init_failure = None
+try:
+    server = TailscaleMCPServer()
+    logger.info("Tailscale MCP Server initialized successfully")
+except Exception as e:
+    logger.error("Failed to initialize Tailscale MCP Server", error=str(e))
+    _init_failure = str(e)
 
 
 async def main():
     """Main entry point for the MCP server."""
+    if server is None:
+        logger.error("Cannot start: server initialization failed: %s", _init_failure)
+        return
     async with server:
-        # Server will run until interrupted
         pass
 
 

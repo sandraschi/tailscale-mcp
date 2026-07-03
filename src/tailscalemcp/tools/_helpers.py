@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any
 
 import structlog
 
+from tailscalemcp.exceptions import AuthenticationError, TailscaleMCPError
 from tailscalemcp.version import __version__
 
 if TYPE_CHECKING:
@@ -15,6 +16,176 @@ if TYPE_CHECKING:
     from tailscalemcp.monitoring import TailscaleMonitor
 
 logger = structlog.get_logger(__name__)
+
+
+def is_auth_error(exc: BaseException) -> bool:
+    """Detect a 401-shaped failure anywhere in the exception chain.
+
+    ``device_management.py`` and the portmanteau tool layer re-wrap every
+    failure into a flat ``TailscaleMCPError`` (see ``f"Failed to ...: {e}"``
+    patterns throughout). That loses the distinction between an auth failure
+    and any other failure by the time it reaches the tool boundary. This
+    walks ``__cause__`` to find the original ``AuthenticationError`` (raised
+    correctly in ``client/api_client.py`` on HTTP 401) even after it has been
+    wrapped one or more times.
+
+    Args:
+        exc: The exception caught at the tool boundary.
+
+    Returns:
+        True if an ``AuthenticationError`` (HTTP 401) is anywhere in the chain,
+        or the message text matches the known 401 phrasing as a fallback for
+        call sites that stringify before re-raising.
+    """
+    seen: set[int] = set()
+    current: BaseException | None = exc
+    while current is not None and id(current) not in seen:
+        seen.add(id(current))
+        if isinstance(current, AuthenticationError):
+            return True
+        current = current.__cause__
+    # Fallback: some call sites stringify the original exception into a new
+    # TailscaleMCPError message rather than chaining via `raise ... from e`,
+    # which breaks __cause__ walking. Match on the known message text.
+    msg = str(exc).lower()
+    return "invalid api key" in msg or "authentication failed" in msg
+
+
+def build_auth_error_response(
+    operation: str,
+    exc: BaseException,
+    *,
+    server_started_at: float | None = None,
+) -> dict[str, Any]:
+    """Build a conversational, actionable response for a 401 auth failure.
+
+    Distinguishes the two distinct root causes that both surface as HTTP 401
+    and tells the caller which is more likely, rather than a flat
+    "Invalid API key or authentication failed" string that gives no signal
+    on what to actually do next:
+
+    1. **Stale in-process credentials** -- the running MCP server process
+       cached ``TAILSCALE_API_KEY`` from ``.env`` at startup (``load_dotenv()``
+       runs once, at import time, in ``config.py`` / ``mcp_server.py``). If the
+       key was rotated or ``.env`` edited *after* this process started, the
+       live process is holding a key the file no longer has, or the Tailscale
+       API has since invalidated. This is the more common cause for a
+       long-lived stdio-spawned server (e.g. one Claude Desktop launched days
+       ago) and the fix is a process restart, not a new key.
+    2. **Genuinely invalid/expired key** -- the key in ``.env`` itself is bad
+       (revoked, past its 90-day expiry, wrong tailnet). Fix is to mint a new
+       key in the Tailscale admin console and update ``.env``.
+
+    Args:
+        operation: The portmanteau sub-operation that failed (for context).
+        exc: The caught exception (any depth of wrapping; see ``is_auth_error``).
+        server_started_at: Optional unix timestamp of when this server process
+            started, if known, to make the "likely stale" framing concrete.
+
+    Returns:
+        Dict with ``operation``, ``error``, ``error_type="authentication"``,
+        and ``recovery_options`` -- a list of dicts each with ``cause``,
+        ``likelihood``, ``check``, and ``fix`` keys so a caller (human or
+        agent) can act without guessing which of the two causes applies.
+    """
+    age_note = ""
+    if server_started_at is not None:
+        age_hours = (time.time() - server_started_at) / 3600
+        if age_hours > 0.08:  # > ~5 minutes
+            age_note = (
+                f" This server process has been running for "
+                f"{age_hours:.1f} hours - if credentials were rotated "
+                f"since then, this is almost certainly the cause."
+            )
+
+    return {
+        "operation": operation,
+        "error": str(exc),
+        "error_type": "authentication",
+        "summary": (
+            "Tailscale API rejected the request with HTTP 401. This can mean "
+            "either the key on disk is genuinely bad, or this running server "
+            "process is holding a stale key it loaded at startup and never "
+            "refreshed." + age_note
+        ),
+        "recovery_options": [
+            {
+                "cause": "stale_in_process_credentials",
+                "likelihood": (
+                    "high if this server has been running more than a few "
+                    "minutes and credentials were changed since"
+                ),
+                "check": (
+                    "Test the key on disk directly: Invoke-RestMethod -Uri "
+                    "'https://api.tailscale.com/api/v2/tailnet/<tailnet>/devices' "
+                    "-Headers @{Authorization=\"Bearer <key from .env>\"}. "
+                    "If that succeeds but this tool still fails, the key is "
+                    "fine and the running process is stale."
+                ),
+                "fix": (
+                    "Restart the MCP server process so it re-reads .env "
+                    "(load_dotenv() only runs once, at import time). For a "
+                    "stdio-spawned server this means restarting the MCP host "
+                    "(e.g. Claude Desktop); for the webapp-mounted instance, "
+                    "POST new credentials to /api/v1/settings, which calls "
+                    "reload_credentials() and patches every cached client."
+                ),
+            },
+            {
+                "cause": "invalid_or_expired_key",
+                "likelihood": "if the direct API test above also fails",
+                "check": (
+                    "Tailscale API keys expire (90 days by default unless a "
+                    "longer-lived key was created). Check key status at "
+                    "https://login.tailscale.com/admin/settings/keys"
+                ),
+                "fix": (
+                    "Generate a new API key at "
+                    "https://login.tailscale.com/admin/settings/keys, update "
+                    "TAILSCALE_API_KEY in the repo-root .env, then restart "
+                    "the server process (see stale_in_process_credentials "
+                    "fix)."
+                ),
+            },
+        ],
+    }
+
+
+def raise_or_wrap_auth_aware(
+    operation: str, exc: Exception, fallback_message: str
+) -> TailscaleMCPError:
+    """Build a TailscaleMCPError carrying recovery_options when exc is a 401.
+
+    Use at tool-module exception boundaries (the ``except Exception as e:``
+    blocks in files like ``device_tool.py``) in place of a bare
+    ``raise TailscaleMCPError(fallback_message) from e``. Preserves the
+    existing flat-string behavior for non-auth errors so this is a drop-in
+    replacement with no behavior change outside the 401 case.
+
+    Args:
+        operation: The sub-operation name, for the response payload.
+        exc: The caught exception.
+        fallback_message: The existing flat message to use for non-auth errors.
+
+    Returns:
+        A TailscaleMCPError. For auth errors, ``details`` carries the full
+        conversational payload from ``build_auth_error_response`` so it
+        survives ``to_dict()`` and reaches the MCP client; the top-level
+        ``message`` stays short since FastMCP error surfaces are often
+        single-line.
+    """
+    if is_auth_error(exc):
+        payload = build_auth_error_response(operation, exc)
+        return TailscaleMCPError(
+            message=(
+                "Tailscale API authentication failed (HTTP 401). This may "
+                "be a stale key cached by this running server process "
+                "rather than a bad key on disk - see details.recovery_options."
+            ),
+            code=401,
+            details=payload,
+        )
+    return TailscaleMCPError(fallback_message)
 
 
 async def generate_help_content(
@@ -348,7 +519,7 @@ async def generate_mermaid_diagram(
                     if isinstance(funnel, dict) and "port" in funnel:
                         active_funnels[funnel["port"]] = funnel
             except Exception:
-                pass
+                logger.debug("Funnel list unavailable (non-critical), continuing with empty funnels")
 
         # Build Mermaid diagram
         lines = ["graph TB"]
@@ -469,7 +640,6 @@ async def generate_mermaid_diagram(
         return "\n".join(lines)
 
     except Exception as e:
-        logger = structlog.get_logger(__name__)
         logger.warning("Failed to generate Mermaid diagram", error=str(e))
         return f"%% Error generating diagram: {e}"
 
@@ -658,6 +828,9 @@ async def generate_status_info(
 
     except Exception as e:
         logger.error("Error generating status information", error=str(e))
+        auth_recovery = None
+        if is_auth_error(e):
+            auth_recovery = build_auth_error_response("status", e)
 
         # Still try to get MCP server info even if other operations fail
         try:
@@ -738,9 +911,23 @@ async def generate_status_info(
 
         return {
             "error": f"Failed to generate status: {e!s}",
+            "error_type": "authentication" if auth_recovery else None,
+            "recovery_options": auth_recovery["recovery_options"]
+            if auth_recovery
+            else None,
             "system": {"status": "error"},
             "mcp_server": mcp_server_info,
-            "devices": {"total": 0, "online": 0, "offline": 0},
+            "devices": {
+                "total": 0,
+                "online": 0,
+                "offline": 0,
+                "note": (
+                    "0 devices shown is a side effect of the failure above, "
+                    "not necessarily an empty tailnet - check error/recovery_options."
+                )
+                if auth_recovery
+                else None,
+            },
             "network": {"connectivity": "unknown"},
             "services": {"api": "error"},
             "health": {"overall": "error"},

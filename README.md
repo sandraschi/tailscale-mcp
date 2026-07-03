@@ -119,6 +119,7 @@ Set `TAILSCALE_API_KEY` and `TAILSCALE_TAILNET` in your environment or `.env` be
 |--------|----------|
 | Install, env, clients, Webapp | [docs/INSTALL.md](docs/INSTALL.md) |
 | Tailscale concepts | [docs/WHAT_IS_TAILSCALE.md](docs/WHAT_IS_TAILSCALE.md) |
+| **Funnel / Taildrop / Services / Peer Relays — what each does, when to use it** | **[docs/FEATURES.md](docs/FEATURES.md)** |
 | Product scope and sampling | [docs/PRD.md](docs/PRD.md) |
 | Webapp routes and ports | [docs/WEBAPP.md](docs/WEBAPP.md) |
 | Architecture | [docs/ARCHITECTURE_AND_DESIGN.md](docs/ARCHITECTURE_AND_DESIGN.md) |

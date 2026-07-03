@@ -1,0 +1,49 @@
+{
+    "$schema": "https://schema.tauri.app/config/2",
+    "productName": "Tailscale MCP",
+    "version": "0.1.0",
+    "identifier": "com.sandraschi.tailscale-mcp",
+    "build": {
+        "frontendDist": "../web_sota/dist",
+        "devUrl": "http://127.0.0.1:10820",
+        "beforeDevCommand": "npm --prefix ../web_sota run dev -- --port 10820 --host 127.0.0.1",
+        "beforeBuildCommand": "pwsh -NoProfile -Command \"$env:VITE_API_URL='http://127.0.0.1:10821'; npm --prefix ../web_sota run build\""
+    },
+    "app": {
+        "windows": [
+            {
+                "label": "main",
+                "title": "Tailscale MCP",
+                "width": 1280,
+                "height": 860,
+                "minWidth": 700,
+                "minHeight": 500,
+                "resizable": true
+            }
+        ],
+        "security": {
+            "csp": null
+        }
+    },
+    "bundle": {
+        "active": true,
+        "targets": ["nsis"],
+        "icon": ["icons/icon.png", "icons/icon.ico"],
+        "resources": [
+            "resources/tailscale-mcp-backend.exe",
+            "resources/.env.example"],
+        "windows": {
+            "webviewInstallMode": {
+                "type": "skip"
+            },
+            "nsis": {
+                "installMode": "currentUser",
+                "installerHooks": "./windows/hooks.nsh"
+            }
+        }
+    },
+    "plugins": {}
+}
+
+
+

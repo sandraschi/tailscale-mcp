@@ -1,8 +1,9 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { RefreshCw, Activity, Cpu } from "lucide-react";
-import { useState, useEffect } from "react";
 import { callTool } from "@/common/api";
+import { JsonView } from "@/components/ui/json-view";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Activity, Cpu, RefreshCw } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export function Stats() {
   const [status, setStatus] = useState<Record<string, unknown> | null>(null);
@@ -39,11 +40,22 @@ export function Stats() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-white">Stats</h2>
-          <p className="text-slate-400">Network status and metrics from Tailscale</p>
+          <h2 className="text-2xl font-bold tracking-tight text-white">
+            Stats
+          </h2>
+          <p className="text-slate-400">
+            Network status and metrics from Tailscale
+          </p>
         </div>
-        <Button variant="outline" className="border-slate-800 bg-slate-900/50 hover:bg-slate-800" onClick={fetchStats} disabled={loading}>
-          <RefreshCw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+        <Button
+          variant="outline"
+          className="border-slate-800 bg-slate-900/50 hover:bg-slate-800"
+          onClick={fetchStats}
+          disabled={loading}
+        >
+          <RefreshCw
+            className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`}
+          />
           Refresh
         </Button>
       </div>
@@ -65,9 +77,16 @@ export function Stats() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <pre className="text-xs text-slate-300 overflow-auto max-h-64 rounded bg-slate-900/50 p-3">
-              {status ? JSON.stringify(status, null, 2) : "—"}
-            </pre>
+            <JsonView data={status} title="Status" render={() => (
+              <div className="space-y-2 text-sm">
+                {status && Object.entries(status).map(([k, v]) => (
+                  <div key={k} className="flex justify-between border-b border-slate-800/50 py-1">
+                    <span className="text-slate-400">{k}</span>
+                    <span className="text-slate-200 font-mono text-xs">{String(v ?? "—")}</span>
+                  </div>
+                ))}
+              </div>
+            )} />
           </CardContent>
         </Card>
         <Card className="border-slate-800 bg-slate-950/50">
@@ -78,9 +97,7 @@ export function Stats() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <pre className="text-xs text-slate-300 overflow-auto max-h-64 rounded bg-slate-900/50 p-3">
-              {metrics ? JSON.stringify(metrics, null, 2) : "—"}
-            </pre>
+            <JsonView data={metrics} title="Metrics" />
           </CardContent>
         </Card>
       </div>

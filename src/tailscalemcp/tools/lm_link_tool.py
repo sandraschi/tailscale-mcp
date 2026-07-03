@@ -1,14 +1,18 @@
 """LM Link tool: Tailscale + LM Studio remote local LLM (Feb 2026)."""
 
+import time
 from typing import Any
 
 import structlog
 
 from ._base import ToolContext
+from ._helpers import build_auth_error_response, is_auth_error
 from ._tool_types import LmLinkOperation
 from .mcp_tool_names import GET_LM_LINK
 
 logger = structlog.get_logger(__name__)
+
+_TOOL_PROCESS_STARTED_AT = time.time()
 
 LM_LINK_DOC = """
 LM Link (Feb 2026) is a Tailscale + LM Studio partnership feature for secure remote
@@ -74,6 +78,21 @@ def register_lm_link_tool(ctx: ToolContext) -> None:
                 }
             except Exception as e:
                 logger.warning("LM Link readiness check failed", error=str(e))
+                if is_auth_error(e):
+                    payload = build_auth_error_response(
+                        "readiness", e, server_started_at=_TOOL_PROCESS_STARTED_AT
+                    )
+                    return {
+                        "operation": "readiness",
+                        "tailscale_ok": False,
+                        "error_type": "authentication",
+                        **payload,
+                        "message": (
+                            "Tailscale API authentication failed - see "
+                            "recovery_options for stale-credentials vs "
+                            "invalid-key diagnosis."
+                        ),
+                    }
                 return {
                     "operation": "readiness",
                     "tailscale_ok": False,

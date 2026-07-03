@@ -76,7 +76,8 @@ export function TailnetOrbit({ devices }: Props) {
         </div>
 
         <p className="absolute bottom-3 left-0 right-0 text-center text-[11px] text-slate-500">
-          Decorative layout — not geographic. Use the Mermaid tab for topology-style detail.
+          Decorative layout — not geographic. Use the Mermaid tab for
+          topology-style detail.
         </p>
       </div>
     </div>

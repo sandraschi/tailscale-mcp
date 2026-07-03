@@ -1,12 +1,18 @@
-import { useCallback, useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import * as Tabs from "@radix-ui/react-tabs";
-import { RefreshCw, Radar, Loader2 } from "lucide-react";
 import { callTool } from "@/common/api";
 import { MermaidBlock } from "@/components/tailnet/mermaid-block";
 import { TailnetOrbit } from "@/components/tailnet/tailnet-orbit";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import type { TailnetDevice } from "@/types/tailnet";
+import * as Tabs from "@radix-ui/react-tabs";
+import { Loader2, Radar, RefreshCw } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 function parseToolData(data: unknown): Record<string, unknown> | null {
   if (!data || typeof data !== "object") return null;
@@ -33,13 +39,12 @@ function extractMermaid(raw: Record<string, unknown> | null): string | null {
 }
 
 function buildFallbackMermaid(devices: TailnetDevice[]): string {
-  const lines = [
-    "flowchart TB",
-    "  TN[Tailnet]",
-  ];
+  const lines = ["flowchart TB", "  TN[Tailnet]"];
   devices.slice(0, 48).forEach((d, i) => {
     const id = `D${i}`;
-    const safe = (d.name ?? d.id ?? `node-${i}`).replace(/"/g, "'").slice(0, 40);
+    const safe = (d.name ?? d.id ?? `node-${i}`)
+      .replace(/"/g, "'")
+      .slice(0, 40);
     const state = d.online ? "online" : "offline";
     lines.push(`  ${id}["${safe}<br/>${state}"]`);
     lines.push(`  TN --> ${id}`);
@@ -74,7 +79,9 @@ export function MyTailnet() {
       const list = extractDevices(devData);
       setDevices(list);
 
-      const stData = parseToolData(statusRes.data ?? devDataFromContent(statusRes));
+      const stData = parseToolData(
+        statusRes.data ?? devDataFromContent(statusRes),
+      );
       let md = extractMermaid(stData);
       if (!md && list.length) {
         md = buildFallbackMermaid(list);
@@ -97,10 +104,12 @@ export function MyTailnet() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-white">My tailnet</h2>
+          <h2 className="text-2xl font-bold tracking-tight text-white">
+            My tailnet
+          </h2>
           <p className="text-slate-400">
-            Mermaid topology from the MCP server (or a simple fallback graph). Orbit view is a stylized
-            3D CSS scene — not real geography.
+            Mermaid topology from the MCP server (or a simple fallback graph).
+            Orbit view is a stylized 3D CSS scene — not real geography.
           </p>
         </div>
         <Button
@@ -110,14 +119,20 @@ export function MyTailnet() {
           disabled={loading}
           onClick={() => void load()}
         >
-          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+          {loading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <RefreshCw className="h-4 w-4" />
+          )}
           <span className="ml-2">Refresh</span>
         </Button>
       </div>
 
       {error && (
         <Card className="border-amber-800 bg-amber-950/20">
-          <CardContent className="py-3 text-sm text-amber-200">{error}</CardContent>
+          <CardContent className="py-3 text-sm text-amber-200">
+            {error}
+          </CardContent>
         </Card>
       )}
 
@@ -127,7 +142,8 @@ export function MyTailnet() {
           <div>
             <CardTitle className="text-white">Visualization</CardTitle>
             <CardDescription className="text-slate-400">
-              Full Unity / WebGL twin remains on <span className="text-slate-300">Visualizer</span> when wired.
+              Full Unity / WebGL twin remains on{" "}
+              <span className="text-slate-300">Visualizer</span> when wired.
             </CardDescription>
           </div>
         </CardHeader>
@@ -156,7 +172,13 @@ export function MyTailnet() {
                 <MermaidBlock chart={mermaid} />
               </Tabs.Content>
               <Tabs.Content value="orbit">
-                <TailnetOrbit devices={devices.length ? devices : [{ name: "No devices", online: false }]} />
+                <TailnetOrbit
+                  devices={
+                    devices.length
+                      ? devices
+                      : [{ name: "No devices", online: false }]
+                  }
+                />
               </Tabs.Content>
             </Tabs.Root>
           )}
@@ -165,22 +187,30 @@ export function MyTailnet() {
 
       <Card className="border-slate-800 bg-slate-950/50">
         <CardHeader>
-          <CardTitle className="text-sm text-slate-300">Devices ({devices.length})</CardTitle>
+          <CardTitle className="text-sm text-slate-300">
+            Devices ({devices.length})
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="max-h-48 space-y-1 overflow-y-auto text-sm text-slate-400">
             {devices.slice(0, 100).map((d) => (
               <li key={d.id ?? d.name} className="font-mono text-xs">
-                <span className={d.online ? "text-emerald-400" : "text-slate-500"}>
+                <span
+                  className={d.online ? "text-emerald-400" : "text-slate-500"}
+                >
                   {d.online ? "●" : "○"}
                 </span>{" "}
                 {d.name ?? d.id ?? "?"}
               </li>
             ))}
             {devices.length > 100 && (
-              <li className="text-slate-500">… and {devices.length - 100} more</li>
+              <li className="text-slate-500">
+                … and {devices.length - 100} more
+              </li>
             )}
-            {!devices.length && !loading && <li className="text-slate-500">No devices returned.</li>}
+            {!devices.length && !loading && (
+              <li className="text-slate-500">No devices returned.</li>
+            )}
           </ul>
         </CardContent>
       </Card>
@@ -193,7 +223,8 @@ function devDataFromContent(res: {
   data?: unknown;
   content?: Array<{ text?: string }>;
 }): Record<string, unknown> | null {
-  if (res.data && typeof res.data === "object") return res.data as Record<string, unknown>;
+  if (res.data && typeof res.data === "object")
+    return res.data as Record<string, unknown>;
   const parts = res.content;
   if (!Array.isArray(parts)) return null;
   const text = parts.map((c) => c?.text).join("");

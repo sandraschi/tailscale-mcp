@@ -1,0 +1,38 @@
+{
+  "manifest_version": "0.2",
+  "name": "tailscale-mcp",
+  "version": "2.1.0",
+  "description": "FastMCP 3.2+ compliant Tailscale network controller with persistent storage",
+  "author": { "name": "sandraschi" },
+  "server": {
+    "type": "python",
+    "entry_point": "run_server.py",
+    "mcp_config": {
+      "command": "uv",
+      "args": ["run","--directory","${PWD}","run_server.py"],
+      "env": {
+        "PYTHONPATH": "${PWD}/src",
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  },
+  "tools": [
+    { "name": "health", "description": "health" },
+    { "name": "api_status", "description": "api_status" },
+    { "name": "list_tools", "description": "list_tools" },
+    { "name": "call_tool", "description": "call_tool" },
+    { "name": "save_settings", "description": "save_settings" },
+    { "name": "test_credentials", "description": "test_credentials" },
+    { "name": "sampling_status", "description": "sampling_status" },
+    { "name": "llm_health", "description": "llm_health" },
+    { "name": "chat_completions", "description": "chat_completions" },
+    { "name": "log_status", "description": "log_status" },
+    { "name": "log_search", "description": "log_search" },
+    { "name": "log_export", "description": "log_export" },
+    { "name": "main_stdio", "description": "main(stdio)" },
+    { "name": "main_http", "description": "main(http)" },
+    { "name": "main_sse", "description": "main(sse)" },
+    { "name": "tailscale_agentic_workflow", "description": "tailscale_agentic_workflow" },
+    { "name": "tailscale_sampling", "description": "tailscale_sampling" }
+  ]
+}

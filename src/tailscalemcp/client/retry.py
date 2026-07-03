@@ -70,7 +70,7 @@ class RetryHandler:
 
         if self.jitter:
             # Add random jitter (0-25% of delay)
-            jitter_amount = delay * 0.25 * random.random()
+            jitter_amount = delay * 0.25 * random.random()  # noqa: S311
             delay += jitter_amount
 
         return min(delay, 60.0)  # Cap at 60 seconds

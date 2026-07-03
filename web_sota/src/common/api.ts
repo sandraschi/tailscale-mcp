@@ -14,8 +14,12 @@ export async function listTools(): Promise<{ tools: ToolInfo[] }> {
 
 export async function callTool(
   name: string,
-  args: Record<string, unknown> = {}
-): Promise<{ data?: unknown; content?: Array<{ text?: string }>; is_error?: boolean }> {
+  args: Record<string, unknown> = {},
+): Promise<{
+  data?: unknown;
+  content?: Array<{ text?: string }>;
+  is_error?: boolean;
+}> {
   const res = await fetch(`${API_BASE}/api/v1/tools/call`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -57,11 +61,14 @@ export async function fetchLlmHealth(): Promise<LlmHealth> {
   return res.json();
 }
 
-export type ChatMessage = { role: "user" | "assistant" | "system"; content: string };
+export type ChatMessage = {
+  role: "user" | "assistant" | "system";
+  content: string;
+};
 
 export async function chatComplete(
   messages: ChatMessage[],
-  options?: { model?: string; temperature?: number; max_tokens?: number }
+  options?: { model?: string; temperature?: number; max_tokens?: number },
 ): Promise<{ content: string; model: string }> {
   const res = await fetch(`${API_BASE}/api/v1/chat`, {
     method: "POST",
@@ -77,7 +84,8 @@ export async function chatComplete(
     let detail = "";
     try {
       const j = await res.json();
-      detail = typeof j.detail === "string" ? j.detail : JSON.stringify(j.detail ?? j);
+      detail =
+        typeof j.detail === "string" ? j.detail : JSON.stringify(j.detail ?? j);
     } catch {
       detail = await res.text();
     }

@@ -35,9 +35,8 @@ from .help_tool import register_help_tool
 from .integration_tool import register_integration_tool
 from .lm_link_tool import register_lm_link_tool
 from .monitor_tool import register_monitor_tool
-from .new_api_tool import register_new_api_tools
 from .network_tool import register_network_tool
-from .partner_tailnets_tool import register_partner_tailnets_tool
+from .new_api_tool import register_new_api_tools
 from .performance_tool import register_performance_tool
 from .reporting_tool import register_reporting_tool
 from .sampling_tool import register_sampling_tool

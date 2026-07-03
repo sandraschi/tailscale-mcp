@@ -1,5 +1,6 @@
 """Tailscale Security tool module."""
 
+import time
 from typing import Any
 
 import structlog
@@ -7,10 +8,13 @@ import structlog
 from tailscalemcp.exceptions import TailscaleMCPError
 
 from ._base import ToolContext
+from ._helpers import build_auth_error_response, is_auth_error
 from ._tool_types import SecurityOperation
 from .mcp_tool_names import RUN_TAILNET_SECURITY
 
 logger = structlog.get_logger(__name__)
+
+_TOOL_PROCESS_STARTED_AT = time.time()
 
 
 def register_security_tool(ctx: ToolContext) -> None:
@@ -57,4 +61,17 @@ def register_security_tool(ctx: ToolContext) -> None:
                 operation=operation,
                 error=str(e),
             )
+            if is_auth_error(e):
+                payload = build_auth_error_response(
+                    operation, e, server_started_at=_TOOL_PROCESS_STARTED_AT
+                )
+                raise TailscaleMCPError(
+                    message=(
+                        "Tailscale API authentication failed (HTTP 401). "
+                        "This may be a stale key cached by this running "
+                        "server process - see details.recovery_options."
+                    ),
+                    code=401,
+                    details=payload,
+                ) from e
             raise TailscaleMCPError(f"Failed to perform security operation: {e}") from e

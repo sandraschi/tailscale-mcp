@@ -1,6 +1,7 @@
 """Tailscale Device tool module."""
 
 import re
+import time
 from typing import Annotated, Any
 
 import structlog
@@ -9,10 +10,13 @@ from pydantic import Field
 from tailscalemcp.exceptions import TailscaleMCPError
 
 from ._base import ToolContext
+from ._helpers import build_auth_error_response, is_auth_error
 from ._tool_types import DeviceOperation
 from .mcp_tool_names import MANAGE_TAILNET_DEVICES
 
 logger = structlog.get_logger(__name__)
+
+_TOOL_PROCESS_STARTED_AT = time.time()
 
 
 def register_device_tool(ctx: ToolContext) -> None:
@@ -348,4 +352,18 @@ def register_device_tool(ctx: ToolContext) -> None:
             logger.error(
                 "Error in tailscale_device operation", operation=operation, error=str(e)
             )
+            if is_auth_error(e):
+                payload = build_auth_error_response(
+                    operation, e, server_started_at=_TOOL_PROCESS_STARTED_AT
+                )
+                raise TailscaleMCPError(
+                    message=(
+                        "Tailscale API authentication failed (HTTP 401). This "
+                        "may be a stale key cached by this running server "
+                        "process rather than a bad key on disk - see "
+                        "details.recovery_options."
+                    ),
+                    code=401,
+                    details=payload,
+                ) from e
             raise TailscaleMCPError(f"Failed to perform device operation: {e}") from e

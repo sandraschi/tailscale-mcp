@@ -3,7 +3,7 @@
 from unittest.mock import patch
 
 import pytest
-from httpx import AsyncClient, ASGITransport
+from httpx import ASGITransport, AsyncClient
 
 from tailscalemcp.server import app
 

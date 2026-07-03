@@ -3,8 +3,6 @@
 import os
 from unittest.mock import patch
 
-import pytest
-
 from tailscalemcp.transport import (
     ENV_HOST,
     ENV_PATH,
@@ -12,7 +10,6 @@ from tailscalemcp.transport import (
     ENV_TRANSPORT,
     get_transport_config,
     resolve_transport,
-    TransportType,
 )
 
 

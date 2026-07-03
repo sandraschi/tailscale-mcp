@@ -1,10 +1,13 @@
 """Full FastAPI backend for the web dashboard — health, logs, settings."""
 from contextlib import asynccontextmanager
 from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from web_sota.backend.routes.logging import router as logging_router
+
 from web_sota.backend.log_buffer import activity_log
+from web_sota.backend.routes.logging import router as logging_router
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

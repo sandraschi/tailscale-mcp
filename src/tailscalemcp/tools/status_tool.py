@@ -8,11 +8,13 @@ import structlog
 from tailscalemcp.exceptions import TailscaleMCPError
 
 from ._base import ToolContext
-from ._helpers import generate_status_info
+from ._helpers import build_auth_error_response, generate_status_info, is_auth_error
 from ._tool_types import StatusComponent, StatusDetailLevel, StatusTimeRange
 from .mcp_tool_names import GET_TAILNET_STATUS
 
 logger = structlog.get_logger(__name__)
+
+_TOOL_PROCESS_STARTED_AT = time.time()
 
 
 def register_status_tool(ctx: ToolContext) -> None:
@@ -180,6 +182,21 @@ def register_status_tool(ctx: ToolContext) -> None:
             logger.error(
                 "Error generating status information", component=component, error=str(e)
             )
+            if is_auth_error(e):
+                payload = build_auth_error_response(
+                    component or "overview",
+                    e,
+                    server_started_at=_TOOL_PROCESS_STARTED_AT,
+                )
+                raise TailscaleMCPError(
+                    message=(
+                        "Tailscale API authentication failed (HTTP 401). "
+                        "This may be a stale key cached by this running "
+                        "server process - see details.recovery_options."
+                    ),
+                    code=401,
+                    details=payload,
+                ) from e
             raise TailscaleMCPError(
                 f"Failed to generate status information: {e}"
             ) from e

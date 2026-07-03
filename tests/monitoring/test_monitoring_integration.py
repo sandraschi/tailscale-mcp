@@ -2,15 +2,12 @@
 Integration tests for the monitoring stack in the Tailscale MCP server.
 """
 
-import builtins
-import contextlib
 import json
 import logging
 import sys
 import tempfile
-import time
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 import structlog
@@ -34,7 +31,6 @@ class TestMonitoringIntegration:
     @_win
     def test_structured_logging_with_prometheus_metrics(self):
         """Test that structured logging and Prometheus can coexist."""
-        import logging
 
         with tempfile.TemporaryDirectory() as temp_dir:
             log_file = Path(temp_dir) / "test.log"
@@ -63,7 +59,6 @@ class TestMonitoringIntegration:
     @_win
     def test_monitoring_stack_initialization(self):
         """Test that the monitoring stack initializes correctly."""
-        import logging
 
         with tempfile.TemporaryDirectory() as temp_dir:
             log_file = Path(temp_dir) / "test.log"
@@ -79,7 +74,6 @@ class TestMonitoringIntegration:
     @_win
     def test_log_metrics_correlation(self):
         """Test that log entries and metrics share consistent identifiers."""
-        import logging
 
         with tempfile.TemporaryDirectory() as temp_dir:
             log_file = Path(temp_dir) / "test.log"
@@ -103,7 +97,6 @@ class TestMonitoringIntegration:
     @_win
     def test_error_logging_with_metrics(self):
         """Test that errors are logged with context for metric correlation."""
-        import logging
 
         with tempfile.TemporaryDirectory() as temp_dir:
             log_file = Path(temp_dir) / "test.log"
@@ -133,7 +126,6 @@ class TestMonitoringIntegration:
     @_win
     def test_device_activity_monitoring(self):
         """Test monitoring of device activity with structured logs."""
-        import logging
 
         with tempfile.TemporaryDirectory() as temp_dir:
             log_file = Path(temp_dir) / "test.log"
@@ -160,7 +152,6 @@ class TestMonitoringIntegration:
     @_win
     def test_network_traffic_monitoring(self):
         """Test network traffic monitoring with structured logging."""
-        import logging
 
         with tempfile.TemporaryDirectory() as temp_dir:
             log_file = Path(temp_dir) / "test.log"
@@ -190,7 +181,6 @@ class TestMonitoringIntegration:
     @_win
     def test_api_request_monitoring(self):
         """Test API request monitoring with structured logging."""
-        import logging
 
         with tempfile.TemporaryDirectory() as temp_dir:
             log_file = Path(temp_dir) / "test.log"
@@ -219,7 +209,6 @@ class TestMonitoringIntegration:
     @_win
     def test_monitoring_stack_health_check(self):
         """Test monitoring stack health check with structured logging."""
-        import logging
 
         with tempfile.TemporaryDirectory() as temp_dir:
             log_file = Path(temp_dir) / "test.log"
@@ -246,7 +235,6 @@ class TestMonitoringIntegration:
     @_win
     def test_monitoring_stack_error_recovery(self):
         """Test error recovery with structured logging."""
-        import logging
 
         with tempfile.TemporaryDirectory() as temp_dir:
             log_file = Path(temp_dir) / "test.log"

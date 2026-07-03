@@ -1,5 +1,6 @@
 """Tailscale Reporting tool module."""
 
+import time
 from typing import Any
 
 import structlog
@@ -11,6 +12,8 @@ from ._tool_types import ReportingOperation
 from .mcp_tool_names import GENERATE_TAILNET_REPORTS
 
 logger = structlog.get_logger(__name__)
+
+_TOOL_PROCESS_STARTED_AT = time.time()
 
 
 def register_reporting_tool(ctx: ToolContext) -> None:
