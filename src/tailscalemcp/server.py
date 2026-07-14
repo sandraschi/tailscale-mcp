@@ -66,7 +66,7 @@ logger = structlog.get_logger(__name__)
 
 # Build MCP ASGI app and capture lifespan for FastAPI
 if tailscale_mcp_server is not None:
-    mcp_app = tailscale_mcp_server.mcp.http_app(path="/mcp")
+    mcp_app = tailscale_mcp_server.mcp.http_app(path="/")
 else:
     mcp_app = None
     logger.warning("MCP server unavailable - running in degraded mode (no API key or tailnet configured)")
@@ -106,7 +106,7 @@ app.add_middleware(
         "https://tauri.localhost",
         "tauri://localhost",
     ],
-    allow_origin_regex=r"https?://tauri\.localhost(:\d+)?" if _tauri_desktop else None,
+    allow_origin_regex=r"https?://(?:[a-zA-Z0-9-]+\.ts\.net|.*?\.tail-[a-f0-9]+\.ts\.net|tauri\.localhost|localhost|127\.0\.0\.1|192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|100\.\d{1,3}\.\d{1,3}\.\d{1,3})(?::\d+)?$|^tauri://localhost$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

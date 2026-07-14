@@ -29,7 +29,7 @@ Tailscale MCP is a **FastMCP 3.1+** server that exposes the **Tailscale Admin AP
 ### MCP server
 
 - **Credentials:** `TAILSCALE_API_KEY`, `TAILSCALE_TAILNET` required for live API calls.
-- **Tools:** Portmanteau pattern (`operation` parameter); includes `manage_tailnet_devices`, `configure_tailnet_network`, `monitor_tailnet_activity`, `manage_tailnet_files`, `configure_tailnet_funnel`, `manage_tailnet_security`, `automate_tailnet_tasks`, `backup_tailnet_config`, `optimize_tailnet_performance`, `generate_tailnet_reports`, `integrate_tailnet_services`, `get_tailnet_help`, `get_tailnet_status`, `manage_tailnet_keys`, and `run_agentic_tailnet_workflow`.
+- **Tools:** Portmanteau pattern (`operation` parameter); includes `manage_tailnet_devices`, `configure_tailnet_network`, `monitor_tailnet_activity`, `manage_tailnet_files`, `configure_tailnet_funnel`, `manage_tailnet_security`, `automate_tailnet_tasks`, `backup_tailnet_config`, `optimize_tailnet_performance`, `generate_tailnet_reports`, `integrate_tailnet_services`, `get_tailnet_help`, `get_tailnet_status`, `manage_tailnet_keys`, `get_lm_link` (7 operations: status, enable, disable, set_device_name, set_preferred_device, info, readiness), and `run_agentic_tailnet_workflow`.
 - **Sampling:** Server-side OpenAI-compatible HTTP (`TAILSCALE_SAMPLING_*`) or client LLM (`TAILSCALE_SAMPLING_USE_CLIENT_LLM=1`) for `run_agentic_tailnet_workflow`.
 - **Status:** `get_tailnet_status` exposes MCP capability counts; optional **`include_mermaid_diagram`** returns Mermaid text for tailnet topology (consumed by the web app and agents).
 
@@ -43,6 +43,14 @@ Tailscale MCP is a **FastMCP 3.1+** server that exposes the **Tailscale Admin AP
 
 - **MCP:** `summarize_partner_tailnets` aggregates Admin API **users** (`member` vs **shared** tailnet users) and **devices grouped by login** (node `user` field).
 - **Web:** `/partner-tailnets` surfaces the same summary, Mermaid overview, and raw JSON for debugging.
+
+### LM Link (Tailscale + LM Studio)
+
+- **MCP:** `get_lm_link` tool with 7 operations: `status` (live peers and loaded models via `lms link status --json`), `enable`, `disable`, `set_device_name`, `set_preferred_device`, `info`, `readiness`.
+- **CLI dependency:** Requires the `lms` CLI (bundled with LM Studio or `curl -fsSL https://lmstudio.ai/install.sh | bash`). Graceful fallback when not installed.
+- **Web:** `/lm-link` page is a live dashboard with peer list, model badges, enable/disable controls, device rename, and preferred device selection.
+- **Cross-repo:** `local-llm-mcp` (port 10833) probes the same `lms link status --json` for provider health and dashboard display. This repo owns the control plane; local-llm-mcp owns read-only awareness.
+- **Non-goal:** local-llm-mcp already manages LM Studio model loading/unloading. This repo does not duplicate model management — it manages the Tailscale network layer that enables remote access.
 
 ### Non-goals (current)
 

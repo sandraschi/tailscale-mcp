@@ -1,0 +1,6 @@
+assess-fix completed: 2026-07-14T01:56+02:00 (CEST)
+Changes:
+  - Fixed CORS allow_origin_regex: unconditional + Tailscale/LAN coverage (server.py:109)
+  - Created .opencode/skills/tailscale-mcp/SKILL.md (missing opencode skill)
+  - Synced mcpb/pyproject.toml fastmcp >=3.2.0 → >=3.4.2,<4
+  - Packed dist/tailscale-mcp-v2.1.0.mcpb (329 KB, 81 files)

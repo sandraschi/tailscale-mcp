@@ -1,4 +1,26 @@
 
+## [Unreleased] — 2026-07-06
+
+### Added
+- **LM Link operational control**: `get_lm_link` tool upgraded from static docs stub to full operational surface
+  - `status`: Live peer list, loaded models, link state via `lms link status --json`
+  - `enable`/`disable`: Programmatic LM Link on/off via `lms link enable/disable`
+  - `set_device_name`: Rename this device on the link
+  - `set_preferred_device`: Route model requests to a preferred remote peer
+  - `info`/`readiness`: Setup docs + Tailscale connectivity check (existing, enhanced)
+  - Uses `asyncio.create_subprocess_exec` with binary auto-discovery
+- **LM Link Prefab UI card**: `show_lm_link_card` (`@mcp.tool(app=True)`) renders LM Link
+  peers, their loaded models, and link state as a rich in-chat Prefab card. Falls back
+  to plain text when Prefab rendering is unavailable.
+- **LM Link webapp dashboard**: `/lm-link` page rewritten from static docs to live control panel
+  - Real-time peer list with loaded model badges and preferred device indicators
+  - Enable/disable toggle, device name editor, peer-specific "Make preferred" buttons
+  - data-testid coverage for CUA/Playwright targeting
+
+### Changed
+- `LmLinkOperation` extended from `["info", "readiness"]` to 7-operation enum
+- Added `prefab-ui>=0.14.0` to project dependencies
+
 ## [Unreleased] — 2026-06-14
 
 ### Added

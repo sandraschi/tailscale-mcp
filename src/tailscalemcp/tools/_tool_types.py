@@ -218,7 +218,15 @@ PartnerTailnetsOperation = Literal[
     "devices_by_login",
 ]
 
-LmLinkOperation = Literal["info", "readiness"]
+LmLinkOperation = Literal[
+    "info",
+    "readiness",
+    "enable",
+    "disable",
+    "status",
+    "set_device_name",
+    "set_preferred_device",
+]
 
 HelpTopic = Literal[
     "overview",

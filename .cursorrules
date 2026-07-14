@@ -61,3 +61,25 @@
 
 **When in doubt:** Read the central README and navigate from there.
 
+---
+
+## Session Context (Tailscale MCP)
+
+You have access to a Tailscale network controller with 24 tools spanning device management,
+DNS, Funnel, Taildrop, security, monitoring, and LM Link (Tailscale + LM Studio encrypted
+remote LLM mesh).
+
+**Before starting work:**
+1. Check tailnet status: `get_tailnet_status(operation="full")`
+2. Check LM Link for remote LLM peers: `get_lm_link(operation="status")`
+
+**LM Link specifically:**
+- Control the link: `get_lm_link(operation="enable|disable")`
+- Rename this device: `get_lm_link(operation="set_device_name", name="gpu-rig")`
+- Prefer a remote peer: `get_lm_link(operation="set_preferred_device", device="office-pc")`
+- Get setup docs: `get_lm_link(operation="info")`
+
+**At end of work:**
+- If you changed tailnet state (devices, DNS, ACLs), verify with a status check
+- If you used LM Link, confirm the link state with `get_lm_link(operation="status")`
+

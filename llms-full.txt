@@ -1,0 +1,166 @@
+# Tailscale MCP — Full LLM Corpus
+
+> Generated 2026-07-06. Source: https://github.com/sandraschi/tailscale-mcp
+
+---
+
+## Project Identity
+
+Tailscale MCP is a FastMCP 3.2+ server that exposes the Tailscale Admin API as MCP tools
+for AI assistants (Cursor, Claude Desktop, opencode). 24 portmanteau tools cover devices,
+DNS, services, monitoring, Funnel, Taildrop, LM Link, and SEP-1577 agentic workflows.
+An optional React/Vite webapp provides a dark glass-style dashboard on ports 10820/10821.
+
+- **Python**: >=3.12, `uv` for package management
+- **Framework**: FastMCP 3.4.2+ with portmanteau tool pattern
+- **Webapp**: React/Vite frontend (port 10820) + FastAPI backend (port 10821)
+- **Native**: Tauri 2.0 NSIS installer with embedded PyInstaller backend
+- **License**: MIT
+
+---
+
+## Quick Start
+
+```bash
+git clone https://github.com/sandraschi/tailscale-mcp
+cd tailscale-mcp
+uv sync
+uv run tailscale-mcp
+```
+
+Requires `TAILSCALE_API_KEY` and `TAILSCALE_TAILNET` environment variables.
+Optional sampling variables: `TAILSCALE_SAMPLING_BASE_URL`, `TAILSCALE_SAMPLING_MODEL`.
+
+---
+
+## Ports
+
+| Service | Port |
+|---------|------|
+| Frontend (Vite dev) | 10820 |
+| Backend/MCP HTTP | 10821 |
+| Prometheus metrics | 9091 |
+
+---
+
+## Architecture
+
+```
+src/tailscalemcp/
+  tools/           # MCP tool surface (portmanteau pattern, 23 files)
+  operations/      # Business logic layer
+  client/          # Tailscale API client with rate limiting + retry
+  models/          # Pydantic models
+  server.py        # FastAPI backend for web_sota
+  mcp_server.py    # FastMCP server setup
+  transport.py     # Dual transport: stdio / HTTP / SSE
+```
+
+---
+
+## MCP Tool Surface (24 tools)
+
+All tools use the portmanteau pattern: one tool function per domain, with an `operation`
+enum discriminator as the first parameter.
+
+### Core domains
+
+| Tool Name | Operations |
+|-----------|------------|
+| `manage_tailnet_devices` | device_list, device_get, device_update, device_delete, list_discovery_keys, list_auth_keys, approve_device, get_device_posture, etc. |
+| `manage_tailnet_network` | dns_nameservers_list, dns_nameservers_set, dns_searchpaths, dns_preferences, magicdns_get, magicdns_set, dns_split, get_routes, set_routes, list_services, get_service |
+| `monitor_tailnet` | metrics_list, metrics_get, prometheus_status, health_check, network_status |
+| `manage_taildrop` | status, send, receive_list, receive_download, receive_delete |
+| `manage_funnel` | funnel_enable, funnel_disable, funnel_status, funnel_list, funnel_certificate_info |
+| `run_tailnet_security` | acl_get, acl_set, acl_validate, acl_preview, posture_list, posture_create, posture_update, posture_delete, device_keys_list, device_keys_revoke |
+| `run_tailnet_automation` | webhook_list, webhook_create, webhook_delete, webhook_test, tag_list, tag_create, tag_delete, logging_config_get, logging_config_set |
+| `manage_tailnet_backups` | backup_list, backup_create, backup_restore, backup_delete, backup_export, backup_import |
+| `analyze_tailnet_performance` | analytics_get, analytics_trend, analytics_custom, report_usage, report_performance |
+| `generate_tailnet_reports` | report_device_inventory, report_user_summary, report_security_audit, report_change_log |
+| `manage_tailnet_integrations` | integration_list, integration_create, integration_update, integration_delete |
+
+### New API domains
+
+| Tool Name | Operations |
+|-----------|------------|
+| `manage_tailnet_invites` | invites_list, invite_create, invite_delete, invite_resend |
+| `manage_posture_attributes` | posture_attributes_list, posture_attribute_create, posture_attribute_update, posture_attribute_delete |
+| `manage_device_keys` | api_keys_list, api_key_create, api_key_delete |
+| `manage_tailnet_logging` | logstream_list, logstream_create, logstream_update, logstream_delete |
+| `manage_tailnet_webhooks` | webhook_list, webhook_create, webhook_update, webhook_delete, webhook_test |
+| `manage_tailnet_settings` | settings_get, settings_update |
+| `manage_tailnet_contacts` | contacts_list, contact_create, contact_update, contact_delete |
+
+### Standalone utilities
+
+| Tool Name | Operations |
+|-----------|------------|
+| `get_help` | overview, examples, best_practices, troubleshooting, funnel, sampling |
+| `get_tailnet_status` | full, summary, health, devices, services |
+| `summarize_partner_tailnets` | summary, users_list, user_get, devices_by_login |
+
+### Agentic workflows
+
+| Tool Name | Description |
+|-----------|-------------|
+| `run_agentic_tailnet_workflow` | SEP-1577 multi-step agentic workflows using ctx.sample() |
+
+---
+
+## LM Link — Tailscale + LM Studio (Feb 2026)
+
+LM Link is a Tailscale-powered encrypted mesh for remote local LLM access.
+The `get_lm_link` tool provides 7 operations for programmatic control via the `lms` CLI:
+
+### Operations
+
+| Operation | CLI equivalent | Description |
+|-----------|---------------|-------------|
+| `status` | `lms link status --json` | Live peers, loaded models, link state |
+| `enable` | `lms link enable` | Enable LM Link on this device |
+| `disable` | `lms link disable` | Disable LM Link |
+| `set_device_name` | `lms link set-device-name <name>` | Rename this device |
+| `set_preferred_device` | `lms link set-preferred-device <device>` | Route model requests to a preferred peer |
+| `info` | (static) | Setup docs and links |
+| `readiness` | (Tailscale API) | Tailnet connectivity check + lms binary detection |
+
+### Implementation
+
+- Uses `asyncio.create_subprocess_exec` with binary auto-discovery
+- `_find_lms_binary()` searches `shutil.which("lms")` + known Windows paths
+- `_run_lms()` wraps CLI calls with timeout, JSON parsing, structured error returns
+- Graceful fallback when `lms` is not installed (returns `ok: false` with recovery instructions)
+
+### Webapp page (`/lm-link`)
+
+The `/lm-link` frontend page is a live dashboard showing:
+- This device's name and link state (connected/inactive badge)
+- Enable/disable toggle buttons
+- Device name editor with inline rename
+- Peers list with loaded model badges and preferred device indicators
+- "Make preferred" button per peer
+- Info/readiness cards behind a toggle
+
+### Cross-repo
+
+`local-llm-mcp` (port 10833) also probes `lms link status --json` for its provider health
+dashboard and `llm_lmstudio(operation="link_status")` MCP tool.
+
+---
+
+## Key Files
+
+| File | Purpose |
+|------|---------|
+| `README.md` | Full documentation with doc map |
+| `CHANGELOG.md` | Version history |
+| `AGENTS.md` | Agent workflow recollection |
+| `pyproject.toml` | Build configuration |
+| `.env.example` | Environment variable template |
+| `llms.txt` | LLM discovery index |
+| `src/tailscalemcp/tools/lm_link_tool.py` | LM Link tool implementation |
+| `src/tailscalemcp/tools/mcp_tool_names.py` | Canonical MCP tool name constants |
+| `docs/TAILSCALE_MCP_PORTMANTEAU_TOOLS.md` | Full tool deep dive |
+| `docs/INSTALL.md` | Installation guide |
+| `docs/PRD.md` | Product scope and sampling |
+| `web_sota/src/pages/lm-link.tsx` | LM Link webapp page |

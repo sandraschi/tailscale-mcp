@@ -40,7 +40,7 @@ setup_logging()
 logger = structlog.get_logger(__name__)
 
 # Build MCP ASGI app and capture lifespan for FastAPI
-mcp_app = tailscale_mcp_server.mcp.http_app(path="/mcp")
+mcp_app = tailscale_mcp_server.mcp.http_app(path="/")
 
 # Reusable FastMCP Client — created once, not per-request
 _fastmcp_client: Any = None

@@ -228,7 +228,7 @@ async def generate_help_content(
                 "get_help": "This comprehensive help system",
                 "get_tailnet_status": "System status and health monitoring",
                 "summarize_partner_tailnets": "Partner tailnets and people/sharing summary",
-                "get_lm_link": "LM Link (Tailscale + LM Studio) guidance and readiness",
+                "get_lm_link": "LM Link (Tailscale + LM Studio) operational control — status, enable/disable, peer management, device naming, and preferred device selection",
             },
             "credentials": {
                 "env_file": "Copy .env.example to .env in the repo root (or set process env). .env is listed in .gitignore — safe for local non-mock testing.",

@@ -1,0 +1,50 @@
+# Tailscale MCP — LLM index
+
+Full corpus: [llms-full.txt](./llms-full.txt)
+
+## Summary
+FastMCP 3.2+ Tailscale network controller. 24 MCP tools exposing the Tailscale Admin API
+to AI assistants: devices, DNS, services, monitoring, Funnel, Taildrop, LM Link, and
+SEP-1577 agentic workflows. Optional Vite/React webapp (port 10820/10821).
+
+## Quick start
+```bash
+git clone https://github.com/sandraschi/tailscale-mcp
+cd tailscale-mcp && uv sync
+uv run tailscale-mcp
+```
+Requires `TAILSCALE_API_KEY` + `TAILSCALE_TAILNET`.
+
+## Ports
+| Service | Port |
+|---------|------|
+| Frontend (Vite) | 10820 |
+| Backend/MCP HTTP | 10821 |
+| Prometheus metrics | 9091 |
+
+## MCP tools
+| Tool | Domain |
+|------|--------|
+| `manage_tailnet_devices` | Device CRUD, approvals, posture |
+| `manage_tailnet_network` | DNS, MagicDNS, routing, services |
+| `monitor_tailnet` | Metrics, Prometheus, health |
+| `manage_taildrop` | File send/receive |
+| `manage_funnel` | Public exposure via Funnel |
+| `run_tailnet_security` | ACLs, posture, device keys |
+| `run_tailnet_automation` | Webhooks, tags, logging |
+| `manage_tailnet_backups` | Configuration backup/restore |
+| `get_lm_link` | LM Link (Tailscale + LM Studio remote LLMs) |
+| `get_help` | Help & discovery |
+| `get_tailnet_status` | Dashboard status |
+| `run_agentic_tailnet_workflow` | SEP-1577 agentic workflows |
+
+## LM Link (Tailscale + LM Studio, Feb 2026)
+7 operations: `status` (peers+models), `enable`, `disable`, `set_device_name`,
+`set_preferred_device`, `info`, `readiness`. Webapp `/lm-link` page is a live dashboard.
+
+## Key files
+- `README.md` — full documentation
+- `CHANGELOG.md` — version history
+- `docs/TAILSCALE_MCP_PORTMANTEAU_TOOLS.md` — tool deep dive
+- `pyproject.toml` — build config
+- `.env.example` — env var template

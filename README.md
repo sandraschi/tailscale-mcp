@@ -50,6 +50,25 @@ The **Webapp** under `web_sota/` is a React/Vite front end with a dark, glass-st
 
 Ports for this repo follow the fleet **adjacency** convention (**10820** frontend / **10821** backend by default); see **[docs/WEBAPP.md](docs/WEBAPP.md)** and `web_sota/start.ps1`.
 
+### LM Link (Tailscale + LM Studio)
+
+The **`get_lm_link`** tool provides operational control over [LM Link](https://lmstudio.ai/docs/lmlink) — the Tailscale + LM Studio partnership (Feb 2026) that creates an encrypted mesh for remote local LLMs:
+
+| Operation | CLI equivalent | Description |
+|-----------|---------------|-------------|
+| `status` | `lms link status --json` | Live peers, loaded models, link state |
+| `enable` / `disable` | `lms link enable/disable` | Toggle LM Link on/off |
+| `set_device_name` | `lms link set-device-name` | Rename this device on the link |
+| `set_preferred_device` | `lms link set-preferred-device` | Route model requests to a preferred peer |
+| `info` / `readiness` | (static / Tailscale API) | Setup docs and tailnet connectivity check |
+
+The **LM Link webapp page** (`/lm-link`) shows a live dashboard with peer lists,
+loaded model badges, device rename, and preferred device selection. Requires the
+`lms` CLI (bundled with LM Studio or via `curl -fsSL https://lmstudio.ai/install.sh | bash`).
+
+**Cross-repo**: For model-level management, see [local-llm-mcp](https://github.com/sandraschi/local-llm-mcp)
+which also probes LM Link status for its provider health dashboard.
+
 ### Persistence and observability
 
 **DiskStore** (FastMCP 3.1.0) holds durable state for funnels, transfers, and preferences across restarts  see **[docs/STORAGE_BACKENDS.md](docs/STORAGE_BACKENDS.md)**. Optional **Prometheus / Grafana / Loki**-style stacks are documented under **[docs/monitoring/](docs/monitoring/README.md)** if you want full observability on your own infrastructure.
