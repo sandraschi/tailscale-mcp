@@ -59,9 +59,9 @@ print(f"[server] .env loaded from {_env_path} (exists={_env_path.exists()})", fl
 print(f"[server] TAILSCALE_API_KEY set={bool(_key_check)}", flush=True)
 print(f"[server] TAILSCALE_TAILNET set={bool((os.getenv('TAILSCALE_TAILNET') or '').strip())}", flush=True)
 
-from tailscalemcp import setup_logging  # noqa: E402
-from tailscalemcp.log_api import export_logs, filter_logs, get_status  # noqa: E402
-from tailscalemcp.mcp_server import server as tailscale_mcp_server  # noqa: E402
+from tailscalemcp import setup_logging
+from tailscalemcp.log_api import export_logs, filter_logs, get_status
+from tailscalemcp.mcp_server import server as tailscale_mcp_server
 
 setup_logging()
 

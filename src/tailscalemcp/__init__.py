@@ -77,8 +77,8 @@ def setup_logging(log_level: str | None = None, log_file: str | None = None) -> 
     root_logger.addHandler(stderr_handler)
 
 
-from .exceptions import TailscaleMCPError  # noqa: E402
-from .mcp_server import TailscaleMCPServer  # noqa: E402
+from .exceptions import TailscaleMCPError
+from .mcp_server import TailscaleMCPServer
 
 # Create a default server instance for convenience
 server = TailscaleMCPServer()

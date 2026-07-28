@@ -52,7 +52,7 @@ else:
     load_dotenv()
 
 # Initialize logging (idempotent)
-from . import setup_logging  # noqa: E402
+from . import setup_logging
 
 setup_logging()
 

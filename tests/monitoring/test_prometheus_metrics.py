@@ -28,7 +28,7 @@ class TestPrometheusMetrics:
             with contextlib.suppress(Exception):
                 try:
                     registry.unregister(collector)
-                except Exception:  # noqa: S110
+                except Exception:
                     pass
         pc.REGISTRY._names_to_collectors.clear()
         pc.REGISTRY._collector_to_names.clear()
