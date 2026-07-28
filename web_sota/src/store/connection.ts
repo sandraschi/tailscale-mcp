@@ -27,7 +27,10 @@ async function _tick() {
       _timer = setTimeout(_tick, 10000); // steady 10s poll while connected
       return;
     } else {
-      useConnection.setState({ state: "offline", lastError: `HTTP ${r.status}` });
+      useConnection.setState({
+        state: "offline",
+        lastError: `HTTP ${r.status}`,
+      });
     }
   } catch (e) {
     useConnection.setState({
@@ -39,6 +42,10 @@ async function _tick() {
   _timer = setTimeout(_tick, _BACKOFF[_attempt] * 1000);
 }
 
-export function startHealthPoll() { _tick(); }
+export function startHealthPoll() {
+  _tick();
+}
 
-export function stopHealthPoll() { if (_timer) clearTimeout(_timer); }
+export function stopHealthPoll() {
+  if (_timer) clearTimeout(_timer);
+}

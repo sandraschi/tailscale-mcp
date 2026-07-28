@@ -1,4 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Activity,
   Cpu,
@@ -10,6 +9,7 @@ import {
   WifiOff,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:10821";
 
@@ -21,7 +21,10 @@ async function checkBackendHealth(): Promise<{ ok: boolean; error?: string }> {
     if (!r.ok) return { ok: false, error: `HTTP ${r.status}` };
     return { ok: true };
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : "Network error" };
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Network error",
+    };
   }
 }
 
@@ -69,7 +72,10 @@ export function Dashboard() {
           if (event.payload === "ready") {
             refresh();
             setRestarting(false);
-          } else if (typeof event.payload === "string" && event.payload.startsWith("error:")) {
+          } else if (
+            typeof event.payload === "string" &&
+            event.payload.startsWith("error:")
+          ) {
             setBackendOk(false);
             setRestarting(false);
           }
@@ -78,7 +84,9 @@ export function Dashboard() {
         // Not inside Tauri — HTTP polling handles it
       }
     })();
-    return () => { if (unlisten) unlisten(); };
+    return () => {
+      if (unlisten) unlisten();
+    };
   }, [refresh]);
 
   const restartBackend = useCallback(async () => {
@@ -118,7 +126,9 @@ export function Dashboard() {
         setDevices(Array.isArray(list) ? list : []);
       } else if (toolRes.status === "fulfilled") {
         const text = await toolRes.value.text().catch(() => "");
-        const snippet = text.replace(/<[^>]+>/g, "").slice(0, 150) || `HTTP ${toolRes.value.status}`;
+        const snippet =
+          text.replace(/<[^>]+>/g, "").slice(0, 150) ||
+          `HTTP ${toolRes.value.status}`;
         if (toolRes.value.status === 401 || toolRes.value.status === 503) {
           setError("Set API key in Settings to enable device listing.");
         } else {
@@ -152,9 +162,15 @@ export function Dashboard() {
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 text-xs">
-            <span className={`inline-block w-2 h-2 rounded-full ${backendOk === null ? "bg-gray-500" : backendOk ? "bg-green-500" : "bg-red-500"} animate-pulse`} />
+            <span
+              className={`inline-block w-2 h-2 rounded-full ${backendOk === null ? "bg-gray-500" : backendOk ? "bg-green-500" : "bg-red-500"} animate-pulse`}
+            />
             <span className="text-slate-400">
-              {backendOk === null ? "Connecting..." : backendOk ? "Connected" : "Offline"}
+              {backendOk === null
+                ? "Connecting..."
+                : backendOk
+                  ? "Connected"
+                  : "Offline"}
             </span>
           </div>
           {!backendOk && backendOk !== null && (
@@ -164,7 +180,9 @@ export function Dashboard() {
               disabled={restarting}
               className="flex items-center gap-1 text-xs text-amber-400 hover:text-amber-300 transition-colors disabled:opacity-50"
             >
-              <RefreshCw className={`h-3 w-3 ${restarting ? "animate-spin" : ""}`} />
+              <RefreshCw
+                className={`h-3 w-3 ${restarting ? "animate-spin" : ""}`}
+              />
               {restarting ? "Restarting..." : "Restart Backend"}
             </button>
           )}

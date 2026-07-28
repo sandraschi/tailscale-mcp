@@ -1,4 +1,3 @@
-import { cn } from "@/common/utils";
 import {
   Activity,
   BarChart3,
@@ -11,7 +10,7 @@ import {
   Globe,
   LayoutDashboard,
   Link2,
-  Map,
+  Map as MapIcon,
   MessageSquare,
   Network,
   Plug,
@@ -23,6 +22,7 @@ import {
   Wrench,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { cn } from "@/common/utils";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -43,7 +43,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     { href: "/services", label: "Services", icon: Server },
     { href: "/taildrive", label: "Taildrive", icon: FolderOpen },
     { href: "/lm-link", label: "LM Link", icon: Link2 },
-    { href: "/visualizer", label: "Visualizer", icon: Map },
+    { href: "/visualizer", label: "Visualizer", icon: MapIcon },
     { href: "/mcp-connection", label: "MCP & API", icon: Plug },
     { href: "/runbook", label: "Runbook", icon: BookOpen },
     { href: "/tools-explorer", label: "Tool explorer", icon: Wrench },

@@ -1,3 +1,4 @@
+import { ExternalLink } from "lucide-react";
 import { API_BASE } from "@/common/api";
 import { copyToClipboard } from "@/common/clipboard";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ExternalLink } from "lucide-react";
 
 const MCP_URL = `${API_BASE}/mcp`;
 const HEALTH_URL = `${API_BASE}/health`;

@@ -1,0 +1,109 @@
+src\components\layout\sidebar.tsx:13:3 lint/suspicious/noShadowRestrictedNames ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ├ù Do not shadow the global "Map" property.
+  
+    11 Ôöé   LayoutDashboard,
+    12 Ôöé   Link2,
+  > 13 Ôöé   Map,
+       Ôöé   ^^^
+    14 Ôöé   MessageSquare,
+    15 Ôöé   Network,
+  
+  i Consider renaming this variable. It's easy to confuse the origin of variables when they're named after a known global.
+  
+
+src\pages\Logging.tsx:278:9 lint/a11y/useKeyWithClickEvents ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ├ù Enforce to have the onClick mouse event with the onKeyUp, the onKeyDown, or the onKeyPress keyboard event.
+  
+    276 Ôöé       {/* Clear confirmation */}
+    277 Ôöé       {showClear && (
+  > 278 Ôöé         <div
+        Ôöé         ^^^^
+  > 279 Ôöé           className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+  > 280 Ôöé           onClick={() => setShowClear(false)}
+  > 281 Ôöé         >
+        Ôöé         ^
+    282 Ôöé           <div
+    283 Ôöé             className="bg-slate-900 border border-slate-700 rounded-xl p-6 max-w-sm"
+  
+  i Actions triggered using mouse events should have corresponding keyboard events to account for keyboard-only navigation.
+  
+
+src\pages\Logging.tsx:282:11 lint/a11y/useKeyWithClickEvents ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ├ù Enforce to have the onClick mouse event with the onKeyUp, the onKeyDown, or the onKeyPress keyboard event.
+  
+    280 Ôöé           onClick={() => setShowClear(false)}
+    281 Ôöé         >
+  > 282 Ôöé           <div
+        Ôöé           ^^^^
+  > 283 Ôöé             className="bg-slate-900 border border-slate-700 rounded-xl p-6 max-w-sm"
+  > 284 Ôöé             onClick={(e) => e.stopPropagation()}
+  > 285 Ôöé           >
+        Ôöé           ^
+    286 Ôöé             <h3 className="text-lg font-bold text-slate-200 mb-2">
+    287 Ôöé               Clear all logs?
+  
+  i Actions triggered using mouse events should have corresponding keyboard events to account for keyboard-only navigation.
+  
+
+src\pages\chat.tsx:186:11 lint/a11y/noLabelWithoutControl ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ├ù A form label must be associated with an input.
+  
+    184 Ôöé       <div className="flex flex-wrap items-end justify-between gap-4">
+    185 Ôöé         <div className="flex w-full max-w-xs flex-col gap-1">
+  > 186 Ôöé           <label className="text-xs text-slate-500">
+        Ôöé           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  > 187 Ôöé             Model override (optional)
+  > 188 Ôöé           </label>
+        Ôöé           ^^^^^^^^
+    189 Ôöé           <input
+    190 Ôöé             className="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-sm text-slate-100 font-mono"
+  
+  i Consider adding a "for" or "htmlFor" attribute to the label element or moving the input element to inside the label element.
+  
+
+src\pages\logs.tsx:285:9 lint/a11y/useKeyWithClickEvents ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ├ù Enforce to have the onClick mouse event with the onKeyUp, the onKeyDown, or the onKeyPress keyboard event.
+  
+    284 Ôöé       {showClear && (
+  > 285 Ôöé         <div
+        Ôöé         ^^^^
+  > 286 Ôöé           className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+  > 287 Ôöé           onClick={() => setShowClear(false)}
+  > 288 Ôöé         >
+        Ôöé         ^
+    289 Ôöé           <div
+    290 Ôöé             className="bg-slate-900 border border-slate-700 rounded-xl p-6 max-w-sm"
+  
+  i Actions triggered using mouse events should have corresponding keyboard events to account for keyboard-only navigation.
+  
+
+src\pages\logs.tsx:289:11 lint/a11y/useKeyWithClickEvents ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ├ù Enforce to have the onClick mouse event with the onKeyUp, the onKeyDown, or the onKeyPress keyboard event.
+  
+    287 Ôöé           onClick={() => setShowClear(false)}
+    288 Ôöé         >
+  > 289 Ôöé           <div
+        Ôöé           ^^^^
+  > 290 Ôöé             className="bg-slate-900 border border-slate-700 rounded-xl p-6 max-w-sm"
+  > 291 Ôöé             onClick={(e) => e.stopPropagation()}
+  > 292 Ôöé           >
+        Ôöé           ^
+    293 Ôöé             <h3 className="text-lg font-bold text-slate-200 mb-2">
+    294 Ôöé               Clear all logs?
+  
+  i Actions triggered using mouse events should have corresponding keyboard events to account for keyboard-only navigation.
+  
+
+[0m[36mChecked 48 files in 128[0m[0m[2m[36mms[0m[0m[36m.[0m[0m[36m No fixes applied.[0m[0m
+[0m[0m[31mFound [0m[0m[31m6[0m[0m[31m errors.[0m
+ci ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ├ù Some errors were emitted while running checks.
+  
+

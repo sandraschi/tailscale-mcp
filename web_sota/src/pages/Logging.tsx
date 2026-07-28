@@ -1,5 +1,5 @@
-import { API_BASE } from "../lib/api";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { API_BASE } from "../lib/api";
 
 type LogEntry = {
   id: string;
@@ -91,7 +91,7 @@ export default function Logging() {
     if (tail && !userScrolled && endRef.current) {
       endRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [entries, tail, userScrolled]);
+  }, [tail, userScrolled]);
 
   const handleScroll = () => {
     if (!containerRef.current) return;
@@ -123,7 +123,7 @@ export default function Logging() {
   };
 
   const handleClear = async () => {
-    await fetch(API_BASE + "/api/logs", { method: "DELETE" });
+    await fetch(`${API_BASE}/api/logs`, { method: "DELETE" });
     setShowClear(false);
     setEntries([]);
     setTotal(0);

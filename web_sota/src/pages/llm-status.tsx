@@ -1,8 +1,10 @@
+import { Loader2, RefreshCw } from "lucide-react";
+import { useEffect, useState } from "react";
 import {
-  type LlmHealth,
-  type SamplingStatus,
   fetchLlmHealth,
   fetchSamplingStatus,
+  type LlmHealth,
+  type SamplingStatus,
 } from "@/common/api";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,8 +14,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2, RefreshCw } from "lucide-react";
-import { useEffect, useState } from "react";
 
 export function LlmStatus() {
   const [sampling, setSampling] = useState<SamplingStatus | null>(null);
@@ -40,7 +40,7 @@ export function LlmStatus() {
 
   useEffect(() => {
     void load();
-  }, []);
+  }, [load]);
 
   return (
     <div className="space-y-6">

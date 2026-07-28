@@ -1,8 +1,8 @@
+import { ExternalLink, RefreshCw, Server, Shield, Wifi } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ExternalLink, RefreshCw, Server, Shield, Wifi } from "lucide-react";
-import { useEffect, useState } from "react";
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:10821";
 
@@ -106,11 +106,11 @@ export function Control() {
 
   useEffect(() => {
     void fetchStatus();
-  }, []);
+  }, [fetchStatus]);
 
   useEffect(() => {
     void fetchDevices();
-  }, []);
+  }, [fetchDevices]);
 
   return (
     <div className="space-y-6">

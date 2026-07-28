@@ -1,3 +1,6 @@
+import * as Tabs from "@radix-ui/react-tabs";
+import { Loader2, Radar, RefreshCw } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { callTool } from "@/common/api";
 import { MermaidBlock } from "@/components/tailnet/mermaid-block";
 import { TailnetOrbit } from "@/components/tailnet/tailnet-orbit";
@@ -10,9 +13,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import type { TailnetDevice } from "@/types/tailnet";
-import * as Tabs from "@radix-ui/react-tabs";
-import { Loader2, Radar, RefreshCw } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
 
 function parseToolData(data: unknown): Record<string, unknown> | null {
   if (!data || typeof data !== "object") return null;

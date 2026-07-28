@@ -1,3 +1,7 @@
+import * as Tabs from "@radix-ui/react-tabs";
+import { Laptop, Loader2, RefreshCw, Share2, Users } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { callTool } from "@/common/api";
 import { MermaidBlock } from "@/components/tailnet/mermaid-block";
 import { Button } from "@/components/ui/button";
@@ -8,10 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import * as Tabs from "@radix-ui/react-tabs";
-import { Laptop, Loader2, RefreshCw, Share2, Users } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 
 function parseRecord(data: unknown): Record<string, unknown> | null {
   if (!data || typeof data !== "object") return null;

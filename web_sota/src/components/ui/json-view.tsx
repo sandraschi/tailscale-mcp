@@ -8,7 +8,12 @@ type JsonViewProps = {
   render?: () => ReactNode;
 };
 
-export function JsonView({ data, title, className = "", render }: JsonViewProps) {
+export function JsonView({
+  data,
+  title,
+  className = "",
+  render,
+}: JsonViewProps) {
   const [showJson, setShowJson] = useState(false);
 
   return (
@@ -20,7 +25,11 @@ export function JsonView({ data, title, className = "", render }: JsonViewProps)
           onClick={() => setShowJson(!showJson)}
           className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition-colors"
         >
-          {showJson ? <Eye className="h-3 w-3" /> : <Code2 className="h-3 w-3" />}
+          {showJson ? (
+            <Eye className="h-3 w-3" />
+          ) : (
+            <Code2 className="h-3 w-3" />
+          )}
           {showJson ? "Rendered" : "JSON"}
         </button>
       </div>

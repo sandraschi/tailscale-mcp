@@ -1,4 +1,6 @@
-import { type ToolInfo, callTool, listTools } from "@/common/api";
+import { Loader2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { callTool, listTools, type ToolInfo } from "@/common/api";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,8 +11,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
 
 export function ToolsExplorer() {
   const [tools, setTools] = useState<ToolInfo[]>([]);

@@ -1,6 +1,6 @@
-import { Card, CardContent } from "@/components/ui/card";
 import { Maximize, Video } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
 
 export function Visualizer() {
   return (

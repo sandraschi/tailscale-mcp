@@ -1,8 +1,8 @@
+import { Globe, Network, RefreshCw } from "lucide-react";
+import { useEffect, useState } from "react";
 import { callTool } from "@/common/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Globe, Network, RefreshCw } from "lucide-react";
-import { useEffect, useState } from "react";
 
 export function Nets() {
   const [dnsConfig, setDnsConfig] = useState<Record<string, unknown> | null>(
@@ -39,7 +39,7 @@ export function Nets() {
 
   useEffect(() => {
     fetchNets();
-  }, []);
+  }, [fetchNets]);
 
   return (
     <div className="space-y-6">

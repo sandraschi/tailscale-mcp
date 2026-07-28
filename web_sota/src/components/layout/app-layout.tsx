@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-import { useConnection, startHealthPoll, stopHealthPoll } from "@/store/connection";
+import {
+  startHealthPoll,
+  stopHealthPoll,
+  useConnection,
+} from "@/store/connection";
 import { Sidebar } from "./sidebar";
 import { Topbar } from "./topbar";
 
@@ -27,7 +31,9 @@ function useZoom() {
     // Tauri native zoom for crisp text
     try {
       const { getCurrentWindow } = await import("@tauri-apps/api/window");
-      const win = getCurrentWindow() as { setZoom?: (l: number) => Promise<void> };
+      const win = getCurrentWindow() as {
+        setZoom?: (l: number) => Promise<void>;
+      };
       if (win.setZoom) await win.setZoom(level);
     } catch {
       /* dev browser -- CSS zoom handles it */
@@ -69,13 +75,24 @@ export function AppLayout({ children }: AppLayoutProps) {
         unlisten = await listen<string>("backend-status", (event) => {
           if (event.payload === "ready") {
             useConnection.setState({ state: "connected", lastError: null });
-          } else if (typeof event.payload === "string" && event.payload.startsWith("error:")) {
-            useConnection.setState({ state: "error", lastError: event.payload });
+          } else if (
+            typeof event.payload === "string" &&
+            event.payload.startsWith("error:")
+          ) {
+            useConnection.setState({
+              state: "error",
+              lastError: event.payload,
+            });
           }
         });
-      } catch { /* not in Tauri */ }
+      } catch {
+        /* not in Tauri */
+      }
     })();
-    return () => { stopHealthPoll(); if (unlisten) unlisten(); };
+    return () => {
+      stopHealthPoll();
+      if (unlisten) unlisten();
+    };
   }, []);
 
   // Persist sidebar state

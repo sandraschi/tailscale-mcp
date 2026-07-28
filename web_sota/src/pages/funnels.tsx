@@ -1,8 +1,8 @@
+import { Globe, RefreshCw } from "lucide-react";
+import { useEffect, useState } from "react";
 import { callTool } from "@/common/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Globe, RefreshCw } from "lucide-react";
-import { useEffect, useState } from "react";
 
 export function Funnels() {
   const [list, setList] = useState<unknown[]>([]);
@@ -34,7 +34,7 @@ export function Funnels() {
 
   useEffect(() => {
     fetchFunnels();
-  }, []);
+  }, [fetchFunnels]);
 
   return (
     <div className="space-y-6">

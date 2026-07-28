@@ -1,5 +1,5 @@
-import { API_BASE } from "../lib/api";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { API_BASE } from "../lib/api";
 
 type LogEntry = {
   id: string;
@@ -57,8 +57,11 @@ export default function Logging() {
         const d = await r.json();
         if (opts.tail && opts.after_id) {
           if (d.lines && d.lines.length > 0) {
-            const afterIdx = d.lines.findIndex((e: { id: string }) => e.id === opts.after_id);
-            const newEntries = afterIdx >= 0 ? d.lines.slice(afterIdx + 1) : d.lines;
+            const afterIdx = d.lines.findIndex(
+              (e: { id: string }) => e.id === opts.after_id,
+            );
+            const newEntries =
+              afterIdx >= 0 ? d.lines.slice(afterIdx + 1) : d.lines;
             setEntries((prev) => [...prev, ...newEntries].slice(-200));
           }
         } else {
@@ -97,7 +100,7 @@ export default function Logging() {
     if (tail && !userScrolled && endRef.current) {
       endRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [entries, tail, userScrolled]);
+  }, [tail, userScrolled]);
 
   const handleScroll = () => {
     if (!containerRef.current) return;
@@ -248,7 +251,9 @@ export default function Logging() {
               {e.level}
             </span>
             {e.kind && (
-              <span className="text-slate-500 w-16 shrink-0 text-xs">[{e.kind}]</span>
+              <span className="text-slate-500 w-16 shrink-0 text-xs">
+                [{e.kind}]
+              </span>
             )}
             <span className="text-slate-200 text-sm break-all">{e.detail}</span>
           </div>

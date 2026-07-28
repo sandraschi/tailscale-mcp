@@ -1,29 +1,35 @@
 "use client";
 
-import { APPS_CATALOG } from "@/common/apps-catalog";
-import { useConnection } from "@/store/connection";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ExternalLink, HelpCircle, LayoutGrid, RefreshCw } from "lucide-react";
 import { Link } from "react-router-dom";
+import { APPS_CATALOG } from "@/common/apps-catalog";
+import { useConnection } from "@/store/connection";
 
 export function Topbar() {
   const { state, lastError } = useConnection();
 
   const statusColor =
-    state === "connected" ? "text-emerald-500 border-emerald-500/20 bg-emerald-500/10" :
-    state === "connecting" ? "text-amber-500 border-amber-500/20 bg-amber-500/10" :
-    "text-red-500 border-red-500/20 bg-red-500/10";
+    state === "connected"
+      ? "text-emerald-500 border-emerald-500/20 bg-emerald-500/10"
+      : state === "connecting"
+        ? "text-amber-500 border-amber-500/20 bg-amber-500/10"
+        : "text-red-500 border-red-500/20 bg-red-500/10";
 
   const statusLabel =
-    state === "connected" ? "System Online" :
-    state === "connecting" ? "Connecting..." :
-    `Offline${lastError ? ` (${lastError.slice(0, 60)})` : ""}`;
+    state === "connected"
+      ? "System Online"
+      : state === "connecting"
+        ? "Connecting..."
+        : `Offline${lastError ? ` (${lastError.slice(0, 60)})` : ""}`;
 
   const restartBackend = async () => {
     try {
       const { invoke } = await import("@tauri-apps/api/core");
       await invoke("start_backend");
-    } catch { /* not in Tauri */ }
+    } catch {
+      /* not in Tauri */
+    }
   };
 
   return (
@@ -36,7 +42,9 @@ export function Topbar() {
 
       <div className="flex items-center gap-2">
         {/* Dynamic System Status */}
-        <div className={`mr-4 flex items-center gap-2 rounded-full px-3 py-1 text-xs border ${statusColor}`}>
+        <div
+          className={`mr-4 flex items-center gap-2 rounded-full px-3 py-1 text-xs border ${statusColor}`}
+        >
           <span className="relative flex h-2 w-2">
             {state === "connected" && (
               <>
@@ -53,7 +61,11 @@ export function Topbar() {
           </span>
           <span>{statusLabel}</span>
           {state !== "connected" && (
-            <button onClick={restartBackend} className="ml-1 underline hover:text-white" title="Restart backend">
+            <button
+              onClick={restartBackend}
+              className="ml-1 underline hover:text-white"
+              title="Restart backend"
+            >
               Restart
             </button>
           )}

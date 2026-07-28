@@ -1,0 +1,763 @@
+src\common\apps-catalog.ts:14:9 lint/suspicious/noExplicitAny ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Unexpected any. Specify a different type.
+  
+    12 Ôöé   label: string;
+    13 Ôöé   description: string;
+  > 14 Ôöé   icon: any;
+       Ôöé         ^^^
+    15 Ôöé   url: string; // Absolute URL for cross-app navigation
+    16 Ôöé   port: number;
+  
+  i any disables many type checking rules. Its use should be avoided.
+  
+
+src\components\layout\sidebar.tsx:109:9 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    108 Ôöé       <div className="border-t border-slate-800 p-2">
+  > 109 Ôöé         <button
+        Ôöé         ^^^^^^^
+  > 110 Ôöé           onClick={onToggle}
+  > 111 Ôöé           className="flex w-full items-center justify-center rounded-md p-2 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+  > 112 Ôöé         >
+        Ôöé         ^
+    113 Ôöé           {collapsed ? (
+    114 Ôöé             <ChevronRight className="h-5 w-5" />
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\components\layout\topbar.tsx:64:13 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    62 Ôöé           <span>{statusLabel}</span>
+    63 Ôöé           {state !== "connected" && (
+  > 64 Ôöé             <button
+       Ôöé             ^^^^^^^
+  > 65 Ôöé               onClick={restartBackend}
+  > 66 Ôöé               className="ml-1 underline hover:text-white"
+  > 67 Ôöé               title="Restart backend"
+  > 68 Ôöé             >
+       Ôöé             ^
+    69 Ôöé               Restart
+    70 Ôöé             </button>
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\components\layout\topbar.tsx:77:13 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    75 Ôöé         <DropdownMenu.Root>
+    76 Ôöé           <DropdownMenu.Trigger asChild>
+  > 77 Ôöé             <button className="flex items-center gap-2 rounded-md border border-slate-800 bg-slate-900/50 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-700">
+       Ôöé             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    78 Ôöé               <LayoutGrid className="h-4 w-4" />
+    79 Ôöé               Apps
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\main.tsx:6:21 lint/style/noNonNullAssertion ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Forbidden non-null assertion.
+  
+    4 Ôöé import "./index.css";
+    5 Ôöé 
+  > 6 Ôöé ReactDOM.createRoot(document.getElementById("root")!).render(
+      Ôöé                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    7 Ôöé   <React.StrictMode>
+    8 Ôöé     <App />
+  
+
+src\pages\Logging.tsx:267:9 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    265 Ôöé           Page {currentPage} of {totalPages || 1}
+    266 Ôöé         </span>
+  > 267 Ôöé         <button
+        Ôöé         ^^^^^^^
+  > 268 Ôöé           className="px-3 py-1 rounded border border-slate-700 hover:bg-slate-800 disabled:opacity-30"
+  > 269 Ôöé           disabled={offset + limit >= total}
+  > 270 Ôöé           onClick={() => setOffset(offset + limit)}
+  > 271 Ôöé         >
+        Ôöé         ^
+    272 Ôöé           Next
+    273 Ôöé         </button>
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\pages\Logging.tsx:299:15 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    297 Ôöé                 Cancel
+    298 Ôöé               </button>
+  > 299 Ôöé               <button
+        Ôöé               ^^^^^^^
+  > 300 Ôöé                 className="px-4 py-2 rounded bg-red-700 text-white text-sm hover:bg-red-600"
+  > 301 Ôöé                 onClick={handleClear}
+  > 302 Ôöé               >
+        Ôöé               ^
+    303 Ôöé                 Clear
+    304 Ôöé               </button>
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\pages\Logging.tsx:10:24 lint/suspicious/noExplicitAny ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Unexpected any. Specify a different type.
+  
+     8 Ôöé   kind: string;
+     9 Ôöé   detail: string;
+  > 10 Ôöé   meta: Record<string, any>;
+       Ôöé                        ^^^
+    11 Ôöé };
+    12 Ôöé 
+  
+  i any disables many type checking rules. Its use should be avoided.
+  
+
+src\pages\Logging.tsx:194:9 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    192 Ôöé         </select>
+    193 Ôöé 
+  > 194 Ôöé         <button
+        Ôöé         ^^^^^^^
+  > 195 Ôöé           className={`h-8 rounded px-3 text-xs font-medium ${tail ? "bg-emerald-600 text-white" : "border border-slate-700 text-slate-400 hover:bg-slate-800"}`}
+  > 196 Ôöé           onClick={() => setTail(!tail)}
+  > 197 Ôöé         >
+        Ôöé         ^
+    198 Ôöé           {tail ? "LIVE" : "Tail"}
+    199 Ôöé         </button>
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\pages\Logging.tsx:201:9 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    199 Ôöé         </button>
+    200 Ôöé 
+  > 201 Ôöé         <button
+        Ôöé         ^^^^^^^
+  > 202 Ôöé           className="h-8 rounded border border-slate-700 px-3 text-xs text-slate-400 hover:bg-slate-800"
+  > 203 Ôöé           onClick={() => handleExport("json")}
+  > 204 Ôöé         >
+        Ôöé         ^
+    205 Ôöé           JSON
+    206 Ôöé         </button>
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\pages\Logging.tsx:207:9 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    205 Ôöé           JSON
+    206 Ôöé         </button>
+  > 207 Ôöé         <button
+        Ôöé         ^^^^^^^
+  > 208 Ôöé           className="h-8 rounded border border-slate-700 px-3 text-xs text-slate-400 hover:bg-slate-800"
+  > 209 Ôöé           onClick={() => handleExport("csv")}
+  > 210 Ôöé         >
+        Ôöé         ^
+    211 Ôöé           CSV
+    212 Ôöé         </button>
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\pages\Logging.tsx:214:9 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    212 Ôöé         </button>
+    213 Ôöé 
+  > 214 Ôöé         <button
+        Ôöé         ^^^^^^^
+  > 215 Ôöé           className="h-8 rounded border border-red-800 px-3 text-xs text-red-400 hover:bg-red-950/30"
+  > 216 Ôöé           onClick={() => setShowClear(true)}
+  > 217 Ôöé         >
+        Ôöé         ^
+    218 Ôöé           Clear
+    219 Ôöé         </button>
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\pages\Logging.tsx:257:9 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    255 Ôöé       {/* Pagination */}
+    256 Ôöé       <div className="flex items-center justify-between text-xs text-slate-500">
+  > 257 Ôöé         <button
+        Ôöé         ^^^^^^^
+  > 258 Ôöé           className="px-3 py-1 rounded border border-slate-700 hover:bg-slate-800 disabled:opacity-30"
+  > 259 Ôöé           disabled={offset <= 0}
+  > 260 Ôöé           onClick={() => setOffset(Math.max(0, offset - limit))}
+  > 261 Ôöé         >
+        Ôöé         ^
+    262 Ôöé           Prev
+    263 Ôöé         </button>
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\pages\Logging.tsx:293:15 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    291 Ôöé             </p>
+    292 Ôöé             <div className="flex gap-3 justify-end">
+  > 293 Ôöé               <button
+        Ôöé               ^^^^^^^
+  > 294 Ôöé                 className="px-4 py-2 rounded border border-slate-700 text-slate-400 text-sm hover:bg-slate-800"
+  > 295 Ôöé                 onClick={() => setShowClear(false)}
+  > 296 Ôöé               >
+        Ôöé               ^
+    297 Ôöé                 Cancel
+    298 Ôöé               </button>
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\pages\chat.tsx:235:15 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    233 Ôöé             <span className="text-xs text-slate-500 mr-1">{group.group}:</span>
+    234 Ôöé             {group.prompts.map((p) => (
+  > 235 Ôöé               <button
+        Ôöé               ^^^^^^^
+  > 236 Ôöé                 key={p}
+  > 237 Ôöé                 onClick={() => setInput(p)}
+  > 238 Ôöé                 className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded"
+  > 239 Ôöé               >
+        Ôöé               ^
+    240 Ôöé                 {p}
+    241 Ôöé               </button>
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\pages\chat.tsx:261:9 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    259 Ôöé           }}
+    260 Ôöé         />
+  > 261 Ôöé         <button
+        Ôöé         ^^^^^^^
+  > 262 Ôöé           data-testid="chat-send"
+  > 263 Ôöé           onClick={() => send()}
+  > 264 Ôöé           disabled={loading}
+  > 265 Ôöé           className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-4 py-2 rounded-md"
+  > 266 Ôöé         >
+        Ôöé         ^
+    267 Ôöé           {loading ? (
+    268 Ôöé             <Loader2 className="h-4 w-4 animate-spin" />
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\pages\chat.tsx:172:11 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    170 Ôöé             <Download className="h-4 w-4" />
+    171 Ôöé           </button>
+  > 172 Ôöé           <button
+        Ôöé           ^^^^^^^
+  > 173 Ôöé             data-testid="chat-clear"
+         ...
+  > 177 Ôöé             title="Clear"
+  > 178 Ôöé           >
+        Ôöé           ^
+    179 Ôöé             <Eraser className="h-4 w-4" />
+    180 Ôöé           </button>
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\pages\chat.tsx:163:11 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    161 Ôöé             ))}
+    162 Ôöé           </select>
+  > 163 Ôöé           <button
+        Ôöé           ^^^^^^^
+  > 164 Ôöé             data-testid="chat-export"
+         ...
+  > 168 Ôöé             title="Export"
+  > 169 Ôöé           >
+        Ôöé           ^
+    170 Ôöé             <Download className="h-4 w-4" />
+    171 Ôöé           </button>
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\pages\chat.tsx:202:21 lint/suspicious/noArrayIndexKey ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Avoid using the index of an array as key property in an element.
+  
+    200 Ôöé       <div className="flex-1 overflow-y-auto space-y-4">
+    201 Ôöé         {messages.map((m, i) => (
+  > 202 Ôöé           <div key={i} className="flex gap-3">
+        Ôöé                     ^
+    203 Ôöé             <div
+    204 Ôöé               className={`h-8 w-8 shrink-0 flex items-center justify-center rounded-full border ${m.role === "user" ? "border-slate-700 bg-slate-800" : "border-blue-800 bg-blue-950/30"}`}
+  
+  i This is the source of the key value.
+  
+    200 Ôöé       <div className="flex-1 overflow-y-auto space-y-4">
+  > 201 Ôöé         {messages.map((m, i) => (
+        Ôöé                           ^
+    202 Ôöé           <div key={i} className="flex gap-3">
+    203 Ôöé             <div
+  
+  i The order of the items may change, and this also affects performances and component state.
+  
+  i Check the React documentation. 
+  
+
+src\pages\logs.tsx:10:24 lint/suspicious/noExplicitAny ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Unexpected any. Specify a different type.
+  
+     8 Ôöé   kind: string;
+     9 Ôöé   detail: string;
+  > 10 Ôöé   meta: Record<string, any>;
+       Ôöé                        ^^^
+    11 Ôöé };
+    12 Ôöé 
+  
+  i any disables many type checking rules. Its use should be avoided.
+  
+
+src\pages\logs.tsx:202:9 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    200 Ôöé         </select>
+    201 Ôöé 
+  > 202 Ôöé         <button
+        Ôöé         ^^^^^^^
+  > 203 Ôöé           className={`h-8 rounded px-3 text-xs font-medium ${tail ? "bg-emerald-600 text-white" : "border border-slate-700 text-slate-400 hover:bg-slate-800"}`}
+  > 204 Ôöé           onClick={() => setTail(!tail)}
+  > 205 Ôöé         >
+        Ôöé         ^
+    206 Ôöé           {tail ? "LIVE" : "Tail"}
+    207 Ôöé         </button>
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\pages\logs.tsx:209:9 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    207 Ôöé         </button>
+    208 Ôöé 
+  > 209 Ôöé         <button
+        Ôöé         ^^^^^^^
+  > 210 Ôöé           className="h-8 rounded border border-slate-700 px-3 text-xs text-slate-400 hover:bg-slate-800"
+  > 211 Ôöé           onClick={() => handleExport("json")}
+  > 212 Ôöé         >
+        Ôöé         ^
+    213 Ôöé           JSON
+    214 Ôöé         </button>
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\pages\logs.tsx:215:9 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    213 Ôöé           JSON
+    214 Ôöé         </button>
+  > 215 Ôöé         <button
+        Ôöé         ^^^^^^^
+  > 216 Ôöé           className="h-8 rounded border border-slate-700 px-3 text-xs text-slate-400 hover:bg-slate-800"
+  > 217 Ôöé           onClick={() => handleExport("csv")}
+  > 218 Ôöé         >
+        Ôöé         ^
+    219 Ôöé           CSV
+    220 Ôöé         </button>
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\pages\logs.tsx:222:9 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    220 Ôöé         </button>
+    221 Ôöé 
+  > 222 Ôöé         <button
+        Ôöé         ^^^^^^^
+  > 223 Ôöé           className="h-8 rounded border border-red-800 px-3 text-xs text-red-400 hover:bg-red-950/30"
+  > 224 Ôöé           onClick={() => setShowClear(true)}
+  > 225 Ôöé         >
+        Ôöé         ^
+    226 Ôöé           Clear
+    227 Ôöé         </button>
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\pages\logs.tsx:265:9 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    264 Ôöé       <div className="flex items-center justify-between text-xs text-slate-500">
+  > 265 Ôöé         <button
+        Ôöé         ^^^^^^^
+  > 266 Ôöé           className="px-3 py-1 rounded border border-slate-700 hover:bg-slate-800 disabled:opacity-30"
+  > 267 Ôöé           disabled={offset <= 0}
+  > 268 Ôöé           onClick={() => setOffset(Math.max(0, offset - limit))}
+  > 269 Ôöé         >
+        Ôöé         ^
+    270 Ôöé           Prev
+    271 Ôöé         </button>
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\pages\logs.tsx:275:9 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    273 Ôöé           Page {currentPage} of {totalPages || 1}
+    274 Ôöé         </span>
+  > 275 Ôöé         <button
+        Ôöé         ^^^^^^^
+  > 276 Ôöé           className="px-3 py-1 rounded border border-slate-700 hover:bg-slate-800 disabled:opacity-30"
+  > 277 Ôöé           disabled={offset + limit >= total}
+  > 278 Ôöé           onClick={() => setOffset(offset + limit)}
+  > 279 Ôöé         >
+        Ôöé         ^
+    280 Ôöé           Next
+    281 Ôöé         </button>
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\pages\logs.tsx:300:15 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    298 Ôöé             </p>
+    299 Ôöé             <div className="flex gap-3 justify-end">
+  > 300 Ôöé               <button
+        Ôöé               ^^^^^^^
+  > 301 Ôöé                 className="px-4 py-2 rounded border border-slate-700 text-slate-400 text-sm hover:bg-slate-800"
+  > 302 Ôöé                 onClick={() => setShowClear(false)}
+  > 303 Ôöé               >
+        Ôöé               ^
+    304 Ôöé                 Cancel
+    305 Ôöé               </button>
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\pages\logs.tsx:306:15 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    304 Ôöé                 Cancel
+    305 Ôöé               </button>
+  > 306 Ôöé               <button
+        Ôöé               ^^^^^^^
+  > 307 Ôöé                 className="px-4 py-2 rounded bg-red-700 text-white text-sm hover:bg-red-600"
+  > 308 Ôöé                 onClick={handleClear}
+  > 309 Ôöé               >
+        Ôöé               ^
+    310 Ôöé                 Clear
+    311 Ôöé               </button>
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\pages\partner-tailnets.tsx:306:30 lint/suspicious/noArrayIndexKey ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Avoid using the index of an array as key property in an element.
+  
+    304 Ôöé                 <ul className="list-disc space-y-2 pl-5">
+    305 Ôöé                   {recs.map((r, i) => (
+  > 306 Ôöé                     <li key={i}>{String(r)}</li>
+        Ôöé                              ^
+    307 Ôöé                   ))}
+    308 Ôöé                 </ul>
+  
+  i This is the source of the key value.
+  
+    303 Ôöé               {Array.isArray(recs) && recs.length > 0 ? (
+    304 Ôöé                 <ul className="list-disc space-y-2 pl-5">
+  > 305 Ôöé                   {recs.map((r, i) => (
+        Ôöé                                 ^
+    306 Ôöé                     <li key={i}>{String(r)}</li>
+    307 Ôöé                   ))}
+  
+  i The order of the items may change, and this also affects performances and component state.
+  
+  i Check the React documentation. 
+  
+
+src\pages\visualizer.tsx:52:13 lint/a11y/useButtonType ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ! Provide an explicit type prop for the button element.
+  
+    51 Ôöé           <div className="absolute bottom-4 right-4">
+  > 52 Ôöé             <button className="p-2 bg-black/50 hover:bg-black/70 rounded text-white transition-colors">
+       Ôöé             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    53 Ôöé               <Maximize className="h-5 w-5" />
+    54 Ôöé             </button>
+  
+  i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
+  
+  i Allowed button types are: submit, button or reset
+  
+
+src\components\layout\sidebar.tsx:13:3 lint/suspicious/noShadowRestrictedNames ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ├ù Do not shadow the global "Map" property.
+  
+    11 Ôöé   LayoutDashboard,
+    12 Ôöé   Link2,
+  > 13 Ôöé   Map,
+       Ôöé   ^^^
+    14 Ôöé   MessageSquare,
+    15 Ôöé   Network,
+  
+  i Consider renaming this variable. It's easy to confuse the origin of variables when they're named after a known global.
+  
+
+src\pages\Logging.tsx:278:9 lint/a11y/useKeyWithClickEvents ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ├ù Enforce to have the onClick mouse event with the onKeyUp, the onKeyDown, or the onKeyPress keyboard event.
+  
+    276 Ôöé       {/* Clear confirmation */}
+    277 Ôöé       {showClear && (
+  > 278 Ôöé         <div
+        Ôöé         ^^^^
+  > 279 Ôöé           className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+  > 280 Ôöé           onClick={() => setShowClear(false)}
+  > 281 Ôöé         >
+        Ôöé         ^
+    282 Ôöé           <div
+    283 Ôöé             className="bg-slate-900 border border-slate-700 rounded-xl p-6 max-w-sm"
+  
+  i Actions triggered using mouse events should have corresponding keyboard events to account for keyboard-only navigation.
+  
+
+src\pages\Logging.tsx:278:9 lint/a11y/noStaticElementInteractions ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ├ù Unexpected event handler on static element.
+  
+    276 Ôöé       {/* Clear confirmation */}
+    277 Ôöé       {showClear && (
+  > 278 Ôöé         <div
+        Ôöé         ^^^^
+  > 279 Ôöé           className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+  > 280 Ôöé           onClick={() => setShowClear(false)}
+  > 281 Ôöé         >
+        Ôöé         ^
+    282 Ôöé           <div
+    283 Ôöé             className="bg-slate-900 border border-slate-700 rounded-xl p-6 max-w-sm"
+  
+  i Static elements should not be interactive. To add interactivity such as a mouse or key event listener to a static element, give the element an appropriate role value.
+  
+
+src\pages\Logging.tsx:282:11 lint/a11y/noStaticElementInteractions ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ├ù Unexpected event handler on static element.
+  
+    280 Ôöé           onClick={() => setShowClear(false)}
+    281 Ôöé         >
+  > 282 Ôöé           <div
+        Ôöé           ^^^^
+  > 283 Ôöé             className="bg-slate-900 border border-slate-700 rounded-xl p-6 max-w-sm"
+  > 284 Ôöé             onClick={(e) => e.stopPropagation()}
+  > 285 Ôöé           >
+        Ôöé           ^
+    286 Ôöé             <h3 className="text-lg font-bold text-slate-200 mb-2">
+    287 Ôöé               Clear all logs?
+  
+  i Static elements should not be interactive. To add interactivity such as a mouse or key event listener to a static element, give the element an appropriate role value.
+  
+
+src\pages\Logging.tsx:282:11 lint/a11y/useKeyWithClickEvents ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ├ù Enforce to have the onClick mouse event with the onKeyUp, the onKeyDown, or the onKeyPress keyboard event.
+  
+    280 Ôöé           onClick={() => setShowClear(false)}
+    281 Ôöé         >
+  > 282 Ôöé           <div
+        Ôöé           ^^^^
+  > 283 Ôöé             className="bg-slate-900 border border-slate-700 rounded-xl p-6 max-w-sm"
+  > 284 Ôöé             onClick={(e) => e.stopPropagation()}
+  > 285 Ôöé           >
+        Ôöé           ^
+    286 Ôöé             <h3 className="text-lg font-bold text-slate-200 mb-2">
+    287 Ôöé               Clear all logs?
+  
+  i Actions triggered using mouse events should have corresponding keyboard events to account for keyboard-only navigation.
+  
+
+src\pages\chat.tsx:186:11 lint/a11y/noLabelWithoutControl ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ├ù A form label must be associated with an input.
+  
+    184 Ôöé       <div className="flex flex-wrap items-end justify-between gap-4">
+    185 Ôöé         <div className="flex w-full max-w-xs flex-col gap-1">
+  > 186 Ôöé           <label className="text-xs text-slate-500">
+        Ôöé           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  > 187 Ôöé             Model override (optional)
+  > 188 Ôöé           </label>
+        Ôöé           ^^^^^^^^
+    189 Ôöé           <input
+    190 Ôöé             className="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-sm text-slate-100 font-mono"
+  
+  i Consider adding a "for" or "htmlFor" attribute to the label element or moving the input element to inside the label element.
+  
+
+src\pages\logs.tsx:285:9 lint/a11y/useKeyWithClickEvents ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ├ù Enforce to have the onClick mouse event with the onKeyUp, the onKeyDown, or the onKeyPress keyboard event.
+  
+    284 Ôöé       {showClear && (
+  > 285 Ôöé         <div
+        Ôöé         ^^^^
+  > 286 Ôöé           className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+  > 287 Ôöé           onClick={() => setShowClear(false)}
+  > 288 Ôöé         >
+        Ôöé         ^
+    289 Ôöé           <div
+    290 Ôöé             className="bg-slate-900 border border-slate-700 rounded-xl p-6 max-w-sm"
+  
+  i Actions triggered using mouse events should have corresponding keyboard events to account for keyboard-only navigation.
+  
+
+src\pages\logs.tsx:285:9 lint/a11y/noStaticElementInteractions ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ├ù Unexpected event handler on static element.
+  
+    284 Ôöé       {showClear && (
+  > 285 Ôöé         <div
+        Ôöé         ^^^^
+  > 286 Ôöé           className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+  > 287 Ôöé           onClick={() => setShowClear(false)}
+  > 288 Ôöé         >
+        Ôöé         ^
+    289 Ôöé           <div
+    290 Ôöé             className="bg-slate-900 border border-slate-700 rounded-xl p-6 max-w-sm"
+  
+  i Static elements should not be interactive. To add interactivity such as a mouse or key event listener to a static element, give the element an appropriate role value.
+  
+
+src\pages\logs.tsx:289:11 lint/a11y/noStaticElementInteractions ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ├ù Unexpected event handler on static element.
+  
+    287 Ôöé           onClick={() => setShowClear(false)}
+    288 Ôöé         >
+  > 289 Ôöé           <div
+        Ôöé           ^^^^
+  > 290 Ôöé             className="bg-slate-900 border border-slate-700 rounded-xl p-6 max-w-sm"
+  > 291 Ôöé             onClick={(e) => e.stopPropagation()}
+  > 292 Ôöé           >
+        Ôöé           ^
+    293 Ôöé             <h3 className="text-lg font-bold text-slate-200 mb-2">
+    294 Ôöé               Clear all logs?
+  
+  i Static elements should not be interactive. To add interactivity such as a mouse or key event listener to a static element, give the element an appropriate role value.
+  
+
+src\pages\logs.tsx:289:11 lint/a11y/useKeyWithClickEvents ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ├ù Enforce to have the onClick mouse event with the onKeyUp, the onKeyDown, or the onKeyPress keyboard event.
+  
+    287 Ôöé           onClick={() => setShowClear(false)}
+    288 Ôöé         >
+  > 289 Ôöé           <div
+        Ôöé           ^^^^
+  > 290 Ôöé             className="bg-slate-900 border border-slate-700 rounded-xl p-6 max-w-sm"
+  > 291 Ôöé             onClick={(e) => e.stopPropagation()}
+  > 292 Ôöé           >
+        Ôöé           ^
+    293 Ôöé             <h3 className="text-lg font-bold text-slate-200 mb-2">
+    294 Ôöé               Clear all logs?
+  
+  i Actions triggered using mouse events should have corresponding keyboard events to account for keyboard-only navigation.
+  
+
+[0m[36mChecked 48 files in 140[0m[0m[2m[36mms[0m[0m[36m.[0m[0m[36m No fixes applied.[0m[0m
+[0m[0m[31mFound [0m[0m[31m10[0m[0m[31m errors.[0m[0m
+[0m[0m[33mFound [0m[0m[33m30[0m[0m[33m warnings.[0m
+ci ÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü
+
+  ├ù Some errors were emitted while running checks.
+  
+

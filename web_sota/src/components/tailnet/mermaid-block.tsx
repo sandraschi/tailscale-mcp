@@ -1,6 +1,6 @@
+import { ZoomIn, ZoomOut } from "lucide-react";
 import mermaid from "mermaid";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { ZoomIn, ZoomOut } from "lucide-react";
 
 type Props = {
   chart: string;
@@ -44,20 +44,26 @@ export function MermaidBlock({ chart, className = "" }: Props) {
     node.id = `mm-${uid}`;
     node.textContent = chart;
     inner.appendChild(node);
-    void mermaid.run({ nodes: [node] }).then(() => {
-      const svg = inner.querySelector("svg");
-      if (svg) {
-        svg.style.maxWidth = "none";
-        svg.style.height = "auto";
-      }
-    }).catch((e) => {
-      console.error("mermaid run failed", e);
-      inner.innerHTML = `<pre class="text-xs text-red-400 whitespace-pre-wrap p-2">${String(e)}</pre>`;
-    });
+    void mermaid
+      .run({ nodes: [node] })
+      .then(() => {
+        const svg = inner.querySelector("svg");
+        if (svg) {
+          svg.style.maxWidth = "none";
+          svg.style.height = "auto";
+        }
+      })
+      .catch((e) => {
+        console.error("mermaid run failed", e);
+        inner.innerHTML = `<pre class="text-xs text-red-400 whitespace-pre-wrap p-2">${String(e)}</pre>`;
+      });
   }, [chart, uid]);
 
   const zoomIn = useCallback(() => setScale((s) => Math.min(s + 0.25, 5)), []);
-  const zoomOut = useCallback(() => setScale((s) => Math.max(s - 0.25, 0.25)), []);
+  const zoomOut = useCallback(
+    () => setScale((s) => Math.max(s - 0.25, 0.25)),
+    [],
+  );
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
     if (e.ctrlKey || e.metaKey) {
@@ -85,7 +91,9 @@ export function MermaidBlock({ chart, className = "" }: Props) {
         >
           <ZoomOut className="h-4 w-4" />
         </button>
-        <span className="text-xs text-slate-500 w-10 text-center">{Math.round(scale * 100)}%</span>
+        <span className="text-xs text-slate-500 w-10 text-center">
+          {Math.round(scale * 100)}%
+        </span>
         <button
           type="button"
           onClick={zoomIn}
@@ -107,7 +115,10 @@ export function MermaidBlock({ chart, className = "" }: Props) {
         onWheel={handleWheel}
         className={`min-h-[240px] overflow-auto rounded-lg border border-slate-800 bg-slate-950/90 p-4 text-slate-200 ${className}`}
       >
-        <div ref={innerRef} style={{ transform: `scale(${scale})`, transformOrigin: "top left" }} />
+        <div
+          ref={innerRef}
+          style={{ transform: `scale(${scale})`, transformOrigin: "top left" }}
+        />
       </div>
     </div>
   );

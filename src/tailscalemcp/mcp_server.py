@@ -148,6 +148,7 @@ class TailscaleMCPServer:
             )
         else:
             logger.error("No API credentials found! Check user_config or environment variables")
+            raise ValueError("Tailscale API key is required")
 
         # Initialize FastMCP with server lifespan (3.2+ feature) and SEP-1577 sampling handler
         lifespan = create_server_lifespan(self.api_key, self.tailnet)

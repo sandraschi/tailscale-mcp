@@ -1,9 +1,9 @@
+import { Globe, RefreshCw, Server } from "lucide-react";
+import { useEffect, useState } from "react";
 import { callTool } from "@/common/api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Globe, RefreshCw, Server } from "lucide-react";
-import { useEffect, useState } from "react";
 
 interface ServiceEndpoint {
   device_id?: string;
@@ -53,7 +53,7 @@ export function Services() {
 
   useEffect(() => {
     fetchServices();
-  }, []);
+  }, [fetchServices]);
 
   return (
     <div className="space-y-6">

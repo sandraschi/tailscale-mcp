@@ -1,9 +1,16 @@
+import { lazy, Suspense } from "react";
+import {
+  Navigate,
+  Route,
+  BrowserRouter as Router,
+  Routes,
+} from "react-router-dom";
 import { AppLayout } from "@/components/layout/app-layout";
-import { Help } from "@/pages/Help";
 import { Chat } from "@/pages/chat";
 import { Control } from "@/pages/control";
 import { Dashboard } from "@/pages/dashboard";
 import { Funnels } from "@/pages/funnels";
+import { Help } from "@/pages/Help";
 import { LlmStatus } from "@/pages/llm-status";
 import { LmLink } from "@/pages/lm-link";
 import Logs from "@/pages/logs";
@@ -16,13 +23,7 @@ import { Stats } from "@/pages/stats";
 import { Taildrive } from "@/pages/taildrive";
 import { ToolsExplorer } from "@/pages/tools-explorer";
 import { Visualizer } from "@/pages/visualizer";
-import { Suspense, lazy } from "react";
-import {
-  Navigate,
-  Route,
-  BrowserRouter as Router,
-  Routes,
-} from "react-router-dom";
+
 const MyTailnet = lazy(async () => {
   const m = await import("@/pages/my-tailnet");
   return { default: m.MyTailnet };

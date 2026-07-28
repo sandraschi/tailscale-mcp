@@ -1,9 +1,9 @@
-import { callTool } from "@/common/api";
-import { JsonView } from "@/components/ui/json-view";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Activity, Cpu, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
+import { callTool } from "@/common/api";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { JsonView } from "@/components/ui/json-view";
 
 export function Stats() {
   const [status, setStatus] = useState<Record<string, unknown> | null>(null);
@@ -34,7 +34,7 @@ export function Stats() {
 
   useEffect(() => {
     fetchStats();
-  }, []);
+  }, [fetchStats]);
 
   return (
     <div className="space-y-6">
@@ -77,16 +77,26 @@ export function Stats() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <JsonView data={status} title="Status" render={() => (
-              <div className="space-y-2 text-sm">
-                {status && Object.entries(status).map(([k, v]) => (
-                  <div key={k} className="flex justify-between border-b border-slate-800/50 py-1">
-                    <span className="text-slate-400">{k}</span>
-                    <span className="text-slate-200 font-mono text-xs">{String(v ?? "—")}</span>
-                  </div>
-                ))}
-              </div>
-            )} />
+            <JsonView
+              data={status}
+              title="Status"
+              render={() => (
+                <div className="space-y-2 text-sm">
+                  {status &&
+                    Object.entries(status).map(([k, v]) => (
+                      <div
+                        key={k}
+                        className="flex justify-between border-b border-slate-800/50 py-1"
+                      >
+                        <span className="text-slate-400">{k}</span>
+                        <span className="text-slate-200 font-mono text-xs">
+                          {String(v ?? "—")}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              )}
+            />
           </CardContent>
         </Card>
         <Card className="border-slate-800 bg-slate-950/50">
