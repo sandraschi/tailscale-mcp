@@ -1,4 +1,23 @@
+# Fleet: mcp-central-docs/templates/pre-commit-config.yaml.template
+
 repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.0
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: local
+    hooks:
+      - id: biome-web
+        name: biome check (webapp)
+        entry: powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/pre-commit-biome.ps1
+        language: system
+        files: ^(webapp(/frontend)?|web_sota|web)/(.*\.(ts|tsx|js|jsx)|biome\.json)$
+        pass_filenames: false
+        require_serial: true
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
@@ -6,54 +25,4 @@ repos:
       - id: end-of-file-fixer
       - id: check-yaml
       - id: check-added-large-files
-      - id: check-merge-conflict
-      - id: check-json
-      - id: check-toml
-      - id: check-xml
-      - id: debug-statements
-      - id: check-docstring-first
-      - id: requirements-txt-fixer
-      - id: mixed-line-ending
-
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.0
-    hooks:
-      - id: ruff
-        args: [--fix, --exit-non-zero-on-fix]
-      - id: ruff-format
-
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.15.0
-    hooks:
-      - id: mypy
-        additional_dependencies: [types-all]
-        args: [--strict, --ignore-missing-imports]
-
-  - repo: https://github.com/Lucas-C/pre-commit-hooks-safety
-    rev: v1.3.2
-    hooks:
-      - id: python-safety-dependencies-check
-        args: [--full-report]
-
-  - repo: https://github.com/PyCQA/bandit
-    rev: 1.8.3
-    hooks:
-      - id: bandit
-        args: [-r, src/, -f, json, -o, bandit-report.json]
-        additional_dependencies: [bandit[toml]]
-
-  - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.5.1
-    hooks:
-      - id: commitizen
-        stages: [commit-msg]
-
-  - repo: local
-    hooks:
-      - id: pytest-check
-        name: pytest-check
-        entry: pytest
-        language: system
-        pass_filenames: false
-        always_run: true
-        args: [--maxfail=1, --tb=short]
+        args: [--maxkb=5120]

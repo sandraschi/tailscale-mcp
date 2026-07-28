@@ -8,7 +8,7 @@ version = "2.1.0"
 description = "FastMCP 3.2+ compliant Tailscale network controller with persistent storage"
 readme = "README.md"
 authors = [
-    { name = "Sandra", email = "sandra@example.com" },
+    { name = "Sandra", email = "sandraschipal@gmail.com" },
 ]
 license = {text = "MIT"}
 requires-python = ">=3.12"
@@ -26,7 +26,7 @@ classifiers = [
     "Topic :: System :: Systems Administration",
 ]
 dependencies = [
-    "fastmcp>=3.4.2,<4",
+    "fastmcp>=3.4.4,<4",
     "fastapi>=0.115.0",
     "py-key-value-aio[filetree]>=0.4.4,<0.5.0",  # FastMCP 3.2
     "pydantic>=2.0.0",
@@ -154,7 +154,7 @@ name = "tailscalemcp"
 version = "2.0.2"
 description = "FastMCP 3.2+ compliant Tailscale network controller with persistent storage and optional SOTA web UI (My tailnet visualization)."
 author = "Sandra Schi"
-author_email = "sandra@sandraschi.dev"
+author_email = "sandraschipal@gmail.com"
 license = "MIT"
 homepage = "https://github.com/sandraschi/tailscale-mcp"
 repository = "https://github.com/sandraschi/tailscale-mcp"
