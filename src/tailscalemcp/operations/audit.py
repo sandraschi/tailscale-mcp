@@ -69,33 +69,21 @@ class AuditOperations:
             # Apply filters
             if filters:
                 if filters.get("os"):
-                    all_devices = [
-                        d for d in all_devices if d.os.lower() == filters["os"].lower()
-                    ]
+                    all_devices = [d for d in all_devices if d.os.lower() == filters["os"].lower()]
                 if filters.get("require_authorized"):
                     all_devices = [d for d in all_devices if d.authorized]
                 if filters.get("require_online"):
-                    all_devices = [
-                        d for d in all_devices if d.status == DeviceStatus.ONLINE
-                    ]
+                    all_devices = [d for d in all_devices if d.status == DeviceStatus.ONLINE]
                 if filters.get("tag_required"):
                     required_tags = filters["tag_required"]
                     if isinstance(required_tags, str):
                         required_tags = [required_tags]
-                    all_devices = [
-                        d
-                        for d in all_devices
-                        if all(tag in d.tags for tag in required_tags)
-                    ]
+                    all_devices = [d for d in all_devices if all(tag in d.tags for tag in required_tags)]
                 if filters.get("tag_forbidden"):
                     forbidden_tags = filters["tag_forbidden"]
                     if isinstance(forbidden_tags, str):
                         forbidden_tags = [forbidden_tags]
-                    all_devices = [
-                        d
-                        for d in all_devices
-                        if not any(tag in d.tags for tag in forbidden_tags)
-                    ]
+                    all_devices = [d for d in all_devices if not any(tag in d.tags for tag in forbidden_tags)]
 
             # Audit checks
             issues: list[dict[str, Any]] = []
@@ -147,11 +135,7 @@ class AuditOperations:
                     )
 
                 # Check client version (simplified - would need version comparison logic)
-                if (
-                    min_version
-                    and device.client_version
-                    and device.client_version < min_version
-                ):
+                if min_version and device.client_version and device.client_version < min_version:
                     statistics["outdated_clients"] += 1
                     issues.append(
                         {
@@ -184,9 +168,7 @@ class AuditOperations:
 
             # Find stale devices (not seen in 30 days)
             stale_threshold = current_time - timedelta(days=30)
-            stale_devices = [
-                d for d in all_devices if d.last_seen and d.last_seen < stale_threshold
-            ]
+            stale_devices = [d for d in all_devices if d.last_seen and d.last_seen < stale_threshold]
 
             for device in stale_devices:
                 issues.append(
@@ -196,9 +178,7 @@ class AuditOperations:
                         "device_name": device.name,
                         "severity": "medium",
                         "message": f"Device {device.name} has not been seen in 30+ days",
-                        "last_seen": device.last_seen.isoformat()
-                        if device.last_seen
-                        else None,
+                        "last_seen": device.last_seen.isoformat() if device.last_seen else None,
                     }
                 )
 
@@ -221,9 +201,7 @@ class AuditOperations:
             logger.error("Error performing device audit", error=str(e))
             raise TailscaleMCPError(f"Failed to audit devices: {e}") from e
 
-    async def check_control_plane_connectivity(
-        self, hours_threshold: int = 24
-    ) -> dict[str, Any]:
+    async def check_control_plane_connectivity(self, hours_threshold: int = 24) -> dict[str, Any]:
         """Check which devices are connected to control plane.
 
         Args:
@@ -238,9 +216,7 @@ class AuditOperations:
             device_ops = DeviceOperations(self.config)
             all_devices = await device_ops.list_devices()
 
-            threshold_time = datetime.now(
-                datetime.now().astimezone().tzinfo
-            ) - timedelta(hours=hours_threshold)
+            threshold_time = datetime.now(datetime.now().astimezone().tzinfo) - timedelta(hours=hours_threshold)
 
             connected: list[dict[str, Any]] = []
             disconnected: list[dict[str, Any]] = []
@@ -250,9 +226,7 @@ class AuditOperations:
                     "device_id": device.id,
                     "device_name": device.name,
                     "connected_to_control": device.connected_to_control,
-                    "last_seen": device.last_seen.isoformat()
-                    if device.last_seen
-                    else None,
+                    "last_seen": device.last_seen.isoformat() if device.last_seen else None,
                     "status": device.status.value,
                 }
 
@@ -271,9 +245,7 @@ class AuditOperations:
                 "connected_devices": connected,
                 "disconnected_devices": disconnected,
                 "threshold_hours": hours_threshold,
-                "check_timestamp": datetime.now(
-                    datetime.now().astimezone().tzinfo
-                ).isoformat(),
+                "check_timestamp": datetime.now(datetime.now().astimezone().tzinfo).isoformat(),
             }
 
             logger.info(

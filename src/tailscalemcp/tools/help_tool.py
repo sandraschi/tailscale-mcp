@@ -30,9 +30,7 @@ def register_help_tool(ctx: ToolContext) -> None:
         category: Annotated[
             str | None,
             Field(
-                description=(
-                    "Optional sub-filter for future help layouts; core content is selected by `topic`."
-                ),
+                description=("Optional sub-filter for future help layouts; core content is selected by `topic`."),
             ),
         ] = None,
         operation: Annotated[
@@ -51,9 +49,7 @@ def register_help_tool(ctx: ToolContext) -> None:
         **Errors:** ``TailscaleMCPError`` only on unexpected failure (not on unknown topic).
         """
         try:
-            help_content = await generate_help_content(
-                topic, level, category, operation, include_examples
-            )
+            help_content = await generate_help_content(topic, level, category, operation, include_examples)
             return {
                 "topic": topic or "overview",
                 "level": level,

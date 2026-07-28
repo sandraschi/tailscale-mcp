@@ -119,9 +119,7 @@ class PolicyAnalyzer:
             logger.error("Error analyzing policy", error=str(e))
             raise TailscaleMCPError(f"Failed to analyze policy: {e}") from e
 
-    async def find_affected_devices(
-        self, rule_action: str | None = None
-    ) -> dict[str, Any]:
+    async def find_affected_devices(self, rule_action: str | None = None) -> dict[str, Any]:
         """Find devices affected by ACL policy rules.
 
         Args:
@@ -178,9 +176,7 @@ class PolicyAnalyzer:
 
             result = {
                 "total_devices": len(all_devices),
-                "devices_affected": len(
-                    [d for d in device_access.values() if d["affected_by_rules"]]
-                ),
+                "devices_affected": len([d for d in device_access.values() if d["affected_by_rules"]]),
                 "device_access_map": device_access,
                 "rule_action_filter": rule_action,
             }
@@ -225,14 +221,12 @@ class PolicyAnalyzer:
                     match = False
 
                 if query.get("src_contains") and (
-                    not rule.src
-                    or not any(query["src_contains"] in src for src in rule.src)
+                    not rule.src or not any(query["src_contains"] in src for src in rule.src)
                 ):
                     match = False
 
                 if query.get("dst_contains") and (
-                    not rule.dst
-                    or not any(query["dst_contains"] in dst for dst in rule.dst)
+                    not rule.dst or not any(query["dst_contains"] in dst for dst in rule.dst)
                 ):
                     match = False
 

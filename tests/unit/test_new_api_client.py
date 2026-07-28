@@ -66,7 +66,9 @@ class TestDeviceInvites:
             m.return_value = {"device": {"id": "dev1"}}
             result = await client.accept_device_invite("https://login.tailscale.com/admin/invite/code123")
             assert result["device"]["id"] == "dev1"
-            m.assert_called_once_with("POST", "/device-invites/-/accept", json={"invite": "https://login.tailscale.com/admin/invite/code123"})
+            m.assert_called_once_with(
+                "POST", "/device-invites/-/accept", json={"invite": "https://login.tailscale.com/admin/invite/code123"}
+            )
 
 
 class TestUserInvites:
@@ -159,7 +161,8 @@ class TestWebhooks:
             hook = await client.create_webhook("https://example.com/hook", "slack")
             assert hook["id"] == "w1"
             m.assert_called_once_with(
-                "POST", "/tailnet/test.tailnet.ts.net/webhooks",
+                "POST",
+                "/tailnet/test.tailnet.ts.net/webhooks",
                 json={"endpointUrl": "https://example.com/hook", "providerType": "slack"},
             )
 

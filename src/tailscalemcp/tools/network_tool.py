@@ -61,12 +61,8 @@ def register_network_tool(ctx: ToolContext) -> None:
 
             elif operation == "magic_dns":
                 if enabled is None:
-                    raise TailscaleMCPError(
-                        "enabled parameter is required for magic_dns operation"
-                    )
-                result = await ctx.magic_dns_manager.configure_magic_dns(
-                    enabled, override_local_dns
-                )
+                    raise TailscaleMCPError("enabled parameter is required for magic_dns operation")
+                result = await ctx.magic_dns_manager.configure_magic_dns(enabled, override_local_dns)
                 return {
                     "operation": "magic_dns",
                     "result": result,
@@ -76,12 +72,8 @@ def register_network_tool(ctx: ToolContext) -> None:
 
             elif operation == "dns_record":
                 if not name or not record_type or not value:
-                    raise TailscaleMCPError(
-                        "name, record_type, and value are required for dns_record operation"
-                    )
-                result = await ctx.magic_dns_manager.add_dns_record(
-                    name, record_type, value, ttl
-                )
+                    raise TailscaleMCPError("name, record_type, and value are required for dns_record operation")
+                result = await ctx.magic_dns_manager.add_dns_record(name, record_type, value, ttl)
                 return {
                     "operation": "dns_record_add",
                     "result": result,
@@ -93,12 +85,8 @@ def register_network_tool(ctx: ToolContext) -> None:
 
             elif operation == "resolve":
                 if not hostname:
-                    raise TailscaleMCPError(
-                        "hostname is required for resolve operation"
-                    )
-                result = await ctx.magic_dns_manager.resolve_dns(
-                    hostname, record_type or "A", use_cache
-                )
+                    raise TailscaleMCPError("hostname is required for resolve operation")
+                result = await ctx.magic_dns_manager.resolve_dns(hostname, record_type or "A", use_cache)
                 return {
                     "operation": "resolve",
                     "result": result,
@@ -108,9 +96,7 @@ def register_network_tool(ctx: ToolContext) -> None:
 
             elif operation == "search_domain":
                 if not domain:
-                    raise TailscaleMCPError(
-                        "domain is required for search_domain operation"
-                    )
+                    raise TailscaleMCPError("domain is required for search_domain operation")
                 if enabled:
                     result = await ctx.magic_dns_manager.add_search_domain(domain)
                     return {
@@ -128,9 +114,7 @@ def register_network_tool(ctx: ToolContext) -> None:
 
             elif operation == "policy":
                 if not policy_name or not rules:
-                    raise TailscaleMCPError(
-                        "policy_name and rules are required for policy operation"
-                    )
+                    raise TailscaleMCPError("policy_name and rules are required for policy operation")
                 # Use NetworkOperations for DNS-related policies, PolicyOperations for ACL policies
                 # For now, use NetworkOperations which has ACL policy methods
                 # Note: This may need to be split into separate operations
@@ -174,9 +158,7 @@ def register_network_tool(ctx: ToolContext) -> None:
 
             elif operation == "services_get":
                 if not service_id:
-                    raise TailscaleMCPError(
-                        "service_id is required for services_get operation"
-                    )
+                    raise TailscaleMCPError("service_id is required for services_get operation")
                 service = await ctx.service_ops.get_service(service_id)
                 return {
                     "operation": "services_get",
@@ -186,9 +168,7 @@ def register_network_tool(ctx: ToolContext) -> None:
 
             elif operation == "services_create":
                 if not service_payload:
-                    raise TailscaleMCPError(
-                        "service_payload is required for services_create operation"
-                    )
+                    raise TailscaleMCPError("service_payload is required for services_create operation")
                 service = await ctx.service_ops.create_service(service_payload)
                 return {
                     "operation": "services_create",
@@ -197,12 +177,8 @@ def register_network_tool(ctx: ToolContext) -> None:
 
             elif operation == "services_update":
                 if not service_id or not service_payload:
-                    raise TailscaleMCPError(
-                        "service_id and service_payload are required for services_update operation"
-                    )
-                service = await ctx.service_ops.update_service(
-                    service_id, service_payload
-                )
+                    raise TailscaleMCPError("service_id and service_payload are required for services_update operation")
+                service = await ctx.service_ops.update_service(service_id, service_payload)
                 return {
                     "operation": "services_update",
                     "service_id": service_id,
@@ -211,9 +187,7 @@ def register_network_tool(ctx: ToolContext) -> None:
 
             elif operation == "services_delete":
                 if not service_id:
-                    raise TailscaleMCPError(
-                        "service_id is required for services_delete operation"
-                    )
+                    raise TailscaleMCPError("service_id is required for services_delete operation")
                 await ctx.service_ops.delete_service(service_id)
                 return {
                     "operation": "services_delete",
@@ -231,9 +205,7 @@ def register_network_tool(ctx: ToolContext) -> None:
                 error=str(e),
             )
             if is_auth_error(e):
-                payload = build_auth_error_response(
-                    operation, e, server_started_at=_TOOL_PROCESS_STARTED_AT
-                )
+                payload = build_auth_error_response(operation, e, server_started_at=_TOOL_PROCESS_STARTED_AT)
                 raise TailscaleMCPError(
                     message=(
                         "Tailscale API authentication failed (HTTP 401). "

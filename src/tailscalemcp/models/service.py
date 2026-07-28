@@ -25,12 +25,8 @@ class Service(BaseModel):
     magicdns_name: str | None = Field(None, description="MagicDNS name for the service")
     created_at: datetime | None = Field(None, description="Creation timestamp")
     updated_at: datetime | None = Field(None, description="Last update timestamp")
-    tags: list[str] = Field(
-        default_factory=list, description="Tags applied to the service"
-    )
-    endpoints: list[ServiceEndpoint] = Field(
-        default_factory=list, description="Backing endpoints for the service"
-    )
+    tags: list[str] = Field(default_factory=list, description="Tags applied to the service")
+    endpoints: list[ServiceEndpoint] = Field(default_factory=list, description="Backing endpoints for the service")
 
     @classmethod
     def from_api_response(cls, data: dict[str, Any]) -> "Service":

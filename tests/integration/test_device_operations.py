@@ -41,9 +41,7 @@ async def test_list_devices(operations):
         }
     ]
 
-    with patch.object(
-        operations.client, "_request", new_callable=AsyncMock
-    ) as mock_request:
+    with patch.object(operations.client, "_request", new_callable=AsyncMock) as mock_request:
         mock_request.return_value = {"devices": mock_devices}
 
         devices = await operations.list_devices()
@@ -80,9 +78,7 @@ async def test_list_devices_online_only(operations):
         },
     ]
 
-    with patch.object(
-        operations.client, "_request", new_callable=AsyncMock
-    ) as mock_request:
+    with patch.object(operations.client, "_request", new_callable=AsyncMock) as mock_request:
         mock_request.return_value = {"devices": mock_devices}
 
         devices = await operations.list_devices(online_only=True)
@@ -106,9 +102,7 @@ async def test_get_device(operations):
         "lastSeen": "2024-01-15T12:00:00Z",
     }
 
-    with patch.object(
-        operations.client, "_request", new_callable=AsyncMock
-    ) as mock_request:
+    with patch.object(operations.client, "_request", new_callable=AsyncMock) as mock_request:
         mock_request.return_value = mock_device
 
         device = await operations.get_device("device1")
@@ -119,9 +113,7 @@ async def test_get_device(operations):
 @pytest.mark.asyncio
 async def test_get_device_not_found(operations):
     """Test getting non-existent device."""
-    with patch.object(
-        operations.client, "_request", new_callable=AsyncMock
-    ) as mock_request:
+    with patch.object(operations.client, "_request", new_callable=AsyncMock) as mock_request:
         mock_request.side_effect = NotFoundError("Device", "nonexistent")
 
         with pytest.raises(NotFoundError):
@@ -143,14 +135,10 @@ async def test_authorize_device(operations):
         "lastSeen": "2024-01-15T12:00:00Z",
     }
 
-    with patch.object(
-        operations.client, "_request", new_callable=AsyncMock
-    ) as mock_request:
+    with patch.object(operations.client, "_request", new_callable=AsyncMock) as mock_request:
         mock_request.return_value = mock_device
 
-        device = await operations.authorize_device(
-            "device1", True, "Test authorization"
-        )
+        device = await operations.authorize_device("device1", True, "Test authorization")
         assert device.authorized is True
 
 
@@ -169,9 +157,7 @@ async def test_rename_device(operations):
         "lastSeen": "2024-01-15T12:00:00Z",
     }
 
-    with patch.object(
-        operations.client, "_request", new_callable=AsyncMock
-    ) as mock_request:
+    with patch.object(operations.client, "_request", new_callable=AsyncMock) as mock_request:
         mock_request.return_value = mock_device
 
         device = await operations.rename_device("device1", "new-name")
@@ -206,9 +192,7 @@ async def test_search_devices(operations):
         },
     ]
 
-    with patch.object(
-        operations.client, "_request", new_callable=AsyncMock
-    ) as mock_request:
+    with patch.object(operations.client, "_request", new_callable=AsyncMock) as mock_request:
         mock_request.return_value = {"devices": mock_devices}
 
         devices = await operations.search_devices("engineering", ["name", "tags"])

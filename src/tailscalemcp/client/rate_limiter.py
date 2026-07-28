@@ -81,9 +81,7 @@ class RateLimiter:
         """
         current_time = time.monotonic()
         cutoff_time = current_time - self.window
-        recent_requests = [
-            req_time for req_time in self._request_times if req_time >= cutoff_time
-        ]
+        recent_requests = [req_time for req_time in self._request_times if req_time >= cutoff_time]
 
         return {
             "rate": self.rate,

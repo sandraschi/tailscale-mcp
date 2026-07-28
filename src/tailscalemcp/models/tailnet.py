@@ -10,9 +10,7 @@ class TailnetSettings(BaseModel):
 
     magic_dns_enabled: bool = Field(False, description="MagicDNS enabled")
     default_route_enabled: bool = Field(False, description="Default route enabled")
-    advertising_routes: list[str] = Field(
-        default_factory=list, description="Advertised routes"
-    )
+    advertising_routes: list[str] = Field(default_factory=list, description="Advertised routes")
 
 
 class Tailnet(BaseModel):
@@ -20,9 +18,7 @@ class Tailnet(BaseModel):
 
     name: str = Field(..., description="Tailnet name")
     display_name: str | None = Field(None, description="Display name")
-    settings: TailnetSettings = Field(
-        default_factory=TailnetSettings, description="Tailnet settings"
-    )
+    settings: TailnetSettings = Field(default_factory=TailnetSettings, description="Tailnet settings")
 
     @classmethod
     def from_api_response(cls, data: dict[str, Any]) -> "Tailnet":

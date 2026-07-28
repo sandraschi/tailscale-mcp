@@ -36,32 +36,20 @@ class TailscaleConfig(BaseSettings):
 
     # Optional settings
     log_level: str = Field(default="INFO", description="Logging level")
-    api_timeout: float = Field(
-        default=30.0, description="API request timeout in seconds"
-    )
-    api_base_url: str = Field(
-        default="https://api.tailscale.com", description="Tailscale API base URL"
-    )
+    api_timeout: float = Field(default=30.0, description="API request timeout in seconds")
+    api_base_url: str = Field(default="https://api.tailscale.com", description="Tailscale API base URL")
 
     # Rate limiting
-    rate_limit_per_second: float = Field(
-        default=1.0, description="API requests per second limit"
-    )
-    rate_limit_window: int = Field(
-        default=60, description="Rate limit window in seconds"
-    )
+    rate_limit_per_second: float = Field(default=1.0, description="API requests per second limit")
+    rate_limit_window: int = Field(default=60, description="Rate limit window in seconds")
 
     # Retry configuration
     max_retries: int = Field(default=3, description="Maximum retry attempts")
-    retry_backoff_factor: float = Field(
-        default=2.0, description="Exponential backoff factor"
-    )
+    retry_backoff_factor: float = Field(default=2.0, description="Exponential backoff factor")
 
     # Connection pooling
     max_connections: int = Field(default=10, description="Max HTTP connections")
-    max_keepalive_connections: int = Field(
-        default=5, description="Max keepalive connections"
-    )
+    max_keepalive_connections: int = Field(default=5, description="Max keepalive connections")
 
     # Monitoring
     prometheus_port: int = Field(default=9091, description="Prometheus metrics port")
@@ -86,16 +74,10 @@ class TailscaleConfig(BaseSettings):
         tailnet = os.getenv("TAILSCALE_TAILNET")
 
         if not api_key:
-            raise ValueError(
-                "TAILSCALE_API_KEY environment variable is required. "
-                "Set it in .env file or environment."
-            )
+            raise ValueError("TAILSCALE_API_KEY environment variable is required. Set it in .env file or environment.")
 
         if not tailnet:
-            raise ValueError(
-                "TAILSCALE_TAILNET environment variable is required. "
-                "Set it in .env file or environment."
-            )
+            raise ValueError("TAILSCALE_TAILNET environment variable is required. Set it in .env file or environment.")
 
         return cls(
             tailscale_api_key=api_key,

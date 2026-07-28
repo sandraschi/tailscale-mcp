@@ -1,12 +1,12 @@
 """User models for Tailscale."""
 
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, Field
 
 
-class UserRole(str, Enum):
+class UserRole(StrEnum):
     """User role in tailnet."""
 
     OWNER = "owner"

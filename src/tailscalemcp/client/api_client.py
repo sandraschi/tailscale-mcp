@@ -138,13 +138,9 @@ class TailscaleAPIClient:
         url = f"{self.api_base_url}/{endpoint.lstrip('/')}"
 
         if not self.api_key:
-            raise AuthenticationError(
-                "Tailscale API key not configured — set TAILSCALE_API_KEY in Settings or .env"
-            )
+            raise AuthenticationError("Tailscale API key not configured — set TAILSCALE_API_KEY in Settings or .env")
         if not self.tailnet:
-            raise AuthenticationError(
-                "Tailnet not configured — set TAILSCALE_TAILNET in Settings or .env"
-            )
+            raise AuthenticationError("Tailnet not configured — set TAILSCALE_TAILNET in Settings or .env")
 
         headers = {
             "Authorization": f"Bearer {self.api_key}",
@@ -164,15 +160,11 @@ class TailscaleAPIClient:
                     endpoint=endpoint,
                 )
 
-                response = await self.client.request(
-                    method, url, headers=headers, **kwargs
-                )
+                response = await self.client.request(method, url, headers=headers, **kwargs)
 
                 # Handle specific status codes
                 if response.status_code == 401:
-                    raise AuthenticationError(
-                        "Invalid API key or authentication failed"
-                    )
+                    raise AuthenticationError("Invalid API key or authentication failed")
                 elif response.status_code == 404:
                     raise NotFoundError("Resource", endpoint)
                 elif response.status_code == 429:
@@ -247,9 +239,7 @@ class TailscaleAPIClient:
         logger.info("Device retrieved from API", device_id=device_id)
         return response
 
-    async def update_device(
-        self, device_id: str, updates: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def update_device(self, device_id: str, updates: dict[str, Any]) -> dict[str, Any]:
         """Update a device (e.g., rename, tags, authorized status).
 
         Args:
@@ -329,9 +319,7 @@ class TailscaleAPIClient:
         """
         data = await self._request("GET", "/services")
         raw_services = data.get("services", []) if isinstance(data, dict) else data
-        services: list[Service] = [
-            Service.from_api_response(s) for s in (raw_services or [])
-        ]
+        services: list[Service] = [Service.from_api_response(s) for s in (raw_services or [])]
         logger.info("Services retrieved from API", count=len(services))
         return services
 
@@ -377,9 +365,7 @@ class TailscaleAPIClient:
             params["type"] = user_type
         if role:
             params["role"] = role
-        response = await self._request(
-            "GET", "/users", params=params if params else None
-        )
+        response = await self._request("GET", "/users", params=params if params else None)
         users = response.get("users", [])
         logger.info("Users retrieved from API", count=len(users))
         return users if isinstance(users, list) else []
@@ -398,9 +384,7 @@ class TailscaleAPIClient:
         logger.info("Device invites retrieved", device_id=device_id, count=len(invites))
         return invites
 
-    async def create_device_invites(
-        self, device_id: str, invites: list[dict[str, Any]]
-    ) -> list[dict[str, Any]]:
+    async def create_device_invites(self, device_id: str, invites: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Create share invites for a device."""
         data = await self._request("POST", f"/devices/{device_id}/device-invites", json=invites)
         result = data if isinstance(data, list) else []
@@ -499,7 +483,8 @@ class TailscaleAPIClient:
     async def update_device_key(self, device_id: str, key_expiry_disabled: bool) -> None:
         """Update device key expiry settings."""
         await self._request(
-            "POST", f"/devices/{device_id}/key",
+            "POST",
+            f"/devices/{device_id}/key",
             json={"keyExpiryDisabled": key_expiry_disabled},
         )
         logger.info("Device key updated", device_id=device_id, key_expiry_disabled=key_expiry_disabled)
@@ -582,8 +567,12 @@ class TailscaleAPIClient:
         return hooks
 
     async def create_webhook(
-        self, endpoint_url: str, provider_type: str, tailnet: str | None = None,
-        secret: str | None = None, subscriptions: list[str] | None = None,
+        self,
+        endpoint_url: str,
+        provider_type: str,
+        tailnet: str | None = None,
+        secret: str | None = None,
+        subscriptions: list[str] | None = None,
     ) -> dict[str, Any]:
         """Create a webhook endpoint."""
         t = tailnet or self.tailnet

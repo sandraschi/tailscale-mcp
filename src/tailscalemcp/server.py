@@ -22,7 +22,9 @@ from pydantic import BaseModel
 # Load .env FIRST, before any imports that may trigger os.getenv calls.
 # In frozen exe (_MEIPASS), resolve .env relative to cwd (install dir).
 # Also check the app data settings file for saved credentials.
-_env_path = Path.cwd() / ".env" if getattr(sys, "frozen", False) else Path(__file__).resolve().parent.parent.parent / ".env"
+_env_path = (
+    Path.cwd() / ".env" if getattr(sys, "frozen", False) else Path(__file__).resolve().parent.parent.parent / ".env"
+)
 if getattr(sys, "frozen", False) and not _env_path.exists():
     # First run: copy .env.example → .env if available
     _example = Path.cwd() / ".env.example"
@@ -42,6 +44,7 @@ _settings_path = Path(os.environ.get("LOCALAPPDATA", ".")) / "com.sandraschi.tai
 if _settings_path.exists():
     try:
         import json
+
         _settings = json.loads(_settings_path.read_text(encoding="utf-8"))
         for k, v in _settings.items():
             if v and not os.environ.get(k):
@@ -87,6 +90,7 @@ async def _get_client():
     _fastmcp_client = Client(tailscale_mcp_server.mcp)
     await _fastmcp_client.__aenter__()
     return _fastmcp_client
+
 
 app = FastAPI(
     title="Tailscale MCP Webapp Backend",
@@ -260,10 +264,13 @@ async def save_settings(body: SettingsRequest) -> dict[str, Any]:
     _settings_dir = Path(os.environ.get("LOCALAPPDATA", ".")) / "com.sandraschi.tailscale-mcp"
     _settings_dir.mkdir(parents=True, exist_ok=True)
     (_settings_dir / "settings.json").write_text(
-        __import__("json").dumps({
-            "TAILSCALE_API_KEY": body.tailscale_api_key,
-            "TAILSCALE_TAILNET": body.tailscale_tailnet,
-        }, indent=2),
+        __import__("json").dumps(
+            {
+                "TAILSCALE_API_KEY": body.tailscale_api_key,
+                "TAILSCALE_TAILNET": body.tailscale_tailnet,
+            },
+            indent=2,
+        ),
         encoding="utf-8",
     )
 
@@ -320,15 +327,17 @@ async def llm_providers() -> dict[str, Any]:
     """Auto-discover local LLM providers (Ollama and LM Studio)."""
     result: dict[str, list[dict[str, str]]] = {}
     async with httpx.AsyncClient(timeout=5.0) as client:
-        for name, url in [("ollama", "http://127.0.0.1:11434/api/tags"), ("lm_studio", "http://127.0.0.1:1234/v1/models")]:
+        for name, url in [
+            ("ollama", "http://127.0.0.1:11434/api/tags"),
+            ("lm_studio", "http://127.0.0.1:1234/v1/models"),
+        ]:
             try:
                 r = await client.get(url)
                 if r.status_code == 200:
                     data = r.json()
                     models = data.get("models") or data.get("data") or []
                     result[name] = [
-                        {"name": m.get("name") or m.get("id", f"model-{i}")}
-                        for i, m in enumerate(models[:20])
+                        {"name": m.get("name") or m.get("id", f"model-{i}")} for i, m in enumerate(models[:20])
                     ]
                 else:
                     result[name] = []
@@ -340,9 +349,7 @@ async def llm_providers() -> dict[str, Any]:
 @app.get("/api/v1/sampling-status")
 async def sampling_status() -> dict[str, Any]:
     """Redacted sampling configuration for the webapp (no secrets)."""
-    base = os.getenv("TAILSCALE_SAMPLING_BASE_URL", "http://127.0.0.1:11434/v1").rstrip(
-        "/"
-    )
+    base = os.getenv("TAILSCALE_SAMPLING_BASE_URL", "http://127.0.0.1:11434/v1").rstrip("/")
     model = os.getenv("TAILSCALE_SAMPLING_MODEL", "llama3.2")
     key = (os.getenv("TAILSCALE_SAMPLING_API_KEY") or "").strip()
     use_client = os.getenv("TAILSCALE_SAMPLING_USE_CLIENT_LLM", "").lower() in (
@@ -364,6 +371,7 @@ async def diagnostics() -> dict[str, Any]:
     import time
 
     import psutil
+
     return {
         "success": True,
         "backend": {
@@ -385,9 +393,7 @@ async def diagnostics() -> dict[str, Any]:
 @app.get("/api/v1/llm-health")
 async def llm_health() -> dict[str, Any]:
     """Probe OpenAI-compatible /v1/models; fallback Ollama /api/tags."""
-    base = os.getenv("TAILSCALE_SAMPLING_BASE_URL", "http://127.0.0.1:11434/v1").rstrip(
-        "/"
-    )
+    base = os.getenv("TAILSCALE_SAMPLING_BASE_URL", "http://127.0.0.1:11434/v1").rstrip("/")
     key = (os.getenv("TAILSCALE_SAMPLING_API_KEY") or "").strip()
     headers: dict[str, str] = {}
     if key:
@@ -467,9 +473,7 @@ async def chat_completions(body: ChatRequest) -> dict[str, Any]:
     """Proxy to OpenAI-compatible chat/completions (Ollama, LM Studio, etc.)."""
     if not body.messages:
         raise HTTPException(status_code=400, detail="messages required")
-    base = os.getenv("TAILSCALE_SAMPLING_BASE_URL", "http://127.0.0.1:11434/v1").rstrip(
-        "/"
-    )
+    base = os.getenv("TAILSCALE_SAMPLING_BASE_URL", "http://127.0.0.1:11434/v1").rstrip("/")
     model = body.model or os.getenv("TAILSCALE_SAMPLING_MODEL", "llama3.2")
     key = (os.getenv("TAILSCALE_SAMPLING_API_KEY") or "").strip()
     headers = {"Content-Type": "application/json"}

@@ -58,6 +58,7 @@ def _find_lms_binary() -> str | None:
         r"C:\Program Files\lm-studio\lms.exe",
     ]
     import os
+
     for c in candidates:
         if os.path.isfile(c):
             return c
@@ -85,9 +86,7 @@ async def _run_lms(args: list[str], timeout: int = 30) -> dict[str, Any]:
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
-        stdout_bytes, stderr_bytes = await asyncio.wait_for(
-            proc.communicate(), timeout=timeout
-        )
+        stdout_bytes, stderr_bytes = await asyncio.wait_for(proc.communicate(), timeout=timeout)
         stdout = stdout_bytes.decode("utf-8", errors="replace").strip()
         stderr = stderr_bytes.decode("utf-8", errors="replace").strip()
         result: dict[str, Any] = {
@@ -204,9 +203,7 @@ def register_lm_link_tool(ctx: ToolContext) -> None:
             except Exception as e:
                 logger.warning("LM Link readiness check failed", error=str(e))
                 if is_auth_error(e):
-                    payload = build_auth_error_response(
-                        "readiness", e, server_started_at=_TOOL_PROCESS_STARTED_AT
-                    )
+                    payload = build_auth_error_response("readiness", e, server_started_at=_TOOL_PROCESS_STARTED_AT)
                     return {
                         "operation": "readiness",
                         "ok": False,
@@ -359,8 +356,13 @@ def register_lm_link_tool(ctx: ToolContext) -> None:
             "error": f"Unknown operation: '{operation}'",
             "error_type": "invalid_operation",
             "valid_operations": [
-                "info", "readiness", "status", "enable", "disable",
-                "set_device_name", "set_preferred_device",
+                "info",
+                "readiness",
+                "status",
+                "enable",
+                "disable",
+                "set_device_name",
+                "set_preferred_device",
             ],
         }
 
@@ -421,8 +423,5 @@ def register_lm_link_tool(ctx: ToolContext) -> None:
                     else:
                         Row(label="LM Link inactive", value="enable via get_lm_link(operation='enable')")
 
-            summary = (
-                f"LM Link — {device}: {len(peers)} peer(s), "
-                f"{'connected' if enabled else 'inactive'}"
-            )
+            summary = f"LM Link — {device}: {len(peers)} peer(s), {'connected' if enabled else 'inactive'}"
             return ToolResult(content=summary, structured_content=app)

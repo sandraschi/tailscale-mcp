@@ -72,9 +72,7 @@ def register_partner_tailnets_tool(ctx: ToolContext) -> None:
                     users = await ctx.device_manager.list_users()
                 except Exception as e:
                     users_error = str(e)
-                    logger.warning(
-                        "partner_tailnets summary: users API failed", error=users_error
-                    )
+                    logger.warning("partner_tailnets summary: users API failed", error=users_error)
                     if is_auth_error(e):
                         users_error_recovery = build_auth_error_response(
                             "summary", e, server_started_at=_TOOL_PROCESS_STARTED_AT
@@ -83,20 +81,12 @@ def register_partner_tailnets_tool(ctx: ToolContext) -> None:
                 devices = await ctx.device_manager.list_devices()
                 by_login = _group_devices_by_login(devices)
 
-                members = [
-                    u for u in users if (u.get("type") or "").lower() == "member"
-                ]
+                members = [u for u in users if (u.get("type") or "").lower() == "member"]
                 shared = [u for u in users if (u.get("type") or "").lower() == "shared"]
-                unknown_type = [
-                    u
-                    for u in users
-                    if (u.get("type") or "").lower() not in ("member", "shared")
-                ]
+                unknown_type = [u for u in users if (u.get("type") or "").lower() not in ("member", "shared")]
 
                 logins_from_devices = set(by_login.keys()) - {"(unknown)"}
-                logins_from_users = {
-                    u.get("loginName") or "" for u in users if u.get("loginName")
-                }
+                logins_from_users = {u.get("loginName") or "" for u in users if u.get("loginName")}
                 only_in_devices = logins_from_devices - logins_from_users
                 only_in_users = logins_from_users - logins_from_devices
 
@@ -113,10 +103,7 @@ def register_partner_tailnets_tool(ctx: ToolContext) -> None:
                             "whether this is a stale-in-process key or a genuinely bad one."
                         )
                 if unknown_type:
-                    recs.append(
-                        f"{len(unknown_type)} user(s) have nonstandard type values; "
-                        "see raw `users`."
-                    )
+                    recs.append(f"{len(unknown_type)} user(s) have nonstandard type values; see raw `users`.")
                 if "(unknown)" in by_login and len(by_login["(unknown)"]) > 0:
                     recs.append(
                         "Some devices have no `user` field in the API response; "
@@ -164,9 +151,7 @@ def register_partner_tailnets_tool(ctx: ToolContext) -> None:
                 }
 
             if operation == "users_list":
-                users = await ctx.device_manager.list_users(
-                    user_type=user_type, role=role
-                )
+                users = await ctx.device_manager.list_users(user_type=user_type, role=role)
                 return {
                     "success": True,
                     "operation": "users_list",
@@ -177,9 +162,7 @@ def register_partner_tailnets_tool(ctx: ToolContext) -> None:
 
             if operation == "user_get":
                 if not user_id or not str(user_id).strip():
-                    raise TailscaleMCPError(
-                        "user_id is required for user_get (UUID from users_list)"
-                    )
+                    raise TailscaleMCPError("user_id is required for user_get (UUID from users_list)")
                 user = await ctx.device_manager.get_user_details(str(user_id).strip())
                 return {
                     "success": True,
@@ -198,8 +181,7 @@ def register_partner_tailnets_tool(ctx: ToolContext) -> None:
                 }
 
             raise TailscaleMCPError(
-                f"Unknown operation: {operation!r}. "
-                "Use summary, users_list, user_get, or devices_by_login."
+                f"Unknown operation: {operation!r}. Use summary, users_list, user_get, or devices_by_login."
             )
 
         except TailscaleMCPError:
@@ -207,9 +189,7 @@ def register_partner_tailnets_tool(ctx: ToolContext) -> None:
         except Exception as e:
             logger.exception("tailscale_partner_tailnets failed")
             if is_auth_error(e):
-                payload = build_auth_error_response(
-                    operation, e, server_started_at=_TOOL_PROCESS_STARTED_AT
-                )
+                payload = build_auth_error_response(operation, e, server_started_at=_TOOL_PROCESS_STARTED_AT)
                 raise TailscaleMCPError(
                     message=(
                         "Tailscale API authentication failed (HTTP 401). "

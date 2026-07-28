@@ -33,15 +33,9 @@ class MagicDNSConfig(BaseModel):
 
     enabled: bool = Field(default=True, description="MagicDNS enabled status")
     base_domain: str = Field(..., description="Base domain for MagicDNS")
-    custom_records: list[DNSRecord] = Field(
-        default_factory=list, description="Custom DNS records"
-    )
-    search_domains: list[str] = Field(
-        default_factory=list, description="Search domains"
-    )
-    nameservers: list[str] = Field(
-        default_factory=list, description="Custom nameservers"
-    )
+    custom_records: list[DNSRecord] = Field(default_factory=list, description="Custom DNS records")
+    search_domains: list[str] = Field(default_factory=list, description="Search domains")
+    nameservers: list[str] = Field(default_factory=list, description="Custom nameservers")
     override_local_dns: bool = Field(default=False, description="Override local DNS")
 
 
@@ -93,20 +87,14 @@ class MagicDNSManager:
             logger.error("Error fetching DNS configuration", error=str(e))
             raise TailscaleMCPError(f"Failed to fetch DNS configuration: {e}") from e
 
-    async def configure_magic_dns(
-        self, enabled: bool = True, override_local_dns: bool = False
-    ) -> dict[str, Any]:
+    async def configure_magic_dns(self, enabled: bool = True, override_local_dns: bool = False) -> dict[str, Any]:
         """Configure MagicDNS settings.
 
         Note: MagicDNS toggle is not exposed directly via the public Admin API.
         """
-        raise TailscaleMCPError(
-            "Configuring MagicDNS enable/disable is not supported via the Tailscale Admin API."
-        )
+        raise TailscaleMCPError("Configuring MagicDNS enable/disable is not supported via the Tailscale Admin API.")
 
-    async def add_dns_record(
-        self, name: str, record_type: str, value: str, ttl: int = 3600
-    ) -> dict[str, Any]:
+    async def add_dns_record(self, name: str, record_type: str, value: str, ttl: int = 3600) -> dict[str, Any]:
         """Add a custom DNS record.
 
         Args:
@@ -118,9 +106,7 @@ class MagicDNSManager:
         Returns:
             DNS record creation result
         """
-        raise TailscaleMCPError(
-            "Adding custom DNS records is not supported via the Tailscale Admin API."
-        )
+        raise TailscaleMCPError("Adding custom DNS records is not supported via the Tailscale Admin API.")
 
     async def remove_dns_record(self, name: str, record_type: str) -> dict[str, Any]:
         """Remove a DNS record.
@@ -132,13 +118,9 @@ class MagicDNSManager:
         Returns:
             DNS record removal result
         """
-        raise TailscaleMCPError(
-            "Removing custom DNS records is not supported via the Tailscale Admin API."
-        )
+        raise TailscaleMCPError("Removing custom DNS records is not supported via the Tailscale Admin API.")
 
-    async def list_dns_records(
-        self, record_type: str | None = None
-    ) -> list[dict[str, Any]]:
+    async def list_dns_records(self, record_type: str | None = None) -> list[dict[str, Any]]:
         """List DNS records.
 
         Args:
@@ -147,13 +129,9 @@ class MagicDNSManager:
         Returns:
             List of DNS records
         """
-        raise TailscaleMCPError(
-            "Listing custom DNS records is not supported via the Tailscale Admin API."
-        )
+        raise TailscaleMCPError("Listing custom DNS records is not supported via the Tailscale Admin API.")
 
-    async def resolve_dns(
-        self, hostname: str, record_type: str = "A", use_cache: bool = True
-    ) -> dict[str, Any]:
+    async def resolve_dns(self, hostname: str, record_type: str = "A", use_cache: bool = True) -> dict[str, Any]:
         """Resolve DNS hostname.
 
         Args:
@@ -164,9 +142,7 @@ class MagicDNSManager:
         Returns:
             DNS resolution result
         """
-        raise TailscaleMCPError(
-            "DNS resolution via Admin API is not supported; perform resolution externally."
-        )
+        raise TailscaleMCPError("DNS resolution via Admin API is not supported; perform resolution externally.")
 
     async def add_search_domain(self, domain: str) -> dict[str, Any]:
         """Add a search domain.
@@ -177,9 +153,7 @@ class MagicDNSManager:
         Returns:
             Search domain addition result
         """
-        raise TailscaleMCPError(
-            "Managing search domains is not supported via the Tailscale Admin API."
-        )
+        raise TailscaleMCPError("Managing search domains is not supported via the Tailscale Admin API.")
 
     async def remove_search_domain(self, domain: str) -> dict[str, Any]:
         """Remove a search domain.
@@ -190,9 +164,7 @@ class MagicDNSManager:
         Returns:
             Search domain removal result
         """
-        raise TailscaleMCPError(
-            "Managing search domains is not supported via the Tailscale Admin API."
-        )
+        raise TailscaleMCPError("Managing search domains is not supported via the Tailscale Admin API.")
 
     async def create_network_policy(
         self,
@@ -212,9 +184,7 @@ class MagicDNSManager:
         Returns:
             Policy creation result
         """
-        raise TailscaleMCPError(
-            "Creating/applying custom network policies is not supported via the public Admin API."
-        )
+        raise TailscaleMCPError("Creating/applying custom network policies is not supported via the public Admin API.")
 
     async def apply_network_policy(self, policy_id: str) -> dict[str, Any]:
         """Apply a network policy.
@@ -225,9 +195,7 @@ class MagicDNSManager:
         Returns:
             Policy application result
         """
-        raise TailscaleMCPError(
-            "Applying custom network policies is not supported via the public Admin API."
-        )
+        raise TailscaleMCPError("Applying custom network policies is not supported via the public Admin API.")
 
     async def get_dns_statistics(self) -> dict[str, Any]:
         """Get DNS statistics.

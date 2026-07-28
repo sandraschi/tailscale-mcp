@@ -42,9 +42,7 @@ class ReportingOperations:
             )
         self.client = TailscaleAPIClient(self.config)
 
-    async def generate_network_report(
-        self, format: str = "json"
-    ) -> dict[str, Any] | str:
+    async def generate_network_report(self, format: str = "json") -> dict[str, Any] | str:
         """Generate comprehensive network state report.
 
         Args:
@@ -70,9 +68,7 @@ class ReportingOperations:
             # Build report
             report = {
                 "report_type": "network_state",
-                "generated_at": datetime.now(
-                    datetime.now().astimezone().tzinfo
-                ).isoformat(),
+                "generated_at": datetime.now(datetime.now().astimezone().tzinfo).isoformat(),
                 "tailnet": self.config.tailscale_tailnet,
                 "summary": {
                     "total_devices": len(devices),
@@ -174,9 +170,7 @@ class ReportingOperations:
         """
         return html
 
-    async def export_devices(
-        self, format: str = "json", filters: dict[str, Any] | None = None
-    ) -> str:
+    async def export_devices(self, format: str = "json", filters: dict[str, Any] | None = None) -> str:
         """Export device registry to specified format.
 
         Args:
@@ -200,14 +194,10 @@ class ReportingOperations:
                     devices = [d for d in devices if d.authorized]
 
             if format == "csv":
-                csv_lines = [
-                    "device_id,name,hostname,os,status,authorized,tags,ipv4,last_seen"
-                ]
+                csv_lines = ["device_id,name,hostname,os,status,authorized,tags,ipv4,last_seen"]
                 for device in devices:
                     tags_str = ";".join(device.tags) if device.tags else ""
-                    last_seen_str = (
-                        device.last_seen.isoformat() if device.last_seen else ""
-                    )
+                    last_seen_str = device.last_seen.isoformat() if device.last_seen else ""
                     csv_lines.append(
                         f'"{device.id}","{device.name}","{device.hostname}","{device.os}",'
                         f'"{device.status.value}","{device.authorized}","{tags_str}",'
@@ -217,9 +207,7 @@ class ReportingOperations:
 
             else:  # JSON
                 export_data = {
-                    "exported_at": datetime.now(
-                        datetime.now().astimezone().tzinfo
-                    ).isoformat(),
+                    "exported_at": datetime.now(datetime.now().astimezone().tzinfo).isoformat(),
                     "device_count": len(devices),
                     "devices": [
                         {
@@ -231,9 +219,7 @@ class ReportingOperations:
                             "authorized": d.authorized,
                             "tags": d.tags,
                             "ipv4": d.ipv4,
-                            "last_seen": d.last_seen.isoformat()
-                            if d.last_seen
-                            else None,
+                            "last_seen": d.last_seen.isoformat() if d.last_seen else None,
                         }
                         for d in devices
                     ],

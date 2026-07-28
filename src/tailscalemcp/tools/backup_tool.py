@@ -49,9 +49,7 @@ def register_backup_tool(ctx: ToolContext) -> None:
         try:
             if operation == "backup_create":
                 if not backup_name:
-                    raise TailscaleMCPError(
-                        "backup_name is required for backup_create operation"
-                    )
+                    raise TailscaleMCPError("backup_name is required for backup_create operation")
                 result = await ctx.device_manager.create_backup(
                     backup_name,
                     backup_type,
@@ -71,12 +69,8 @@ def register_backup_tool(ctx: ToolContext) -> None:
 
             elif operation == "backup_restore":
                 if not backup_id:
-                    raise TailscaleMCPError(
-                        "backup_id is required for backup_restore operation"
-                    )
-                result = await ctx.device_manager.restore_backup(
-                    backup_id, test_restore
-                )
+                    raise TailscaleMCPError("backup_id is required for backup_restore operation")
+                result = await ctx.device_manager.restore_backup(backup_id, test_restore)
                 return {
                     "operation": "backup_restore",
                     "backup_id": backup_id,
@@ -86,12 +80,8 @@ def register_backup_tool(ctx: ToolContext) -> None:
 
             elif operation == "backup_schedule":
                 if not schedule_cron:
-                    raise TailscaleMCPError(
-                        "schedule_cron is required for backup_schedule operation"
-                    )
-                result = await ctx.device_manager.schedule_backups(
-                    schedule_cron, retention_days
-                )
+                    raise TailscaleMCPError("schedule_cron is required for backup_schedule operation")
+                result = await ctx.device_manager.schedule_backups(schedule_cron, retention_days)
                 return {
                     "operation": "backup_schedule",
                     "schedule_cron": schedule_cron,
@@ -109,9 +99,7 @@ def register_backup_tool(ctx: ToolContext) -> None:
 
             elif operation == "backup_delete":
                 if not backup_id:
-                    raise TailscaleMCPError(
-                        "backup_id is required for backup_delete operation"
-                    )
+                    raise TailscaleMCPError("backup_id is required for backup_delete operation")
                 result = await ctx.device_manager.delete_backup(backup_id)
                 return {
                     "operation": "backup_delete",
@@ -121,9 +109,7 @@ def register_backup_tool(ctx: ToolContext) -> None:
 
             elif operation == "backup_test":
                 if not backup_id:
-                    raise TailscaleMCPError(
-                        "backup_id is required for backup_test operation"
-                    )
+                    raise TailscaleMCPError("backup_id is required for backup_test operation")
                 result = await ctx.device_manager.test_backup_integrity(backup_id)
                 return {
                     "operation": "backup_test",
@@ -133,9 +119,7 @@ def register_backup_tool(ctx: ToolContext) -> None:
 
             elif operation == "restore_test":
                 if not backup_id:
-                    raise TailscaleMCPError(
-                        "backup_id is required for restore_test operation"
-                    )
+                    raise TailscaleMCPError("backup_id is required for restore_test operation")
                 result = await ctx.device_manager.test_restore_procedure(backup_id)
                 return {
                     "operation": "restore_test",
@@ -154,13 +138,9 @@ def register_backup_tool(ctx: ToolContext) -> None:
                 raise TailscaleMCPError(f"Unknown operation: {operation}")
 
         except Exception as e:
-            logger.error(
-                "Error in tailscale_backup operation", operation=operation, error=str(e)
-            )
+            logger.error("Error in tailscale_backup operation", operation=operation, error=str(e))
             if is_auth_error(e):
-                payload = build_auth_error_response(
-                    operation, e, server_started_at=_TOOL_PROCESS_STARTED_AT
-                )
+                payload = build_auth_error_response(operation, e, server_started_at=_TOOL_PROCESS_STARTED_AT)
                 raise TailscaleMCPError(
                     message=(
                         "Tailscale API authentication failed (HTTP 401). "

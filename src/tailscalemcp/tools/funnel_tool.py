@@ -122,9 +122,7 @@ def register_funnel_tool(ctx: ToolContext) -> None:
         """
         try:
             if not ctx.funnel_manager:
-                raise TailscaleMCPError(
-                    "Funnel manager not initialized. Funnel support requires Tailscale CLI."
-                )
+                raise TailscaleMCPError("Funnel manager not initialized. Funnel support requires Tailscale CLI.")
 
             # Set storage on manager if available (FastMCP 3.1+)
             if hasattr(ctx.mcp, "storage") and ctx.mcp.storage:
@@ -132,12 +130,8 @@ def register_funnel_tool(ctx: ToolContext) -> None:
 
             if operation == "funnel_enable":
                 if port is None:
-                    raise TailscaleMCPError(
-                        "port is required for funnel_enable operation"
-                    )
-                result = await ctx.funnel_manager.enable_funnel(
-                    port=port, allow_tcp=allow_tcp, allow_tls=allow_tls
-                )
+                    raise TailscaleMCPError("port is required for funnel_enable operation")
+                result = await ctx.funnel_manager.enable_funnel(port=port, allow_tcp=allow_tcp, allow_tls=allow_tls)
                 return {
                     "operation": "funnel_enable",
                     **result,
@@ -167,9 +161,7 @@ def register_funnel_tool(ctx: ToolContext) -> None:
 
             elif operation == "funnel_certificate_info":
                 if port is None:
-                    raise TailscaleMCPError(
-                        "port is required for funnel_certificate_info operation"
-                    )
+                    raise TailscaleMCPError("port is required for funnel_certificate_info operation")
                 result = await ctx.funnel_manager.get_certificate_info(port=port)
                 return {
                     "operation": "funnel_certificate_info",
@@ -180,13 +172,9 @@ def register_funnel_tool(ctx: ToolContext) -> None:
                 raise TailscaleMCPError(f"Unknown operation: {operation}")
 
         except Exception as e:
-            logger.error(
-                "Error in tailscale_funnel operation", operation=operation, error=str(e)
-            )
+            logger.error("Error in tailscale_funnel operation", operation=operation, error=str(e))
             if is_auth_error(e):
-                payload = build_auth_error_response(
-                    operation, e, server_started_at=_TOOL_PROCESS_STARTED_AT
-                )
+                payload = build_auth_error_response(operation, e, server_started_at=_TOOL_PROCESS_STARTED_AT)
                 raise TailscaleMCPError(
                     message=(
                         "Tailscale API authentication failed (HTTP 401). "

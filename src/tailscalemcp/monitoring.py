@@ -19,24 +19,16 @@ logger = structlog.get_logger(__name__)
 
 # Prometheus Metrics - Prevent duplicate registration
 try:
-    DEVICE_COUNT = Gauge(
-        "tailscale_devices_total", "Total number of devices", ["status"]
-    )
+    DEVICE_COUNT = Gauge("tailscale_devices_total", "Total number of devices", ["status"])
     DEVICE_ONLINE = Gauge("tailscale_devices_online", "Number of online devices")
     NETWORK_LATENCY = Histogram(
         "tailscale_network_latency_seconds",
         "Network latency between devices",
         ["from_device", "to_device"],
     )
-    BYTES_SENT = Counter(
-        "tailscale_bytes_sent_total", "Total bytes sent", ["device_id"]
-    )
-    BYTES_RECEIVED = Counter(
-        "tailscale_bytes_received_total", "Total bytes received", ["device_id"]
-    )
-    API_REQUESTS = Counter(
-        "tailscale_api_requests_total", "Total API requests", ["endpoint", "status"]
-    )
+    BYTES_SENT = Counter("tailscale_bytes_sent_total", "Total bytes sent", ["device_id"])
+    BYTES_RECEIVED = Counter("tailscale_bytes_received_total", "Total bytes received", ["device_id"])
+    API_REQUESTS = Counter("tailscale_api_requests_total", "Total API requests", ["endpoint", "status"])
 except ValueError:
     # Metrics already registered, skip creation
     DEVICE_COUNT = None
@@ -82,9 +74,7 @@ class DeviceMetrics(BaseModel):
     bytes_received: int = Field(..., description="Bytes received")
     latency_ms: float = Field(..., description="Average latency in milliseconds")
     is_exit_node: bool = Field(..., description="Is exit node")
-    advertised_routes: list[str] = Field(
-        default_factory=list, description="Advertised routes"
-    )
+    advertised_routes: list[str] = Field(default_factory=list, description="Advertised routes")
 
 
 class TailscaleMonitor:
@@ -169,9 +159,7 @@ class TailscaleMonitor:
             logger.error("Error generating Prometheus metrics", error=str(e))
             raise TailscaleMCPError(f"Failed to generate metrics: {e}") from e
 
-    async def create_grafana_dashboard(
-        self, grafana_url: str, api_key: str
-    ) -> dict[str, Any]:
+    async def create_grafana_dashboard(self, grafana_url: str, api_key: str) -> dict[str, Any]:
         """Create a Grafana dashboard for Tailscale monitoring."""
         try:
             dashboard_config = {
@@ -256,17 +244,13 @@ class TailscaleMonitor:
             online_devices = [d for d in devices if d.get("status") == "online"]
 
             status = {
-                "status": "operational"
-                if metrics.network_health_score > 70
-                else "degraded",
+                "status": "operational" if metrics.network_health_score > 70 else "degraded",
                 "health_score": metrics.network_health_score,
                 "devices": {
                     "total": metrics.devices_total,
                     "online": metrics.devices_online,
                     "offline": metrics.devices_offline,
-                    "online_percentage": round(
-                        (metrics.devices_online / metrics.devices_total * 100), 2
-                    )
+                    "online_percentage": round((metrics.devices_online / metrics.devices_total * 100), 2)
                     if metrics.devices_total > 0
                     else 0,
                 },
@@ -310,9 +294,7 @@ class TailscaleMonitor:
                 "exit_nodes": metrics.exit_nodes,
                 "subnet_routes": metrics.subnet_routes,
                 "acl_rules": metrics.acl_rules,
-                "uptime_percentage": round(
-                    (metrics.devices_online / metrics.devices_total * 100), 2
-                )
+                "uptime_percentage": round((metrics.devices_online / metrics.devices_total * 100), 2)
                 if metrics.devices_total > 0
                 else 0,
                 "timestamp": metrics.timestamp,
@@ -336,28 +318,20 @@ class TailscaleMonitor:
             metrics = await self.collect_metrics()
 
             # Analyze trends
-            recent_metrics = [
-                m for m in self.metrics_history if time.time() - m.timestamp < 3600
-            ]  # Last hour
+            recent_metrics = [m for m in self.metrics_history if time.time() - m.timestamp < 3600]  # Last hour
 
             health_report = {
                 "current_status": {
                     "overall_health": metrics.network_health_score,
                     "devices_online": metrics.devices_online,
                     "devices_total": metrics.devices_total,
-                    "uptime_percentage": (
-                        metrics.devices_online / metrics.devices_total * 100
-                    )
+                    "uptime_percentage": (metrics.devices_online / metrics.devices_total * 100)
                     if metrics.devices_total > 0
                     else 0,
                 },
                 "trends": {
-                    "health_trend": self._calculate_trend(
-                        [m.network_health_score for m in recent_metrics]
-                    ),
-                    "device_trend": self._calculate_trend(
-                        [m.devices_online for m in recent_metrics]
-                    ),
+                    "health_trend": self._calculate_trend([m.network_health_score for m in recent_metrics]),
+                    "device_trend": self._calculate_trend([m.devices_online for m in recent_metrics]),
                 },
                 "alerts": await self._generate_alerts(metrics),
                 "recommendations": await self._generate_recommendations(metrics),
@@ -389,10 +363,7 @@ class TailscaleMonitor:
             devices_model = await device_ops.list_devices()
 
             # Convert Device models to dict format for backward compatibility
-            devices = [
-                d.to_dict() if hasattr(d, "to_dict") else d.model_dump()
-                for d in devices_model
-            ]
+            devices = [d.to_dict() if hasattr(d, "to_dict") else d.model_dump() for d in devices_model]
 
             # Map API response to expected format
             formatted_devices = []
@@ -400,9 +371,7 @@ class TailscaleMonitor:
                 formatted_device = {
                     "id": device.get("id", ""),
                     "name": device.get("name", "unknown"),
-                    "status": "online"
-                    if device.get("connectedToControl", False)
-                    else "offline",
+                    "status": "online" if device.get("connectedToControl", False) else "offline",
                     "is_exit_node": device.get("isExitNode", False),
                     "advertised_routes": device.get("routes", []),
                     "authorized": device.get("authorized", True),
@@ -412,9 +381,7 @@ class TailscaleMonitor:
                 }
                 formatted_devices.append(formatted_device)
 
-            logger.info(
-                "Device data retrieved from real API", count=len(formatted_devices)
-            )
+            logger.info("Device data retrieved from real API", count=len(formatted_devices))
             return formatted_devices
 
         except Exception as e:
@@ -436,9 +403,7 @@ class TailscaleMonitor:
         logger.warning("Device connections not yet implemented via API")
         return []
 
-    async def _update_prometheus_metrics(
-        self, metrics: NetworkMetrics, devices: list[dict[str, Any]]
-    ) -> None:
+    async def _update_prometheus_metrics(self, metrics: NetworkMetrics, devices: list[dict[str, Any]]) -> None:
         """Update Prometheus metrics."""
         if DEVICE_COUNT is not None:
             DEVICE_COUNT.labels(status="online").set(metrics.devices_online)
@@ -495,9 +460,7 @@ class TailscaleMonitor:
             },
         ]
 
-    def _calculate_health_score(
-        self, devices: list[dict[str, Any]], online_devices: list[dict[str, Any]]
-    ) -> float:
+    def _calculate_health_score(self, devices: list[dict[str, Any]], online_devices: list[dict[str, Any]]) -> float:
         """Calculate network health score."""
         if not devices:
             return 0.0
@@ -518,9 +481,7 @@ class TailscaleMonitor:
             return "stable"
 
         recent_avg = sum(values[-3:]) / len(values[-3:])
-        older_avg = (
-            sum(values[:3]) / len(values[:3]) if len(values) >= 6 else recent_avg
-        )
+        older_avg = sum(values[:3]) / len(values[:3]) if len(values) >= 6 else recent_avg
 
         if recent_avg > older_avg * 1.05:
             return "increasing"
@@ -558,18 +519,12 @@ class TailscaleMonitor:
         recommendations = []
 
         if metrics.exit_nodes == 0:
-            recommendations.append(
-                "Consider adding an exit node for better connectivity"
-            )
+            recommendations.append("Consider adding an exit node for better connectivity")
 
         if metrics.subnet_routes == 0:
-            recommendations.append(
-                "Consider configuring subnet routes for local network access"
-            )
+            recommendations.append("Consider configuring subnet routes for local network access")
 
         if metrics.network_health_score < 90:
-            recommendations.append(
-                "Review device connectivity and network configuration"
-            )
+            recommendations.append("Review device connectivity and network configuration")
 
         return recommendations

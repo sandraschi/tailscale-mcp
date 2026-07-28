@@ -90,9 +90,7 @@ def create_server_lifespan(_api_key: str | None, tailnet: str | None):
                     # Storage object exists but doesn't have set method
                     logger.debug("Storage object found but methods not available")
             else:
-                logger.debug(
-                    "Persistent storage not available - continuing without persistence"
-                )
+                logger.debug("Persistent storage not available - continuing without persistence")
         except Exception as e:
             logger.debug("Storage initialization skipped", error=str(e))
 
@@ -142,18 +140,14 @@ class TailscaleMCPServer:
 
         # Log configuration (but not the actual API key for security)
         if self.api_key:
-            api_key_preview = (
-                f"{self.api_key[:20]}..." if len(self.api_key) > 20 else "set"
-            )
+            api_key_preview = f"{self.api_key[:20]}..." if len(self.api_key) > 20 else "set"
             logger.info(
                 "API credentials loaded",
                 api_key_preview=api_key_preview,
                 tailnet=self.tailnet,
             )
         else:
-            logger.error(
-                "No API credentials found! Check user_config or environment variables"
-            )
+            logger.error("No API credentials found! Check user_config or environment variables")
 
         # Initialize FastMCP with server lifespan (3.2+ feature) and SEP-1577 sampling handler
         lifespan = create_server_lifespan(self.api_key, self.tailnet)
@@ -186,26 +180,14 @@ class TailscaleMCPServer:
             try:
                 # Get platform-appropriate storage directory
                 if os.name == "nt":  # Windows
-                    appdata = os.getenv(
-                        "APPDATA", os.path.expanduser("~\\AppData\\Roaming")
-                    )
+                    appdata = os.getenv("APPDATA", os.path.expanduser("~\\AppData\\Roaming"))
                     storage_dir = Path(appdata) / "Tailscale Network Controller MCP"
                 else:  # macOS/Linux
                     home = Path.home()
                     if platform.system() == "Darwin":  # macOS
-                        storage_dir = (
-                            home
-                            / "Library"
-                            / "Application Support"
-                            / "Tailscale Network Controller MCP"
-                        )
+                        storage_dir = home / "Library" / "Application Support" / "Tailscale Network Controller MCP"
                     else:  # Linux
-                        storage_dir = (
-                            home
-                            / ".local"
-                            / "share"
-                            / "Tailscale Network Controller MCP"
-                        )
+                        storage_dir = home / ".local" / "share" / "Tailscale Network Controller MCP"
 
                 # Create directory if it doesn't exist
                 storage_dir.mkdir(parents=True, exist_ok=True)
@@ -221,9 +203,7 @@ class TailscaleMCPServer:
                         self.mcp.storage = self._disk_storage
                         logger.info("DiskStore assigned to mcp.storage")
                 except Exception:
-                    logger.debug(
-                        "Could not assign DiskStore to mcp.storage, will use directly"
-                    )
+                    logger.debug("Could not assign DiskStore to mcp.storage, will use directly")
             except Exception as e:
                 logger.warning(
                     "Failed to initialize DiskStore, using default storage",
@@ -242,13 +222,9 @@ class TailscaleMCPServer:
             storage_for_managers = getattr(self.mcp, "storage", None)
 
         # Initialize funnel manager with storage
-        self.funnel_manager = FunnelManager(
-            use_cli=True, mcp_storage=storage_for_managers
-        )
+        self.funnel_manager = FunnelManager(use_cli=True, mcp_storage=storage_for_managers)
 
-        self.device_manager = AdvancedDeviceManager(
-            api_key=self.api_key, tailnet=self.tailnet
-        )
+        self.device_manager = AdvancedDeviceManager(api_key=self.api_key, tailnet=self.tailnet)
         self.magic_dns_manager = MagicDNSManager(tailnet=self.tailnet or "default")
 
         if storage_for_managers:
@@ -318,8 +294,15 @@ class TailscaleMCPServer:
 
         # All operations classes
         for name in (
-            "network_ops", "policy_ops", "audit_ops", "tag_ops", "key_ops",
-            "policy_analyzer", "analytics_ops", "reporting_ops", "service_ops",
+            "network_ops",
+            "policy_ops",
+            "audit_ops",
+            "tag_ops",
+            "key_ops",
+            "policy_analyzer",
+            "analytics_ops",
+            "reporting_ops",
+            "service_ops",
         ):
             ops = getattr(self.portmanteau_tools, name, None)
             if ops is None:
@@ -358,14 +341,10 @@ class TailscaleMCPServer:
             ]
 
         @self.mcp.prompt()
-        def authorize_device_prompt(
-            device_id: str, reason: str | None = None
-        ) -> list[dict[str, Any]]:
+        def authorize_device_prompt(device_id: str, reason: str | None = None) -> list[dict[str, Any]]:
             """Authorize a device to join the Tailscale tailnet."""
             reason_str = f" (reason: {reason})" if reason else ""
-            return [
-                {"role": "user", "content": f"Authorize device {device_id}{reason_str}"}
-            ]
+            return [{"role": "user", "content": f"Authorize device {device_id}{reason_str}"}]
 
         @self.mcp.prompt()
         def check_network_status_prompt() -> list[dict[str, Any]]:
@@ -437,9 +416,7 @@ class TailscaleMCPServer:
             import json
 
             status = await self.monitor.get_network_status()
-            return json.dumps(
-                {"status": status, "resource": "tailscale://network/status"}, indent=2
-            )
+            return json.dumps({"status": status, "resource": "tailscale://network/status"}, indent=2)
 
         @self.mcp.resource("tailscale://network/topology")
         async def network_topology_resource() -> str:
@@ -458,9 +435,7 @@ class TailscaleMCPServer:
             import json
 
             report = await self.device_manager.generate_security_report()
-            return json.dumps(
-                {"report": report, "resource": "tailscale://security/report"}, indent=2
-            )
+            return json.dumps({"report": report, "resource": "tailscale://security/report"}, indent=2)
 
         @self.mcp.resource("tailscale://monitoring/metrics")
         async def metrics_resource() -> str:
@@ -567,6 +542,4 @@ async def main():
 if __name__ == "__main__":
     import asyncio
 
-    asyncio.run(
-        run_server_async(server.mcp, server_name="Tailscale Network Controller MCP")
-    )
+    asyncio.run(run_server_async(server.mcp, server_name="Tailscale Network Controller MCP"))

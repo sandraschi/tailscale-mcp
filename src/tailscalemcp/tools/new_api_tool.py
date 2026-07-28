@@ -34,9 +34,7 @@ logger = structlog.get_logger(__name__)
 _TOOL_PROCESS_STARTED_AT = time.time()
 
 
-def _raise_auth_aware(
-    operation: str, exc: Exception, fallback_message: str
-) -> None:
+def _raise_auth_aware(operation: str, exc: Exception, fallback_message: str) -> None:
     """Shared 401-aware raise for the seven tool functions in this module.
 
     All seven (tailnet_invites, tailnet_posture_attributes, tailnet_device_keys,
@@ -45,9 +43,7 @@ def _raise_auth_aware(
     this is factored once rather than duplicated 7 times in this file.
     """
     if is_auth_error(exc):
-        payload = build_auth_error_response(
-            operation, exc, server_started_at=_TOOL_PROCESS_STARTED_AT
-        )
+        payload = build_auth_error_response(operation, exc, server_started_at=_TOOL_PROCESS_STARTED_AT)
         raise TailscaleMCPError(
             message=(
                 "Tailscale API authentication failed (HTTP 401). This may "
@@ -178,7 +174,9 @@ def register_new_api_tools(ctx: ToolContext) -> None:
             elif operation == "set":
                 if not device_id or not attribute_key:
                     raise TailscaleMCPError("device_id and attribute_key are required for set")
-                result = await ctx.api_client.set_custom_device_posture_attribute(device_id, attribute_key, value, expiry, comment)
+                result = await ctx.api_client.set_custom_device_posture_attribute(
+                    device_id, attribute_key, value, expiry, comment
+                )
                 return {"operation": "set", "device_id": device_id, "attribute_key": attribute_key, "result": result}
             elif operation == "delete":
                 if not device_id or not attribute_key:
@@ -219,8 +217,10 @@ def register_new_api_tools(ctx: ToolContext) -> None:
                     raise TailscaleMCPError("device_id and key_expiry_disabled are required")
                 await ctx.api_client.update_device_key(device_id, key_expiry_disabled)
                 return {
-                    "operation": "update_key_expiry", "device_id": device_id,
-                    "key_expiry_disabled": key_expiry_disabled, "success": True,
+                    "operation": "update_key_expiry",
+                    "device_id": device_id,
+                    "key_expiry_disabled": key_expiry_disabled,
+                    "success": True,
                 }
             elif operation == "set_ip":
                 if not device_id or not ipv4:
@@ -301,7 +301,9 @@ def register_new_api_tools(ctx: ToolContext) -> None:
             elif operation == "create":
                 if not endpoint_url or not provider_type:
                     raise TailscaleMCPError("endpoint_url and provider_type are required")
-                hook = await ctx.api_client.create_webhook(endpoint_url, provider_type, secret=secret, subscriptions=subscriptions)
+                hook = await ctx.api_client.create_webhook(
+                    endpoint_url, provider_type, secret=secret, subscriptions=subscriptions
+                )
                 return {"operation": "create", "webhook": hook}
             elif operation == "get":
                 if not webhook_id:
@@ -379,4 +381,3 @@ def register_new_api_tools(ctx: ToolContext) -> None:
             _raise_auth_aware(operation, e, f"Contact operation failed: {e}")
 
     logger.info("New API tools registered (invites, posture, device keys, logging, webhooks, settings, contacts)")
-

@@ -35,9 +35,7 @@ class DeviceInfo(BaseModel):
     ssh_enabled: bool = Field(default=False, description="SSH access enabled")
     is_exit_node: bool = Field(default=False, description="Is exit node")
     is_subnet_router: bool = Field(default=False, description="Is subnet router")
-    advertised_routes: list[str] = Field(
-        default_factory=list, description="Advertised routes"
-    )
+    advertised_routes: list[str] = Field(default_factory=list, description="Advertised routes")
     client_version: str = Field(..., description="Tailscale client version")
 
 
@@ -56,9 +54,7 @@ class DeviceTag(BaseModel):
     """Device tag model."""
 
     tag: str = Field(..., description="Tag name")
-    devices: list[str] = Field(
-        default_factory=list, description="Device IDs with this tag"
-    )
+    devices: list[str] = Field(default_factory=list, description="Device IDs with this tag")
     created_at: float = Field(..., description="Tag creation timestamp")
     description: str | None = Field(None, description="Tag description")
 
@@ -92,9 +88,7 @@ class AdvancedDeviceManager:
 
         # Configurable timeout for determining if a device is online
         # Default: 1 hour - balances catching offline devices with reasonable active time
-        self.online_timeout_seconds = os.getenv(
-            "TAILSCALE_ONLINE_TIMEOUT_SECONDS", "3600"
-        )
+        self.online_timeout_seconds = os.getenv("TAILSCALE_ONLINE_TIMEOUT_SECONDS", "3600")
         try:
             self.online_timeout_seconds = int(self.online_timeout_seconds)
         except ValueError:
@@ -178,9 +172,7 @@ class AdvancedDeviceManager:
         """Alias for authorize_device for compatibility with tools."""
         return await self.authorize_device(device_id, authorize, reason)
 
-    async def enable_exit_node(
-        self, device_id: str, advertise_routes: list[str] | None = None
-    ) -> dict[str, Any]:
+    async def enable_exit_node(self, device_id: str, advertise_routes: list[str] | None = None) -> dict[str, Any]:
         """Enable exit node on a device (best-effort via Admin API).
 
         Args:
@@ -195,9 +187,7 @@ class AdvancedDeviceManager:
             if advertise_routes is not None:
                 payload["routes"] = advertise_routes
             result = await self.api_client.update_device(device_id, payload)
-            logger.info(
-                "Exit node enabled", device_id=device_id, routes=advertise_routes
-            )
+            logger.info("Exit node enabled", device_id=device_id, routes=advertise_routes)
             return {"device_id": device_id, "result": result}
         except Exception as e:
             logger.error("Error enabling exit node", device_id=device_id, error=str(e))
@@ -206,27 +196,21 @@ class AdvancedDeviceManager:
     async def disable_exit_node(self, device_id: str) -> dict[str, Any]:
         """Disable exit node on a device."""
         try:
-            result = await self.api_client.update_device(
-                device_id, {"isExitNode": False}
-            )
+            result = await self.api_client.update_device(device_id, {"isExitNode": False})
             logger.info("Exit node disabled", device_id=device_id)
             return {"device_id": device_id, "result": result}
         except Exception as e:
             logger.error("Error disabling exit node", device_id=device_id, error=str(e))
             raise TailscaleMCPError(f"Failed to disable exit node: {e}") from e
 
-    async def enable_subnet_router(
-        self, device_id: str, subnets: list[str]
-    ) -> dict[str, Any]:
+    async def enable_subnet_router(self, device_id: str, subnets: list[str]) -> dict[str, Any]:
         """Enable subnet routing by advertising routes on a device."""
         try:
             result = await self.api_client.update_device(device_id, {"routes": subnets})
             logger.info("Subnet router enabled", device_id=device_id, subnets=subnets)
             return {"device_id": device_id, "result": result}
         except Exception as e:
-            logger.error(
-                "Error enabling subnet router", device_id=device_id, error=str(e)
-            )
+            logger.error("Error enabling subnet router", device_id=device_id, error=str(e))
             raise TailscaleMCPError(f"Failed to enable subnet router: {e}") from e
 
     async def disable_subnet_router(self, device_id: str) -> dict[str, Any]:
@@ -236,9 +220,7 @@ class AdvancedDeviceManager:
             logger.info("Subnet router disabled", device_id=device_id)
             return {"device_id": device_id, "result": result}
         except Exception as e:
-            logger.error(
-                "Error disabling subnet router", device_id=device_id, error=str(e)
-            )
+            logger.error("Error disabling subnet router", device_id=device_id, error=str(e))
             raise TailscaleMCPError(f"Failed to disable subnet router: {e}") from e
 
     async def authorize_device(
@@ -256,9 +238,7 @@ class AdvancedDeviceManager:
         """
         try:
             # Use operations layer
-            device = await self.device_operations.authorize_device(
-                device_id, authorize, reason
-            )
+            device = await self.device_operations.authorize_device(device_id, authorize, reason)
 
             logger.info(
                 "Device authorization updated",
@@ -277,13 +257,9 @@ class AdvancedDeviceManager:
 
         except Exception as e:
             logger.error("Error updating device authorization", error=str(e))
-            raise TailscaleMCPError(
-                f"Failed to update device authorization: {e}"
-            ) from e
+            raise TailscaleMCPError(f"Failed to update device authorization: {e}") from e
 
-    async def rename_device(
-        self, device_id: str, new_name: str, update_hostname: bool = False
-    ) -> dict[str, Any]:
+    async def rename_device(self, device_id: str, new_name: str, update_hostname: bool = False) -> dict[str, Any]:
         """Rename a device.
 
         Args:
@@ -317,9 +293,7 @@ class AdvancedDeviceManager:
             logger.error("Error renaming device", error=str(e))
             raise TailscaleMCPError(f"Failed to rename device: {e}") from e
 
-    async def tag_device(
-        self, device_id: str, tags: list[str], operation: str = "add"
-    ) -> dict[str, Any]:
+    async def tag_device(self, device_id: str, tags: list[str], operation: str = "add") -> dict[str, Any]:
         """Add or remove tags from a device.
 
         Args:
@@ -380,9 +354,7 @@ class AdvancedDeviceManager:
 
             for device in devices:
                 # Convert Device model to dict
-                last_seen_ts = (
-                    device.last_seen.timestamp() if device.last_seen else current_time
-                )
+                last_seen_ts = device.last_seen.timestamp() if device.last_seen else current_time
                 is_online = device.status == DeviceStatus.ONLINE
 
                 addrs = [a for a in (device.ipv4, device.ipv6) if a]
@@ -397,9 +369,7 @@ class AdvancedDeviceManager:
                     "status": device.status.value,
                     "online": is_online,
                     "last_seen": last_seen_ts,
-                    "time_since_seen": current_time - last_seen_ts
-                    if device.last_seen
-                    else None,
+                    "time_since_seen": current_time - last_seen_ts if device.last_seen else None,
                     "authorized": device.authorized,
                     "tags": device.tags,
                     "ssh_enabled": False,  # Would need separate API call
@@ -498,12 +468,8 @@ class AdvancedDeviceManager:
             api_devices = await self.api_client.list_devices()
             total_devices = len(api_devices)
 
-            authorized_devices = sum(
-                1 for d in api_devices if d.get("authorized", True)
-            )
-            connected = sum(
-                1 for d in api_devices if d.get("connectedToControl", False)
-            )
+            authorized_devices = sum(1 for d in api_devices if d.get("authorized", True))
+            connected = sum(1 for d in api_devices if d.get("connectedToControl", False))
             exit_nodes = sum(1 for d in api_devices if d.get("isExitNode", False))
             subnet_routers = sum(1 for d in api_devices if len(d.get("routes", [])) > 0)
 
@@ -531,12 +497,8 @@ class AdvancedDeviceManager:
                 "online_devices": connected,
                 "exit_nodes": exit_nodes,
                 "subnet_routers": subnet_routers,
-                "authorization_rate": (authorized_devices / total_devices * 100)
-                if total_devices
-                else 0,
-                "uptime_percentage": (connected / total_devices * 100)
-                if total_devices
-                else 0,
+                "authorization_rate": (authorized_devices / total_devices * 100) if total_devices else 0,
+                "uptime_percentage": (connected / total_devices * 100) if total_devices else 0,
                 "os_distribution": os_distribution,
                 "tag_usage": tag_usage,
                 "version_distribution": version_distribution,
@@ -546,9 +508,7 @@ class AdvancedDeviceManager:
             logger.error("Error getting device statistics", error=str(e))
             raise TailscaleMCPError(f"Failed to get device statistics: {e}") from e
 
-    async def search_devices(
-        self, query: str, search_fields: list[str] | None = None
-    ) -> list[dict[str, Any]]:
+    async def search_devices(self, query: str, search_fields: list[str] | None = None) -> list[dict[str, Any]]:
         """Search devices by various fields using live API list + filter.
 
         Args:
@@ -567,9 +527,7 @@ class AdvancedDeviceManager:
             current_time = time.time()
 
             for device in devices:
-                last_seen_ts = (
-                    device.last_seen.timestamp() if device.last_seen else current_time
-                )
+                last_seen_ts = device.last_seen.timestamp() if device.last_seen else current_time
                 is_online = device.status == DeviceStatus.ONLINE
 
                 device_dict = {

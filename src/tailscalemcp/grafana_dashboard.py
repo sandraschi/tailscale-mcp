@@ -34,9 +34,7 @@ class GrafanaDashboard(BaseModel):
     description: str = Field(..., description="Dashboard description")
     tags: list[str] = Field(default_factory=list, description="Dashboard tags")
     panels: list[GrafanaPanel] = Field(..., description="Dashboard panels")
-    time_range: dict[str, str] = Field(
-        default_factory=lambda: {"from": "now-1h", "to": "now"}
-    )
+    time_range: dict[str, str] = Field(default_factory=lambda: {"from": "now-1h", "to": "now"})
     refresh: str = Field(default="30s", description="Dashboard refresh interval")
 
 
@@ -406,9 +404,7 @@ class TailscaleGrafanaDashboard:
             "id": 7,
             "title": "Geographic Distribution",
             "type": "geomap",
-            "targets": [
-                {"expr": "tailscale_device_location", "format": "table", "refId": "A"}
-            ],
+            "targets": [{"expr": "tailscale_device_location", "format": "table", "refId": "A"}],
             "gridPos": {"h": 8, "w": 8, "x": 16, "y": 16},
             "options": {
                 "basemap": {"type": "default"},
@@ -586,9 +582,7 @@ class TailscaleGrafanaDashboard:
             "id": 101,
             "title": "Network Graph",
             "type": "nodeGraph",
-            "targets": [
-                {"expr": "tailscale_network_topology", "format": "table", "refId": "A"}
-            ],
+            "targets": [{"expr": "tailscale_network_topology", "format": "table", "refId": "A"}],
             "gridPos": {"h": 12, "w": 24, "x": 0, "y": 0},
             "options": {
                 "nodes": {"mainStatUnit": "short", "secondaryStatUnit": "short"},
@@ -631,18 +625,14 @@ class TailscaleGrafanaDashboard:
             "id": 103,
             "title": "Route Map",
             "type": "geomap",
-            "targets": [
-                {"expr": "tailscale_route_map", "format": "table", "refId": "A"}
-            ],
+            "targets": [{"expr": "tailscale_route_map", "format": "table", "refId": "A"}],
             "gridPos": {"h": 12, "w": 12, "x": 12, "y": 12},
             "options": {
                 "basemap": {"type": "default"},
                 "layers": [
                     {
                         "type": "markers",
-                        "config": {
-                            "style": {"color": {"fixed": "blue"}, "size": {"fixed": 5}}
-                        },
+                        "config": {"style": {"color": {"fixed": "blue"}, "size": {"fixed": 5}}},
                     }
                 ],
             },
@@ -724,9 +714,7 @@ class TailscaleGrafanaDashboard:
             "id": 203,
             "title": "Security Alerts",
             "type": "table",
-            "targets": [
-                {"expr": "tailscale_security_alerts", "format": "table", "refId": "A"}
-            ],
+            "targets": [{"expr": "tailscale_security_alerts", "format": "table", "refId": "A"}],
             "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0},
             "transformations": [
                 {
@@ -768,9 +756,7 @@ class TailscaleGrafanaDashboard:
             },
         }
 
-    def export_dashboard_json(
-        self, dashboard_config: dict[str, Any], filename: str
-    ) -> None:
+    def export_dashboard_json(self, dashboard_config: dict[str, Any], filename: str) -> None:
         """Export dashboard configuration to JSON file."""
         try:
             with open(filename, "w") as f:

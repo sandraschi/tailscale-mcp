@@ -84,9 +84,7 @@ FileOperation = Literal[
     "cleanup",
 ]
 
-SecurityOperation = Literal[
-    "audit",
-]
+SecurityOperation = Literal["audit",]
 
 AutomationOperation = Literal[
     "workflow_create",

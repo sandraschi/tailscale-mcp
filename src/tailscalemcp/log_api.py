@@ -70,9 +70,7 @@ def filter_logs(
     # level filter
     if min_level:
         numeric = _parse_level(min_level)
-        raw = [
-            e for e in raw if isinstance(e.get("level"), str) and _parse_level(e["level"]) >= numeric
-        ]
+        raw = [e for e in raw if isinstance(e.get("level"), str) and _parse_level(e["level"]) >= numeric]
 
     if logger_name:
         raw = [e for e in raw if (e.get("logger") or "").startswith(logger_name)]

@@ -20,9 +20,7 @@ def register_prompts(mcp: Any) -> list[Any]:
     """
 
     @mcp.prompt()
-    def list_devices_prompt(
-        online_only: bool = False, filter_tags: list[str] | None = None
-    ) -> list[dict[str, Any]]:
+    def list_devices_prompt(online_only: bool = False, filter_tags: list[str] | None = None) -> list[dict[str, Any]]:
         """List all devices in the Tailscale tailnet.
 
         This prompt helps you list devices with optional filtering by online status and tags.
@@ -66,9 +64,7 @@ def register_prompts(mcp: Any) -> list[Any]:
         ]
 
     @mcp.prompt()
-    def authorize_device_prompt(
-        device_id: str, reason: str | None = None
-    ) -> list[dict[str, Any]]:
+    def authorize_device_prompt(device_id: str, reason: str | None = None) -> list[dict[str, Any]]:
         """Authorize a device to join the Tailscale tailnet.
 
         This prompt helps you authorize a pending device request.
@@ -397,9 +393,7 @@ class TailscalePrompts:
             ]
 
         @self.mcp.prompt()
-        def authorize_device_prompt(
-            device_id: str, reason: str | None = None
-        ) -> list[dict[str, Any]]:
+        def authorize_device_prompt(device_id: str, reason: str | None = None) -> list[dict[str, Any]]:
             """Authorize a device to join the Tailscale tailnet.
 
             This prompt helps you authorize a pending device request.

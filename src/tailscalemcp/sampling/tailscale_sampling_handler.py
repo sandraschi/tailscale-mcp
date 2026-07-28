@@ -111,11 +111,7 @@ def _mcp_tools_to_openai(tools: list[Tool] | None) -> list[dict[str, Any]] | Non
                 "function": {
                     "name": t.name,
                     "description": t.description or f"MCP tool {t.name}",
-                    "parameters": (
-                        t.inputSchema
-                        if isinstance(t.inputSchema, dict)
-                        else {"type": "object"}
-                    ),
+                    "parameters": (t.inputSchema if isinstance(t.inputSchema, dict) else {"type": "object"}),
                 },
             }
         )
@@ -156,9 +152,7 @@ def _sampling_messages_to_openai(
         if msg.role == "user":
             tool_results = [b for b in blocks if isinstance(b, ToolResultContent)]
             texts = [b for b in blocks if isinstance(b, TextContent)]
-            non_text = [
-                b for b in blocks if not isinstance(b, (TextContent, ToolResultContent))
-            ]
+            non_text = [b for b in blocks if not isinstance(b, (TextContent, ToolResultContent))]
             for tr in tool_results:
                 out.append(
                     {
@@ -181,9 +175,7 @@ def _sampling_messages_to_openai(
         elif msg.role == "assistant":
             tool_uses = [b for b in blocks if isinstance(b, ToolUseContent)]
             texts = [b for b in blocks if isinstance(b, TextContent)]
-            non_text = [
-                b for b in blocks if not isinstance(b, (TextContent, ToolUseContent))
-            ]
+            non_text = [b for b in blocks if not isinstance(b, (TextContent, ToolUseContent))]
             if tool_uses:
                 tool_calls = []
                 for tu in tool_uses:
@@ -246,9 +238,7 @@ def _config_from_env() -> Any:
     """Minimal config namespace for sampling (env-only)."""
 
     class _NS:
-        sampling_base_url = os.getenv(
-            "TAILSCALE_SAMPLING_BASE_URL", "http://127.0.0.1:11434/v1"
-        ).rstrip("/")
+        sampling_base_url = os.getenv("TAILSCALE_SAMPLING_BASE_URL", "http://127.0.0.1:11434/v1").rstrip("/")
         sampling_model = os.getenv("TAILSCALE_SAMPLING_MODEL", "llama3.2")
         sampling_api_key = os.getenv("TAILSCALE_SAMPLING_API_KEY") or None
 
@@ -278,9 +268,7 @@ class TailscaleSamplingHandler:
         _ = request_context
         cfg = self._effective_config()
         api_key = getattr(cfg, "sampling_api_key", None)
-        base_url = (
-            getattr(cfg, "sampling_base_url", None) or "http://127.0.0.1:11434/v1"
-        ).rstrip("/")
+        base_url = (getattr(cfg, "sampling_base_url", None) or "http://127.0.0.1:11434/v1").rstrip("/")
         default_model = getattr(cfg, "sampling_model", None) or "llama3.2"
         model = _hint_model(params, default_model)
         max_tokens = params.maxTokens
@@ -369,17 +357,13 @@ class TailscaleSamplingHandler:
                 name = fn.get("name") or "unknown_tool"
                 raw_args = fn.get("arguments") or "{}"
                 try:
-                    parsed: Any = (
-                        json.loads(raw_args) if isinstance(raw_args, str) else raw_args
-                    )
+                    parsed: Any = json.loads(raw_args) if isinstance(raw_args, str) else raw_args
                     if not isinstance(parsed, dict):
                         parsed = {"value": parsed}
                 except json.JSONDecodeError:
                     parsed = {"_raw": raw_args}
                 tid = tc.get("id") or str(uuid.uuid4())
-                blocks.append(
-                    ToolUseContent(type="tool_use", name=name, id=tid, input=parsed)
-                )
+                blocks.append(ToolUseContent(type="tool_use", name=name, id=tid, input=parsed))
             return CreateMessageResultWithTools(
                 role="assistant",
                 model=str(data.get("model") or model),
@@ -410,11 +394,7 @@ class TailscaleSamplingHandler:
         cfg = self._effective_config()
         base = (getattr(cfg, "sampling_base_url", None) or "").rstrip("/")
         key = getattr(cfg, "sampling_api_key", None)
-        http_ok = (
-            _sampling_http_enabled(key, base)
-            if base
-            else bool(key and str(key).strip())
-        )
+        http_ok = _sampling_http_enabled(key, base) if base else bool(key and str(key).strip())
         return {
             "status": "healthy",
             "server_side_llm_configured": http_ok,

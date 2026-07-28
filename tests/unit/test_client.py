@@ -45,9 +45,7 @@ async def test_list_devices_success(api_client):
         ]
     }
 
-    with patch.object(
-        api_client, "_request", new_callable=AsyncMock
-    ) as mock_request:
+    with patch.object(api_client, "_request", new_callable=AsyncMock) as mock_request:
         mock_request.return_value = mock_response
 
         devices = await api_client.list_devices()
@@ -66,9 +64,7 @@ async def test_get_device_success(api_client):
         "os": "linux",
     }
 
-    with patch.object(
-        api_client, "_request", new_callable=AsyncMock
-    ) as mock_request:
+    with patch.object(api_client, "_request", new_callable=AsyncMock) as mock_request:
         mock_request.return_value = mock_response
 
         device = await api_client.get_device("device1")
@@ -79,9 +75,7 @@ async def test_get_device_success(api_client):
 @pytest.mark.asyncio
 async def test_get_device_not_found(api_client):
     """Test device not found error."""
-    with patch.object(
-        api_client, "_request", new_callable=AsyncMock
-    ) as mock_request:
+    with patch.object(api_client, "_request", new_callable=AsyncMock) as mock_request:
         mock_request.side_effect = NotFoundError("Device", "nonexistent")
 
         with pytest.raises(NotFoundError):
@@ -91,9 +85,7 @@ async def test_get_device_not_found(api_client):
 @pytest.mark.asyncio
 async def test_authentication_error(api_client):
     """Test authentication error handling."""
-    with patch.object(
-        api_client.client, "request", new_callable=AsyncMock
-    ) as mock_request:
+    with patch.object(api_client.client, "request", new_callable=AsyncMock) as mock_request:
         mock_response_obj = AsyncMock()
         mock_response_obj.status_code = 401
         mock_request.return_value = mock_response_obj
@@ -105,9 +97,7 @@ async def test_authentication_error(api_client):
 @pytest.mark.asyncio
 async def test_rate_limit_error(api_client):
     """Test rate limit error handling."""
-    with patch.object(
-        api_client.client, "request", new_callable=AsyncMock
-    ) as mock_request:
+    with patch.object(api_client.client, "request", new_callable=AsyncMock) as mock_request:
         mock_response_obj = AsyncMock()
         mock_response_obj.status_code = 429
         mock_request.return_value = mock_response_obj

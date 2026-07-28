@@ -71,9 +71,7 @@ class FunnelManager:
         if not self.mcp_storage:
             return
         try:
-            services_data = {
-                port: service.model_dump() for port, service in self.services.items()
-            }
+            services_data = {port: service.model_dump() for port, service in self.services.items()}
             await self.mcp_storage.set("tailscale:active_funnels", services_data)
         except Exception as e:
             logger.warning("Failed to save funnels to storage", error=str(e))
@@ -85,10 +83,7 @@ class FunnelManager:
         try:
             services_data = await self.mcp_storage.get("tailscale:active_funnels")
             if services_data:
-                self.services = {
-                    int(port): FunnelService(**data)
-                    for port, data in services_data.items()
-                }
+                self.services = {int(port): FunnelService(**data) for port, data in services_data.items()}
                 logger.info("Loaded funnels from storage", count=len(self.services))
         except Exception as e:
             logger.warning("Failed to load funnels from storage", error=str(e))
@@ -111,9 +106,7 @@ class FunnelManager:
         """
         try:
             if not self.use_cli or not self.cli:
-                raise TailscaleMCPError(
-                    "Tailscale CLI not available. Install Tailscale CLI to use Funnel."
-                )
+                raise TailscaleMCPError("Tailscale CLI not available. Install Tailscale CLI to use Funnel.")
 
             if port < 1 or port > 65535:
                 raise ValueError(f"Invalid port number: {port} (must be 1-65535)")
@@ -121,9 +114,7 @@ class FunnelManager:
             logger.info("Enabling Funnel", port=port, tcp=allow_tcp, tls=allow_tls)
 
             # Use CLI to enable Funnel
-            cli_result = await self.cli.funnel_enable(
-                port=port, allow_tcp=allow_tcp, allow_tls=allow_tls
-            )
+            cli_result = await self.cli.funnel_enable(port=port, allow_tcp=allow_tcp, allow_tls=allow_tls)
 
             if cli_result.get("success"):
                 public_url = cli_result.get("public_url")
@@ -134,9 +125,7 @@ class FunnelManager:
                     try:
                         await self._save_services_to_storage()
                     except Exception as e:
-                        logger.warning(
-                            "Failed to save funnels to storage", error=str(e)
-                        )
+                        logger.warning("Failed to save funnels to storage", error=str(e))
 
                 # Parse public URL from output if not directly provided
                 if not public_url and output:
@@ -166,9 +155,7 @@ class FunnelManager:
                     try:
                         await self._save_services_to_storage()
                     except Exception as e:
-                        logger.warning(
-                            "Failed to save funnels to storage", error=str(e)
-                        )
+                        logger.warning("Failed to save funnels to storage", error=str(e))
 
                 logger.info(
                     "Funnel enabled successfully",
@@ -208,9 +195,7 @@ class FunnelManager:
         """
         try:
             if not self.use_cli or not self.cli:
-                raise TailscaleMCPError(
-                    "Tailscale CLI not available. Install Tailscale CLI to use Funnel."
-                )
+                raise TailscaleMCPError("Tailscale CLI not available. Install Tailscale CLI to use Funnel.")
 
             logger.info("Disabling Funnel", port=port)
 
@@ -232,9 +217,7 @@ class FunnelManager:
                     try:
                         await self._save_services_to_storage()
                     except Exception as e:
-                        logger.warning(
-                            "Failed to save funnels to storage", error=str(e)
-                        )
+                        logger.warning("Failed to save funnels to storage", error=str(e))
 
                 logger.info("Funnel disabled successfully", port=port)
 
@@ -243,9 +226,7 @@ class FunnelManager:
                     "port": port,
                     "status": "disabled",
                     "output": cli_result.get("output", ""),
-                    "message": f"Funnel disabled for port {port}"
-                    if port
-                    else "All Funnels disabled",
+                    "message": f"Funnel disabled for port {port}" if port else "All Funnels disabled",
                 }
             else:
                 error_msg = cli_result.get("error", "Unknown error")
@@ -268,10 +249,7 @@ class FunnelManager:
             if not self.use_cli or not self.cli:
                 # Return local service status if CLI not available
                 return {
-                    "active": len(
-                        [s for s in self.services.values() if s.status == "active"]
-                    )
-                    > 0,
+                    "active": len([s for s in self.services.values() if s.status == "active"]) > 0,
                     "services": [
                         {
                             "port": s.port,
@@ -308,9 +286,7 @@ class FunnelManager:
                             else:
                                 self.services[port].status = "active"
                                 if funnel_info.get("url"):
-                                    self.services[port].public_url = funnel_info.get(
-                                        "url"
-                                    )
+                                    self.services[port].public_url = funnel_info.get("url")
 
                 return {
                     "active": active,

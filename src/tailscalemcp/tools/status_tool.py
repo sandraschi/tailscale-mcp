@@ -179,9 +179,7 @@ def register_status_tool(ctx: ToolContext) -> None:
             return response
 
         except Exception as e:
-            logger.error(
-                "Error generating status information", component=component, error=str(e)
-            )
+            logger.error("Error generating status information", component=component, error=str(e))
             if is_auth_error(e):
                 payload = build_auth_error_response(
                     component or "overview",
@@ -197,6 +195,4 @@ def register_status_tool(ctx: ToolContext) -> None:
                     code=401,
                     details=payload,
                 ) from e
-            raise TailscaleMCPError(
-                f"Failed to generate status information: {e}"
-            ) from e
+            raise TailscaleMCPError(f"Failed to generate status information: {e}") from e

@@ -41,9 +41,7 @@ class DeviceOperations:
             )
         self.client = TailscaleAPIClient(self.config)
 
-    async def list_devices(
-        self, online_only: bool = False, filter_tags: list[str] | None = None
-    ) -> list[Device]:
+    async def list_devices(self, online_only: bool = False, filter_tags: list[str] | None = None) -> list[Device]:
         """List all devices in the tailnet.
 
         Args:
@@ -66,9 +64,7 @@ class DeviceOperations:
 
             # Filter by tags
             if filter_tags:
-                devices = [
-                    d for d in devices if all(tag in d.tags for tag in filter_tags)
-                ]
+                devices = [d for d in devices if all(tag in d.tags for tag in filter_tags)]
 
             logger.info(
                 "Devices retrieved",
@@ -148,9 +144,7 @@ class DeviceOperations:
             )
             raise TailscaleMCPError(f"Failed to update device: {e}") from e
 
-    async def authorize_device(
-        self, device_id: str, authorize: bool, reason: str | None = None
-    ) -> Device:
+    async def authorize_device(self, device_id: str, authorize: bool, reason: str | None = None) -> Device:
         """Authorize or revoke device authorization.
 
         Args:
@@ -187,9 +181,7 @@ class DeviceOperations:
         """
         return await self.update_device(device_id, {"name": name})
 
-    async def tag_device(
-        self, device_id: str, tags: list[str], operation: str = "add"
-    ) -> Device:
+    async def tag_device(self, device_id: str, tags: list[str], operation: str = "add") -> Device:
         """Update device tags.
 
         Args:
@@ -214,9 +206,7 @@ class DeviceOperations:
         elif operation == "replace":
             new_tags = tags
         else:
-            raise ValueError(
-                f"Invalid operation: {operation}. Use 'add', 'remove', or 'replace'"
-            )
+            raise ValueError(f"Invalid operation: {operation}. Use 'add', 'remove', or 'replace'")
 
         return await self.update_device(device_id, {"tags": new_tags})
 
@@ -240,9 +230,7 @@ class DeviceOperations:
             logger.error("Error deleting device", device_id=device_id, error=str(e))
             raise TailscaleMCPError(f"Failed to delete device: {e}") from e
 
-    async def search_devices(
-        self, query: str, search_fields: list[str] | None = None
-    ) -> list[Device]:
+    async def search_devices(self, query: str, search_fields: list[str] | None = None) -> list[Device]:
         """Search devices by name, tags, or other fields.
 
         Args:
@@ -269,8 +257,7 @@ class DeviceOperations:
                 matched = False
 
                 if ("name" in search_fields and query_lower in device.name.lower()) or (
-                    "hostname" in search_fields
-                    and query_lower in device.hostname.lower()
+                    "hostname" in search_fields and query_lower in device.hostname.lower()
                 ):
                     matched = True
                 elif "tags" in search_fields:

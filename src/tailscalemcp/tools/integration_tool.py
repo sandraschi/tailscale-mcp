@@ -49,12 +49,8 @@ def register_integration_tool(ctx: ToolContext) -> None:
         try:
             if operation == "webhook_create":
                 if not webhook_url or not webhook_events:
-                    raise TailscaleMCPError(
-                        "webhook_url and webhook_events are required for webhook_create operation"
-                    )
-                result = await ctx.device_manager.create_webhook(
-                    webhook_url, webhook_secret, webhook_events
-                )
+                    raise TailscaleMCPError("webhook_url and webhook_events are required for webhook_create operation")
+                result = await ctx.device_manager.create_webhook(webhook_url, webhook_secret, webhook_events)
                 return {
                     "operation": "webhook_create",
                     "webhook_url": webhook_url,
@@ -65,9 +61,7 @@ def register_integration_tool(ctx: ToolContext) -> None:
 
             elif operation == "webhook_test":
                 if not webhook_id:
-                    raise TailscaleMCPError(
-                        "webhook_id is required for webhook_test operation"
-                    )
+                    raise TailscaleMCPError("webhook_id is required for webhook_test operation")
                 result = await ctx.device_manager.test_webhook(webhook_id)
                 return {
                     "operation": "webhook_test",
@@ -85,9 +79,7 @@ def register_integration_tool(ctx: ToolContext) -> None:
 
             elif operation == "webhook_delete":
                 if not webhook_id:
-                    raise TailscaleMCPError(
-                        "webhook_id is required for webhook_delete operation"
-                    )
+                    raise TailscaleMCPError("webhook_id is required for webhook_delete operation")
                 result = await ctx.device_manager.delete_webhook(webhook_id)
                 return {
                     "operation": "webhook_delete",
@@ -97,12 +89,8 @@ def register_integration_tool(ctx: ToolContext) -> None:
 
             elif operation == "slack":
                 if not slack_channel:
-                    raise TailscaleMCPError(
-                        "slack_channel is required for slack operation"
-                    )
-                result = await ctx.device_manager.integrate_slack(
-                    slack_channel, api_key
-                )
+                    raise TailscaleMCPError("slack_channel is required for slack operation")
+                result = await ctx.device_manager.integrate_slack(slack_channel, api_key)
                 return {
                     "operation": "slack",
                     "slack_channel": slack_channel,
@@ -111,9 +99,7 @@ def register_integration_tool(ctx: ToolContext) -> None:
 
             elif operation == "discord":
                 if not discord_webhook:
-                    raise TailscaleMCPError(
-                        "discord_webhook is required for discord operation"
-                    )
+                    raise TailscaleMCPError("discord_webhook is required for discord operation")
                 result = await ctx.device_manager.integrate_discord(discord_webhook)
                 return {
                     "operation": "discord",
@@ -123,9 +109,7 @@ def register_integration_tool(ctx: ToolContext) -> None:
 
             elif operation == "pagerduty":
                 if not pagerduty_key:
-                    raise TailscaleMCPError(
-                        "pagerduty_key is required for pagerduty operation"
-                    )
+                    raise TailscaleMCPError("pagerduty_key is required for pagerduty operation")
                 result = await ctx.device_manager.integrate_pagerduty(pagerduty_key)
                 return {
                     "operation": "pagerduty",
@@ -135,12 +119,8 @@ def register_integration_tool(ctx: ToolContext) -> None:
 
             elif operation == "datadog":
                 if not datadog_api_key:
-                    raise TailscaleMCPError(
-                        "datadog_api_key is required for datadog operation"
-                    )
-                result = await ctx.device_manager.integrate_datadog(
-                    datadog_api_key, api_endpoint
-                )
+                    raise TailscaleMCPError("datadog_api_key is required for datadog operation")
+                result = await ctx.device_manager.integrate_datadog(datadog_api_key, api_endpoint)
                 return {
                     "operation": "datadog",
                     "datadog_api_key": datadog_api_key,
@@ -150,12 +130,8 @@ def register_integration_tool(ctx: ToolContext) -> None:
 
             elif operation == "test":
                 if not integration_type:
-                    raise TailscaleMCPError(
-                        "integration_type is required for test operation"
-                    )
-                result = await ctx.device_manager.test_integration(
-                    integration_type, api_key, test_connection
-                )
+                    raise TailscaleMCPError("integration_type is required for test operation")
+                result = await ctx.device_manager.test_integration(integration_type, api_key, test_connection)
                 return {
                     "operation": "test",
                     "integration_type": integration_type,
@@ -173,9 +149,7 @@ def register_integration_tool(ctx: ToolContext) -> None:
                 error=str(e),
             )
             if is_auth_error(e):
-                payload = build_auth_error_response(
-                    operation, e, server_started_at=_TOOL_PROCESS_STARTED_AT
-                )
+                payload = build_auth_error_response(operation, e, server_started_at=_TOOL_PROCESS_STARTED_AT)
                 raise TailscaleMCPError(
                     message=(
                         "Tailscale API authentication failed (HTTP 401). "
@@ -185,6 +159,4 @@ def register_integration_tool(ctx: ToolContext) -> None:
                     code=401,
                     details=payload,
                 ) from e
-            raise TailscaleMCPError(
-                f"Failed to perform integration operation: {e}"
-            ) from e
+            raise TailscaleMCPError(f"Failed to perform integration operation: {e}") from e

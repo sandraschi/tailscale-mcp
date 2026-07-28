@@ -10,9 +10,7 @@ class ACLRule(BaseModel):
 
     action: str = Field(..., description="Rule action (accept, reject, etc.)")
     src: list[str] = Field(default_factory=list, description="Source addresses/tags")
-    dst: list[str] = Field(
-        default_factory=list, description="Destination addresses/tags"
-    )
+    dst: list[str] = Field(default_factory=list, description="Destination addresses/tags")
 
 
 class PolicyGrant(BaseModel):
@@ -30,9 +28,7 @@ class ACLPolicy(BaseModel):
     users: dict[str, str] = Field(default_factory=dict, description="User definitions")
     tags: dict[str, str] = Field(default_factory=dict, description="Tag definitions")
     acls: list[ACLRule] = Field(default_factory=list, description="ACL rules")
-    groups: dict[str, list[str]] = Field(
-        default_factory=dict, description="Group definitions"
-    )
+    groups: dict[str, list[str]] = Field(default_factory=dict, description="Group definitions")
 
     @classmethod
     def from_api_response(cls, data: dict[str, Any]) -> "ACLPolicy":
@@ -69,9 +65,6 @@ class ACLPolicy(BaseModel):
             "Hosts": self.hosts,
             "Users": self.users,
             "Tags": self.tags,
-            "ACLs": [
-                {"Action": rule.action, "Src": rule.src, "Dst": rule.dst}
-                for rule in self.acls
-            ],
+            "ACLs": [{"Action": rule.action, "Src": rule.src, "Dst": rule.dst} for rule in self.acls],
             "Groups": self.groups,
         }

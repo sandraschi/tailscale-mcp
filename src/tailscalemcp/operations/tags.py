@@ -185,9 +185,7 @@ class TagOperations:
 
         # Check for valid characters
         if not all(c.isalnum() or c in ["-", "_", ":"] for c in tag[4:]):
-            errors.append(
-                "Tag contains invalid characters. Only alphanumeric, '-', and '_' allowed after 'tag:'"
-            )
+            errors.append("Tag contains invalid characters. Only alphanumeric, '-', and '_' allowed after 'tag:'")
 
         # Check for reserved names
         reserved = ["tag:autogroup", "tag:api"]
@@ -235,9 +233,7 @@ class TagOperations:
                     )
 
             # Sort by usage
-            sorted_tags = sorted(
-                tag_stats.items(), key=lambda x: x[1]["device_count"], reverse=True
-            )
+            sorted_tags = sorted(tag_stats.items(), key=lambda x: x[1]["device_count"], reverse=True)
 
             result = {
                 "total_unique_tags": len(tag_stats),

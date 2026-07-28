@@ -56,9 +56,7 @@ class AnalyticsOperations:
             device_ops = DeviceOperations(self.config)
             all_devices = await device_ops.list_devices()
 
-            cutoff_date = datetime.now(datetime.now().astimezone().tzinfo) - timedelta(
-                days=days
-            )
+            cutoff_date = datetime.now(datetime.now().astimezone().tzinfo) - timedelta(days=days)
 
             # Analyze device activity
             active_devices = []
@@ -68,9 +66,7 @@ class AnalyticsOperations:
                 device_info = {
                     "device_id": device.id,
                     "device_name": device.name,
-                    "last_seen": device.last_seen.isoformat()
-                    if device.last_seen
-                    else None,
+                    "last_seen": device.last_seen.isoformat() if device.last_seen else None,
                     "status": device.status.value,
                 }
 
@@ -93,12 +89,8 @@ class AnalyticsOperations:
                 "authorized_devices_count": authorized_count,
                 "active_devices": active_devices[:10],  # Limit for brevity
                 "inactive_devices": inactive_devices[:10],
-                "activity_rate": (
-                    len(active_devices) / total_devices if total_devices > 0 else 0
-                ),
-                "analysis_timestamp": datetime.now(
-                    datetime.now().astimezone().tzinfo
-                ).isoformat(),
+                "activity_rate": (len(active_devices) / total_devices if total_devices > 0 else 0),
+                "analysis_timestamp": datetime.now(datetime.now().astimezone().tzinfo).isoformat(),
             }
 
             logger.info(
@@ -182,12 +174,8 @@ class AnalyticsOperations:
 
             stats = {
                 "total_devices": len(all_devices),
-                "online_devices": sum(
-                    1 for d in all_devices if d.status.value == "online"
-                ),
-                "offline_devices": sum(
-                    1 for d in all_devices if d.status.value == "offline"
-                ),
+                "online_devices": sum(1 for d in all_devices if d.status.value == "online"),
+                "offline_devices": sum(1 for d in all_devices if d.status.value == "offline"),
                 "unauthorized_devices": sum(1 for d in all_devices if not d.authorized),
                 "devices_by_os": {},
                 "devices_with_tags": sum(1 for d in all_devices if d.tags),
@@ -197,9 +185,7 @@ class AnalyticsOperations:
             # Count by OS
             for device in all_devices:
                 os_name = device.os
-                stats["devices_by_os"][os_name] = (
-                    stats["devices_by_os"].get(os_name, 0) + 1
-                )
+                stats["devices_by_os"][os_name] = stats["devices_by_os"].get(os_name, 0) + 1
 
             logger.info("Network statistics retrieved", total=stats["total_devices"])
             return stats

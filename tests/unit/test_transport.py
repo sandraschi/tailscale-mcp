@@ -23,12 +23,16 @@ class TestGetTransportConfig:
             assert cfg["path"] == "/mcp"
 
     def test_env_overrides(self):
-        with patch.dict(os.environ, {
-            ENV_TRANSPORT: "http",
-            ENV_HOST: "0.0.0.0",
-            ENV_PORT: "9999",
-            ENV_PATH: "/api/mcp",
-        }, clear=True):
+        with patch.dict(
+            os.environ,
+            {
+                ENV_TRANSPORT: "http",
+                ENV_HOST: "0.0.0.0",
+                ENV_PORT: "9999",
+                ENV_PATH: "/api/mcp",
+            },
+            clear=True,
+        ):
             cfg = get_transport_config()
             assert cfg["transport"] == "http"
             assert cfg["host"] == "0.0.0.0"
@@ -47,6 +51,7 @@ class TestResolveTransport:
             http = False
             sse = False
             stdio = False
+
         with patch.dict(os.environ, {}, clear=True):
             t = resolve_transport(Args())
             assert t == "stdio"
@@ -56,6 +61,7 @@ class TestResolveTransport:
             http = True
             sse = False
             stdio = False
+
         t = resolve_transport(Args())
         assert t == "http"
 
@@ -64,6 +70,7 @@ class TestResolveTransport:
             http = False
             sse = True
             stdio = False
+
         t = resolve_transport(Args())
         assert t == "sse"
 
@@ -72,6 +79,7 @@ class TestResolveTransport:
             http = False
             sse = False
             stdio = True
+
         t = resolve_transport(Args())
         assert t == "stdio"
 
@@ -80,6 +88,7 @@ class TestResolveTransport:
             http = False
             sse = False
             stdio = False
+
         with patch.dict(os.environ, {ENV_TRANSPORT: "http"}, clear=True):
             t = resolve_transport(Args())
             assert t == "http"
@@ -89,6 +98,7 @@ class TestResolveTransport:
             http = False
             sse = False
             stdio = False
+
         with patch.dict(os.environ, {ENV_TRANSPORT: "invalid"}, clear=True):
             t = resolve_transport(Args())
             assert t == "stdio"
@@ -98,6 +108,7 @@ class TestResolveTransport:
             http = True
             sse = False
             stdio = False
+
         with patch.dict(os.environ, {ENV_TRANSPORT: "stdio"}, clear=True):
             t = resolve_transport(Args())
             assert t == "http"

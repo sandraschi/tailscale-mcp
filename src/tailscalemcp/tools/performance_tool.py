@@ -46,9 +46,7 @@ def register_performance_tool(ctx: ToolContext) -> None:
         """
         try:
             if operation == "latency":
-                latency_results = await ctx.monitor.measure_latency(
-                    device_id, measure_duration
-                )
+                latency_results = await ctx.monitor.measure_latency(device_id, measure_duration)
                 return {
                     "operation": "latency",
                     "device_id": device_id,
@@ -57,9 +55,7 @@ def register_performance_tool(ctx: ToolContext) -> None:
                 }
 
             elif operation == "bandwidth":
-                bandwidth_results = await ctx.monitor.bandwidth_analysis(
-                    device_id, measure_duration
-                )
+                bandwidth_results = await ctx.monitor.bandwidth_analysis(device_id, measure_duration)
                 return {
                     "operation": "bandwidth",
                     "device_id": device_id,
@@ -68,9 +64,7 @@ def register_performance_tool(ctx: ToolContext) -> None:
                 }
 
             elif operation == "optimize":
-                optimization_results = await ctx.monitor.optimize_routing(
-                    route_optimization
-                )
+                optimization_results = await ctx.monitor.optimize_routing(route_optimization)
                 return {
                     "operation": "optimize",
                     "route_optimization": route_optimization,
@@ -79,12 +73,8 @@ def register_performance_tool(ctx: ToolContext) -> None:
 
             elif operation == "baseline":
                 if not baseline_name:
-                    raise TailscaleMCPError(
-                        "baseline_name is required for baseline operation"
-                    )
-                baseline_results = await ctx.monitor.performance_baseline(
-                    baseline_name, baseline_duration
-                )
+                    raise TailscaleMCPError("baseline_name is required for baseline operation")
+                baseline_results = await ctx.monitor.performance_baseline(baseline_name, baseline_duration)
                 return {
                     "operation": "baseline",
                     "baseline_name": baseline_name,
@@ -93,9 +83,7 @@ def register_performance_tool(ctx: ToolContext) -> None:
                 }
 
             elif operation == "capacity":
-                capacity_results = await ctx.monitor.predict_capacity(
-                    capacity_period, scaling_factor
-                )
+                capacity_results = await ctx.monitor.predict_capacity(capacity_period, scaling_factor)
                 return {
                     "operation": "capacity",
                     "period": capacity_period,
@@ -112,9 +100,7 @@ def register_performance_tool(ctx: ToolContext) -> None:
                 }
 
             elif operation == "scaling":
-                scaling_recommendations = await ctx.monitor.scaling_recommendations(
-                    scaling_factor
-                )
+                scaling_recommendations = await ctx.monitor.scaling_recommendations(scaling_factor)
                 return {
                     "operation": "scaling",
                     "scaling_factor": scaling_factor,
@@ -122,9 +108,7 @@ def register_performance_tool(ctx: ToolContext) -> None:
                 }
 
             elif operation == "threshold":
-                threshold_results = await ctx.monitor.set_performance_threshold(
-                    performance_threshold
-                )
+                threshold_results = await ctx.monitor.set_performance_threshold(performance_threshold)
                 return {
                     "operation": "threshold",
                     "threshold": performance_threshold,
@@ -141,9 +125,7 @@ def register_performance_tool(ctx: ToolContext) -> None:
                 error=str(e),
             )
             if is_auth_error(e):
-                payload = build_auth_error_response(
-                    operation, e, server_started_at=_TOOL_PROCESS_STARTED_AT
-                )
+                payload = build_auth_error_response(operation, e, server_started_at=_TOOL_PROCESS_STARTED_AT)
                 raise TailscaleMCPError(
                     message=(
                         "Tailscale API authentication failed (HTTP 401). "
@@ -153,6 +135,4 @@ def register_performance_tool(ctx: ToolContext) -> None:
                     code=401,
                     details=payload,
                 ) from e
-            raise TailscaleMCPError(
-                f"Failed to perform performance operation: {e}"
-            ) from e
+            raise TailscaleMCPError(f"Failed to perform performance operation: {e}") from e

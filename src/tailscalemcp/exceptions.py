@@ -68,9 +68,7 @@ class NotFoundError(TailscaleMCPError):
 class ValidationError(TailscaleMCPError):
     """Raised when input validation fails."""
 
-    def __init__(
-        self, message: str = "Validation failed", errors: dict[str, Any] | None = None
-    ) -> None:
+    def __init__(self, message: str = "Validation failed", errors: dict[str, Any] | None = None) -> None:
         super().__init__(message=message, code=400, details={"errors": errors or {}})
 
 

@@ -112,13 +112,12 @@ def build_auth_error_response(
             {
                 "cause": "stale_in_process_credentials",
                 "likelihood": (
-                    "high if this server has been running more than a few "
-                    "minutes and credentials were changed since"
+                    "high if this server has been running more than a few minutes and credentials were changed since"
                 ),
                 "check": (
                     "Test the key on disk directly: Invoke-RestMethod -Uri "
                     "'https://api.tailscale.com/api/v2/tailnet/<tailnet>/devices' "
-                    "-Headers @{Authorization=\"Bearer <key from .env>\"}. "
+                    '-Headers @{Authorization="Bearer <key from .env>"}. '
                     "If that succeeds but this tool still fails, the key is "
                     "fine and the running process is stale."
                 ),
@@ -151,9 +150,7 @@ def build_auth_error_response(
     }
 
 
-def raise_or_wrap_auth_aware(
-    operation: str, exc: Exception, fallback_message: str
-) -> TailscaleMCPError:
+def raise_or_wrap_auth_aware(operation: str, exc: Exception, fallback_message: str) -> TailscaleMCPError:
     """Build a TailscaleMCPError carrying recovery_options when exc is a 401.
 
     Use at tool-module exception boundaries (the ``except Exception as e:``
@@ -532,9 +529,7 @@ async def generate_mermaid_diagram(
 
         for node_counter, device in enumerate(devices):
             device_id = device.get("id") or device.get("device_id", "")
-            name = device.get("name") or device.get(
-                "hostname", f"Device-{node_counter}"
-            )
+            name = device.get("name") or device.get("hostname", f"Device-{node_counter}")
             online = device.get("online", False)
             is_exit = device.get("is_exit_node", False)
             is_subnet = device.get("is_subnet_router", False)
@@ -587,15 +582,11 @@ async def generate_mermaid_diagram(
                 funnel_node_id = f"funnel{port}"
                 public_url = funnel_info.get("public_url", f"Port {port}")
                 # Truncate long URLs
-                url_display = (
-                    public_url[:40] + "..." if len(public_url) > 40 else public_url
-                )
+                url_display = public_url[:40] + "..." if len(public_url) > 40 else public_url
                 label = f"Funnel Port {port}\\n{url_display}"
                 safe_label = label.replace('"', "'")
                 lines.append(f'    {funnel_node_id}["{safe_label}"]')
-                lines.append(
-                    f"    style {funnel_node_id} fill:#FFD700,stroke:#FF8C00,stroke-width:2px,color:#000000"
-                )
+                lines.append(f"    style {funnel_node_id} fill:#FFD700,stroke:#FF8C00,stroke-width:2px,color:#000000")
             lines.append("    end")
 
         # Add connections (simplified mesh - all devices connected to tailnet)
@@ -620,13 +611,9 @@ async def generate_mermaid_diagram(
         lines.append("    style Online fill:#90EE90,color:#000000")
         lines.append("    style Offline fill:#FFB6C1,color:#000000")
         if exit_nodes:
-            lines.append(
-                "    style Exit fill:#90EE90,stroke:#FF6B6B,stroke-width:3px,color:#000000"
-            )
+            lines.append("    style Exit fill:#90EE90,stroke:#FF6B6B,stroke-width:3px,color:#000000")
         if subnet_routers:
-            lines.append(
-                "    style Subnet fill:#90EE90,stroke:#4ECDC4,stroke-width:3px,color:#000000"
-            )
+            lines.append("    style Subnet fill:#90EE90,stroke:#4ECDC4,stroke-width:3px,color:#000000")
         if active_funnels:
             lines.append("    style Funnel fill:#FFD700,stroke:#FF8C00,color:#000000")
         lines.append("    end")
@@ -766,11 +753,7 @@ async def generate_status_info(
                 "total": len(devices),
                 "online": len(online_devices),
                 "offline": len(devices) - len(online_devices),
-                "online_percentage": (
-                    round((len(online_devices) / len(devices)) * 100, 2)
-                    if devices
-                    else 0
-                ),
+                "online_percentage": (round((len(online_devices) / len(devices)) * 100, 2) if devices else 0),
             },
             "network": {
                 "connectivity": "good",
@@ -789,11 +772,7 @@ async def generate_status_info(
                 "devices": "healthy" if len(online_devices) > 0 else "warning",
                 "network": "healthy",
                 "services": "healthy",
-                "mcp_server": (
-                    "healthy"
-                    if len(tools) > 0 and len(prompts) > 0 and len(resources) > 0
-                    else "warning"
-                ),
+                "mcp_server": ("healthy" if len(tools) > 0 and len(prompts) > 0 and len(resources) > 0 else "warning"),
             },
         }
 
@@ -816,9 +795,7 @@ async def generate_status_info(
         # Generate Mermaid diagram if requested
         if include_mermaid:
             try:
-                mermaid_diagram = await generate_mermaid_diagram(
-                    device_manager, funnel_manager
-                )
+                mermaid_diagram = await generate_mermaid_diagram(device_manager, funnel_manager)
                 status_data["mermaid_diagram"] = mermaid_diagram
             except Exception as e:
                 logger.warning("Failed to generate Mermaid diagram", error=str(e))
@@ -912,9 +889,7 @@ async def generate_status_info(
         return {
             "error": f"Failed to generate status: {e!s}",
             "error_type": "authentication" if auth_recovery else None,
-            "recovery_options": auth_recovery["recovery_options"]
-            if auth_recovery
-            else None,
+            "recovery_options": auth_recovery["recovery_options"] if auth_recovery else None,
             "system": {"status": "error"},
             "mcp_server": mcp_server_info,
             "devices": {

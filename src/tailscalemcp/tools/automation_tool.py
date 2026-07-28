@@ -50,9 +50,7 @@ def register_automation_tool(ctx: ToolContext) -> None:
                     raise TailscaleMCPError(
                         "workflow_name and workflow_steps are required for workflow_create operation"
                     )
-                result = await ctx.device_manager.create_workflow(
-                    workflow_name, workflow_steps
-                )
+                result = await ctx.device_manager.create_workflow(workflow_name, workflow_steps)
                 return {
                     "operation": "workflow_create",
                     "workflow_name": workflow_name,
@@ -63,12 +61,8 @@ def register_automation_tool(ctx: ToolContext) -> None:
 
             elif operation == "workflow_execute":
                 if not workflow_id:
-                    raise TailscaleMCPError(
-                        "workflow_id is required for workflow_execute operation"
-                    )
-                result = await ctx.device_manager.execute_workflow(
-                    workflow_id, execute_now
-                )
+                    raise TailscaleMCPError("workflow_id is required for workflow_execute operation")
+                result = await ctx.device_manager.execute_workflow(workflow_id, execute_now)
                 return {
                     "operation": "workflow_execute",
                     "workflow_id": workflow_id,
@@ -81,9 +75,7 @@ def register_automation_tool(ctx: ToolContext) -> None:
                     raise TailscaleMCPError(
                         "workflow_id and schedule_cron are required for workflow_schedule operation"
                     )
-                result = await ctx.device_manager.schedule_workflow(
-                    workflow_id, schedule_cron
-                )
+                result = await ctx.device_manager.schedule_workflow(workflow_id, schedule_cron)
                 return {
                     "operation": "workflow_schedule",
                     "workflow_id": workflow_id,
@@ -101,9 +93,7 @@ def register_automation_tool(ctx: ToolContext) -> None:
 
             elif operation == "workflow_delete":
                 if not workflow_id:
-                    raise TailscaleMCPError(
-                        "workflow_id is required for workflow_delete operation"
-                    )
+                    raise TailscaleMCPError("workflow_id is required for workflow_delete operation")
                 result = await ctx.device_manager.delete_workflow(workflow_id)
                 return {
                     "operation": "workflow_delete",
@@ -113,12 +103,8 @@ def register_automation_tool(ctx: ToolContext) -> None:
 
             elif operation == "script_execute":
                 if not script_content:
-                    raise TailscaleMCPError(
-                        "script_content is required for script_execute operation"
-                    )
-                result = await ctx.device_manager.execute_script(
-                    script_content, script_language, dry_run
-                )
+                    raise TailscaleMCPError("script_content is required for script_execute operation")
+                result = await ctx.device_manager.execute_script(script_content, script_language, dry_run)
                 return {
                     "operation": "script_execute",
                     "script_language": script_language,
@@ -128,9 +114,7 @@ def register_automation_tool(ctx: ToolContext) -> None:
 
             elif operation == "script_template":
                 if not template_name:
-                    raise TailscaleMCPError(
-                        "template_name is required for script_template operation"
-                    )
+                    raise TailscaleMCPError("template_name is required for script_template operation")
                 template = await ctx.device_manager.get_script_template(template_name)
                 return {
                     "operation": "script_template",
@@ -140,12 +124,8 @@ def register_automation_tool(ctx: ToolContext) -> None:
 
             elif operation == "batch":
                 if not batch_operations:
-                    raise TailscaleMCPError(
-                        "batch_operations is required for batch operation"
-                    )
-                result = await ctx.device_manager.batch_operations(
-                    batch_operations, dry_run
-                )
+                    raise TailscaleMCPError("batch_operations is required for batch operation")
+                result = await ctx.device_manager.batch_operations(batch_operations, dry_run)
                 return {
                     "operation": "batch",
                     "operations_count": len(batch_operations),
@@ -155,9 +135,7 @@ def register_automation_tool(ctx: ToolContext) -> None:
 
             elif operation == "dry_run":
                 if not batch_operations:
-                    raise TailscaleMCPError(
-                        "batch_operations is required for dry_run operation"
-                    )
+                    raise TailscaleMCPError("batch_operations is required for dry_run operation")
                 preview = await ctx.device_manager.preview_operations(batch_operations)
                 return {
                     "operation": "dry_run",
@@ -175,9 +153,7 @@ def register_automation_tool(ctx: ToolContext) -> None:
                 error=str(e),
             )
             if is_auth_error(e):
-                payload = build_auth_error_response(
-                    operation, e, server_started_at=_TOOL_PROCESS_STARTED_AT
-                )
+                payload = build_auth_error_response(operation, e, server_started_at=_TOOL_PROCESS_STARTED_AT)
                 raise TailscaleMCPError(
                     message=(
                         "Tailscale API authentication failed (HTTP 401). "
@@ -187,6 +163,4 @@ def register_automation_tool(ctx: ToolContext) -> None:
                     code=401,
                     details=payload,
                 ) from e
-            raise TailscaleMCPError(
-                f"Failed to perform automation operation: {e}"
-            ) from e
+            raise TailscaleMCPError(f"Failed to perform automation operation: {e}") from e

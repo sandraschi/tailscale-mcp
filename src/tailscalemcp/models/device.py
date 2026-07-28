@@ -2,13 +2,13 @@
 
 import contextlib
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, Field
 
 
-class DeviceStatus(str, Enum):
+class DeviceStatus(StrEnum):
     """Device connection status."""
 
     ONLINE = "online"
@@ -32,9 +32,7 @@ class Device(BaseModel):
     ipv6: str | None = Field(None, description="IPv6 address")
     tags: list[str] = Field(default_factory=list, description="Device tags")
     authorized: bool = Field(False, description="Device is authorized")
-    connected_to_control: bool = Field(
-        False, description="Device is connected to control plane"
-    )
+    connected_to_control: bool = Field(False, description="Device is connected to control plane")
     last_seen: datetime | None = Field(None, description="Last seen timestamp")
     tailnet_lock_key: str | None = Field(None, description="Tailnet lock key")
     key_expiry_disabled: bool = Field(False, description="Key expiry disabled")
@@ -54,17 +52,17 @@ class Device(BaseModel):
         Returns:
             Device instance
         """
+
         def _safe(s: Any) -> str:
             if not isinstance(s, str):
                 return str(s) if s is not None else ""
             return s.replace("\u2014", "-").replace("\u2013", "-")
+
         # Handle lastSeen timestamp
         last_seen = None
         if data.get("lastSeen"):
             with contextlib.suppress(ValueError, AttributeError):
-                last_seen = datetime.fromisoformat(
-                    data["lastSeen"].replace("Z", "+00:00")
-                )
+                last_seen = datetime.fromisoformat(data["lastSeen"].replace("Z", "+00:00"))
 
         # Handle expires timestamp
         expires = None

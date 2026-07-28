@@ -96,9 +96,7 @@ def register_sampling_tool(ctx: ToolContext) -> None:
 
         all_tools = await mcp.list_tools()
         name_to_tool = {t.name: t for t in all_tools if hasattr(t, "name")}
-        tools_for_sampling = [
-            name_to_tool[n] for n in available_tools if n in name_to_tool
-        ]
+        tools_for_sampling = [name_to_tool[n] for n in available_tools if n in name_to_tool]
         missing = [n for n in available_tools if n not in name_to_tool]
         if missing:
             _log.warning("Agentic workflow: tools not registered: %s", missing)
@@ -107,9 +105,7 @@ def register_sampling_tool(ctx: ToolContext) -> None:
                 f"None of available_tools matched registered tools. Missing: {missing}. "
                 f"Registered include: {list(name_to_tool.keys())[:40]}...",
                 error_code="TOOLS_NOT_FOUND",
-                recovery_options=[
-                    "Call get_tailnet_status(component='mcp_server') for the full tool list."
-                ],
+                recovery_options=["Call get_tailnet_status(component='mcp_server') for the full tool list."],
             )
 
         system_prompt = (
@@ -136,9 +132,7 @@ def register_sampling_tool(ctx: ToolContext) -> None:
                 messages = list(step.history)
             if hasattr(step, "tool_calls") and step.tool_calls:
                 for tc in step.tool_calls:
-                    name = getattr(tc, "name", None) or getattr(
-                        tc, "tool_name", str(tc)
-                    )
+                    name = getattr(tc, "name", None) or getattr(tc, "tool_name", str(tc))
                     if name:
                         executed.append(str(name))
             is_tool = getattr(step, "is_tool_use", True)
@@ -195,9 +189,7 @@ def register_sampling_tool(ctx: ToolContext) -> None:
             Dict with success, result (final_output, iterations, executed_tools), or error.
         """
         try:
-            return await _run_agentic(
-                workflow_prompt, available_tools, max_iterations, context
-            )
+            return await _run_agentic(workflow_prompt, available_tools, max_iterations, context)
         except Exception as e:
             logger.exception("run_agentic_tailnet_workflow failed")
             if is_auth_error(e):
@@ -214,9 +206,7 @@ def register_sampling_tool(ctx: ToolContext) -> None:
                         "rather than a bad key on disk."
                     ),
                     error_code="TAILSCALE_AUTH_FAILED",
-                    recovery_options=[
-                        opt["fix"] for opt in payload["recovery_options"]
-                    ],
+                    recovery_options=[opt["fix"] for opt in payload["recovery_options"]],
                 )
             raise TailscaleMCPError(f"Agentic workflow failed: {e}") from e
 
@@ -228,6 +218,4 @@ def register_sampling_tool(ctx: ToolContext) -> None:
         context: Context | None = None,
     ) -> dict[str, Any]:
         """Deprecated alias for ``run_agentic_tailnet_workflow`` (same parameters)."""
-        return await tailscale_agentic_workflow(
-            workflow_prompt, available_tools, max_iterations, context
-        )
+        return await tailscale_agentic_workflow(workflow_prompt, available_tools, max_iterations, context)

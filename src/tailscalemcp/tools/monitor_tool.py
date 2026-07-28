@@ -79,12 +79,8 @@ def register_monitor_tool(ctx: ToolContext) -> None:
 
             elif operation == "dashboard":
                 if not grafana_url or not api_key:
-                    raise TailscaleMCPError(
-                        "grafana_url and api_key are required for dashboard operation"
-                    )
-                dashboard_config = await ctx.monitor.create_grafana_dashboard(
-                    grafana_url, api_key
-                )
+                    raise TailscaleMCPError("grafana_url and api_key are required for dashboard operation")
+                dashboard_config = await ctx.monitor.create_grafana_dashboard(grafana_url, api_key)
                 return {
                     "operation": "dashboard_create",
                     "dashboard": dashboard_config,
@@ -95,13 +91,9 @@ def register_monitor_tool(ctx: ToolContext) -> None:
                 if not filename:
                     raise TailscaleMCPError("filename is required for export operation")
                 if dashboard_type == "comprehensive":
-                    dashboard_config = (
-                        ctx.grafana_dashboard.create_comprehensive_dashboard()
-                    )
+                    dashboard_config = ctx.grafana_dashboard.create_comprehensive_dashboard()
                 elif dashboard_type == "topology":
-                    dashboard_config = (
-                        ctx.grafana_dashboard.create_network_topology_dashboard()
-                    )
+                    dashboard_config = ctx.grafana_dashboard.create_network_topology_dashboard()
                 elif dashboard_type == "security":
                     dashboard_config = ctx.grafana_dashboard.create_security_dashboard()
                 else:
@@ -125,9 +117,7 @@ def register_monitor_tool(ctx: ToolContext) -> None:
                 error=str(e),
             )
             if is_auth_error(e):
-                payload = build_auth_error_response(
-                    operation, e, server_started_at=_TOOL_PROCESS_STARTED_AT
-                )
+                payload = build_auth_error_response(operation, e, server_started_at=_TOOL_PROCESS_STARTED_AT)
                 raise TailscaleMCPError(
                     message=(
                         "Tailscale API authentication failed (HTTP 401). "

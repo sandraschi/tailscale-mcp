@@ -44,9 +44,7 @@ class TaildropTransfer(BaseModel):
     status: str = Field(..., description="Transfer status")
     progress: float = Field(..., description="Transfer progress percentage")
     created_at: float = Field(..., description="Transfer creation time")
-    estimated_completion: float | None = Field(
-        None, description="Estimated completion time"
-    )
+    estimated_completion: float | None = Field(None, description="Estimated completion time")
 
 
 class TaildropManager:
@@ -69,11 +67,7 @@ class TaildropManager:
         """
         import tempfile
 
-        self.taildrop_dir = (
-            Path(taildrop_dir)
-            if taildrop_dir
-            else Path(tempfile.gettempdir()) / "taildrop"
-        )
+        self.taildrop_dir = Path(taildrop_dir) if taildrop_dir else Path(tempfile.gettempdir()) / "taildrop"
         self.max_file_size = max_file_size
         self.transfers: dict[str, TaildropTransfer] = {}
         self.active_transfers: dict[str, asyncio.Task] = {}
@@ -129,14 +123,10 @@ class TaildropManager:
 
             file_size = file_path_obj.stat().st_size
             if file_size > self.max_file_size:
-                raise ValueError(
-                    f"File too large: {file_size} bytes (max: {self.max_file_size})"
-                )
+                raise ValueError(f"File too large: {file_size} bytes (max: {self.max_file_size})")
 
             # Generate transfer ID
-            transfer_id = hashlib.sha256(
-                f"{file_path}_{recipient_device}_{time.time()}".encode()
-            ).hexdigest()
+            transfer_id = hashlib.sha256(f"{file_path}_{recipient_device}_{time.time()}".encode()).hexdigest()
 
             # Calculate file checksum
             checksum = await self._calculate_checksum(file_path_obj)
@@ -151,9 +141,7 @@ class TaildropManager:
                     )
 
                     # Use CLI to send file
-                    cli_result = await self.cli.file_send(
-                        str(file_path_obj.absolute()), recipient_device, wait=True
-                    )
+                    cli_result = await self.cli.file_send(str(file_path_obj.absolute()), recipient_device, wait=True)
 
                     if cli_result.get("success"):
                         # Create transfer record for successful transfer
@@ -205,9 +193,7 @@ class TaildropManager:
                             "CLI transfer failed, falling back to simulated",
                             error=cli_result.get("error"),
                         )
-                        raise TailscaleMCPError(
-                            f"CLI transfer failed: {cli_result.get('error')}"
-                        )
+                        raise TailscaleMCPError(f"CLI transfer failed: {cli_result.get('error')}")
 
                 except Exception as cli_error:
                     logger.warning(
@@ -291,14 +277,10 @@ class TaildropManager:
             # Use real CLI if available
             if self.use_cli and self.cli:
                 try:
-                    logger.info(
-                        "Receiving files via Tailscale CLI", save_path=save_path
-                    )
+                    logger.info("Receiving files via Tailscale CLI", save_path=save_path)
 
                     # Use CLI to receive files
-                    cli_result = await self.cli.file_receive(
-                        save_path=save_path, accept_all=accept_all
-                    )
+                    cli_result = await self.cli.file_receive(save_path=save_path, accept_all=accept_all)
 
                     if cli_result.get("success"):
                         logger.info(
@@ -313,9 +295,7 @@ class TaildropManager:
                             "message": "Files received successfully via Tailscale CLI",
                         }
                     else:
-                        raise TailscaleMCPError(
-                            f"CLI receive failed: {cli_result.get('error')}"
-                        )
+                        raise TailscaleMCPError(f"CLI receive failed: {cli_result.get('error')}")
 
                 except Exception as cli_error:
                     logger.warning(
@@ -327,9 +307,7 @@ class TaildropManager:
 
             # Fallback to simulated receive (requires transfer_id)
             if not transfer_id:
-                raise ValueError(
-                    "transfer_id required when not using CLI. Use CLI mode or provide transfer_id."
-                )
+                raise ValueError("transfer_id required when not using CLI. Use CLI mode or provide transfer_id.")
 
             if transfer_id not in self.transfers:
                 raise ValueError(f"Transfer not found: {transfer_id}")
@@ -340,10 +318,7 @@ class TaildropManager:
 
             # Determine save path
             if not save_path:
-                save_path = (
-                    self.taildrop_dir
-                    / f"received_{transfer_id}_{transfer.files[0].filename}"
-                )
+                save_path = self.taildrop_dir / f"received_{transfer_id}_{transfer.files[0].filename}"
             else:
                 save_path = Path(save_path)
 
@@ -381,9 +356,7 @@ class TaildropManager:
             logger.error("Error receiving file via Taildrop", error=str(e))
             raise TailscaleMCPError(f"Failed to receive file: {e}") from e
 
-    async def list_transfers(
-        self, status_filter: str | None = None
-    ) -> list[dict[str, Any]]:
+    async def list_transfers(self, status_filter: str | None = None) -> list[dict[str, Any]]:
         """List Taildrop transfers.
 
         Args:
@@ -398,11 +371,7 @@ class TaildropManager:
 
             for transfer_id, transfer in self.transfers.items():
                 # Check for expired transfers
-                if (
-                    transfer.files
-                    and transfer.files[0].expires_at
-                    and current_time > transfer.files[0].expires_at
-                ):
+                if transfer.files and transfer.files[0].expires_at and current_time > transfer.files[0].expires_at:
                     transfer.status = "expired"
 
                 if status_filter and transfer.status != status_filter:
@@ -413,16 +382,12 @@ class TaildropManager:
                         "transfer_id": transfer_id,
                         "sender_device": transfer.sender_device,
                         "recipient_device": transfer.recipient_device,
-                        "filename": transfer.files[0].filename
-                        if transfer.files
-                        else "unknown",
+                        "filename": transfer.files[0].filename if transfer.files else "unknown",
                         "size": transfer.files[0].size if transfer.files else 0,
                         "status": transfer.status,
                         "progress": transfer.progress,
                         "created_at": transfer.created_at,
-                        "expires_at": transfer.files[0].expires_at
-                        if transfer.files
-                        else None,
+                        "expires_at": transfer.files[0].expires_at if transfer.files else None,
                     }
                 )
 
@@ -453,9 +418,7 @@ class TaildropManager:
 
             transfer = self.transfers[transfer_id]
             if transfer.status in ["completed", "cancelled"]:
-                raise ValueError(
-                    f"Cannot cancel transfer with status: {transfer.status}"
-                )
+                raise ValueError(f"Cannot cancel transfer with status: {transfer.status}")
 
             # Cancel asyncio task if active
             if transfer_id in self.active_transfers:
@@ -494,11 +457,7 @@ class TaildropManager:
             current_time = time.time()
 
             # Check for expiration
-            if (
-                transfer.files
-                and transfer.files[0].expires_at
-                and current_time > transfer.files[0].expires_at
-            ):
+            if transfer.files and transfer.files[0].expires_at and current_time > transfer.files[0].expires_at:
                 transfer.status = "expired"
 
             return {
@@ -531,20 +490,13 @@ class TaildropManager:
             cleaned_files = []
 
             for transfer_id, transfer in list(self.transfers.items()):
-                if (
-                    transfer.files
-                    and transfer.files[0].expires_at
-                    and current_time > transfer.files[0].expires_at
-                ):
+                if transfer.files and transfer.files[0].expires_at and current_time > transfer.files[0].expires_at:
                     if transfer.status != "expired":
                         transfer.status = "expired"
                         expired_count += 1
 
                     # Clean up associated files
-                    file_path = (
-                        self.taildrop_dir
-                        / f"{transfer_id}_{transfer.files[0].filename}"
-                    )
+                    file_path = self.taildrop_dir / f"{transfer_id}_{transfer.files[0].filename}"
                     if file_path.exists():
                         file_path.unlink()
                         cleaned_files.append(str(file_path))
@@ -593,15 +545,11 @@ class TaildropManager:
 
             # Calculate average transfer time
             completed_transfers = [
-                t
-                for t in self.transfers.values()
-                if t.status == "completed" and t.files and t.files[0].completed_at
+                t for t in self.transfers.values() if t.status == "completed" and t.files and t.files[0].completed_at
             ]
             avg_transfer_time = 0
             if completed_transfers:
-                total_time = sum(
-                    t.files[0].completed_at - t.created_at for t in completed_transfers
-                )
+                total_time = sum(t.files[0].completed_at - t.created_at for t in completed_transfers)
                 avg_transfer_time = total_time / len(completed_transfers)
 
             return {
@@ -611,9 +559,7 @@ class TaildropManager:
                 "total_data_transferred": total_size,
                 "average_transfer_time": avg_transfer_time,
                 "expired_transfers": status_counts.get("expired", 0),
-                "success_rate": (
-                    status_counts.get("completed", 0) / total_transfers * 100
-                )
+                "success_rate": (status_counts.get("completed", 0) / total_transfers * 100)
                 if total_transfers > 0
                 else 0,
             }
@@ -649,9 +595,7 @@ class TaildropManager:
                     logger.info(
                         "Taildrop transfer completed",
                         transfer_id=transfer_id,
-                        filename=transfer.files[0].filename
-                        if transfer.files
-                        else "unknown",
+                        filename=transfer.files[0].filename if transfer.files else "unknown",
                     )
                     break
 
@@ -664,6 +608,4 @@ class TaildropManager:
             logger.info("Taildrop transfer cancelled", transfer_id=transfer_id)
         except Exception as e:
             transfer.status = "failed"
-            logger.error(
-                "Taildrop transfer failed", transfer_id=transfer_id, error=str(e)
-            )
+            logger.error("Taildrop transfer failed", transfer_id=transfer_id, error=str(e))

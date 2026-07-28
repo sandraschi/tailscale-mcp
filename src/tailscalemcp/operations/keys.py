@@ -148,9 +148,7 @@ class KeyOperations:
 
                 if key.get("expires"):
                     try:
-                        expires = datetime.fromisoformat(
-                            key["expires"].replace("Z", "+00:00")
-                        )
+                        expires = datetime.fromisoformat(key["expires"].replace("Z", "+00:00"))
                         if expires < current_time:
                             expired.append(key_info)
                         elif (expires - current_time).days < 7:

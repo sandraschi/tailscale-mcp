@@ -93,8 +93,7 @@ class TailscaleCLI:
         """
         if not self.tailscale_binary:
             raise ConfigurationError(
-                "Tailscale CLI not found. Please install Tailscale CLI or set "
-                "TAILSCALE_BINARY environment variable."
+                "Tailscale CLI not found. Please install Tailscale CLI or set TAILSCALE_BINARY environment variable."
             )
 
         full_command = [self.tailscale_binary, *command]
@@ -109,9 +108,7 @@ class TailscaleCLI:
                 stderr=asyncio.subprocess.PIPE if capture_output else None,
             )
 
-            stdout, stderr = await asyncio.wait_for(
-                process.communicate(), timeout=timeout
-            )
+            stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=timeout)
 
             stdout_text = stdout.decode("utf-8", errors="replace") if stdout else ""
             stderr_text = stderr.decode("utf-8", errors="replace") if stderr else ""
@@ -170,9 +167,7 @@ class TailscaleCLI:
             logger.error("Failed to parse Tailscale status JSON", error=str(e))
             raise TailscaleMCPError("Failed to parse Tailscale status") from e
 
-    async def file_send(
-        self, file_path: str, recipient: str, wait: bool = True
-    ) -> dict[str, Any]:
+    async def file_send(self, file_path: str, recipient: str, wait: bool = True) -> dict[str, Any]:
         """Send a file via Taildrop.
 
         Args:
@@ -192,9 +187,7 @@ class TailscaleCLI:
             command.append("--wait")
 
         try:
-            result = await self._run_command(
-                command, timeout=300
-            )  # 5 min timeout for large files
+            result = await self._run_command(command, timeout=300)  # 5 min timeout for large files
             return {
                 "success": True,
                 "file_path": str(file_path_obj.absolute()),
@@ -210,9 +203,7 @@ class TailscaleCLI:
                 "recipient": recipient,
             }
 
-    async def file_receive(
-        self, save_path: str | None = None, accept_all: bool = False
-    ) -> dict[str, Any]:
+    async def file_receive(self, save_path: str | None = None, accept_all: bool = False) -> dict[str, Any]:
         """Receive files via Taildrop.
 
         Args:
@@ -261,9 +252,7 @@ class TailscaleCLI:
                 "output": result.stdout.strip(),
             }
 
-    async def funnel_enable(
-        self, port: int, allow_tcp: bool = True, allow_tls: bool = True
-    ) -> dict[str, Any]:
+    async def funnel_enable(self, port: int, allow_tcp: bool = True, allow_tls: bool = True) -> dict[str, Any]:
         """Enable Funnel for a port.
 
         Args:

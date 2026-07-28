@@ -26,13 +26,9 @@ def validate_config() -> None:
     api_key = os.getenv("TAILSCALE_API_KEY")
     tailnet = os.getenv("TAILSCALE_TAILNET")
     if not api_key:
-        raise ConfigurationError(
-            "Tailscale API key is required. Set TAILSCALE_API_KEY environment variable"
-        )
+        raise ConfigurationError("Tailscale API key is required. Set TAILSCALE_API_KEY environment variable")
     if not tailnet:
-        raise ConfigurationError(
-            "Tailnet name is required. Set TAILSCALE_TAILNET environment variable"
-        )
+        raise ConfigurationError("Tailnet name is required. Set TAILSCALE_TAILNET environment variable")
 
 
 def setup_structured_logging(log_level: str, log_file: str) -> None:

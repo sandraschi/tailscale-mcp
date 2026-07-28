@@ -61,9 +61,7 @@ class PolicyOperations:
             logger.error("Error getting ACL policy", error=str(e))
             raise TailscaleMCPError(f"Failed to get ACL policy: {e}") from e
 
-    async def validate_policy(
-        self, policy: dict[str, Any] | ACLPolicy
-    ) -> dict[str, Any]:
+    async def validate_policy(self, policy: dict[str, Any] | ACLPolicy) -> dict[str, Any]:
         """Validate ACL policy syntax and structure before deployment.
 
         Args:
@@ -100,28 +98,18 @@ class PolicyOperations:
                             continue
 
                         if "Action" not in acl:
-                            errors.append(
-                                f"ACL rule {i} missing required 'Action' field"
-                            )
+                            errors.append(f"ACL rule {i} missing required 'Action' field")
                         elif acl["Action"] not in ["accept", "reject"]:
-                            warnings.append(
-                                f"ACL rule {i} has non-standard action: {acl['Action']}"
-                            )
+                            warnings.append(f"ACL rule {i} has non-standard action: {acl['Action']}")
 
                         if "Src" not in acl or not isinstance(acl["Src"], list):
-                            errors.append(
-                                f"ACL rule {i} missing or invalid 'Src' field"
-                            )
+                            errors.append(f"ACL rule {i} missing or invalid 'Src' field")
                         if "Dst" not in acl or not isinstance(acl["Dst"], list):
-                            errors.append(
-                                f"ACL rule {i} missing or invalid 'Dst' field"
-                            )
+                            errors.append(f"ACL rule {i} missing or invalid 'Dst' field")
 
             # Validate dictionary structure
             for section in ["Hosts", "Users", "Tags", "Groups"]:
-                if section in policy_dict and not isinstance(
-                    policy_dict[section], dict
-                ):
+                if section in policy_dict and not isinstance(policy_dict[section], dict):
                     errors.append(f"{section} must be a dictionary")
 
             result = {
@@ -148,9 +136,7 @@ class PolicyOperations:
             logger.error("Error validating policy", error=str(e))
             raise TailscaleMCPError(f"Failed to validate policy: {e}") from e
 
-    async def update_policy(
-        self, policy: dict[str, Any] | ACLPolicy, validate: bool = True
-    ) -> ACLPolicy:
+    async def update_policy(self, policy: dict[str, Any] | ACLPolicy, validate: bool = True) -> ACLPolicy:
         """Update ACL policy with optional validation and rollback support.
 
         Args:
@@ -205,8 +191,7 @@ class PolicyOperations:
         """
         if not self._previous_policy:
             raise TailscaleMCPError(
-                "No previous policy available for rollback. "
-                "Policy must be updated through update_policy() first."
+                "No previous policy available for rollback. Policy must be updated through update_policy() first."
             )
 
         try:

@@ -121,9 +121,7 @@ class ServiceOperations:
             )
             raise TailscaleMCPError(f"Failed to create service: {e}") from e
 
-    async def update_service(
-        self, service_id: str, service_payload: dict[str, Any]
-    ) -> Service:
+    async def update_service(self, service_id: str, service_payload: dict[str, Any]) -> Service:
         """Update an existing Tailscale Service (TailVIP).
 
         Args:

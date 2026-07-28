@@ -46,12 +46,8 @@ def register_file_tool(ctx: ToolContext) -> None:
         try:
             if operation == "send":
                 if not file_path or not recipient_device:
-                    raise TailscaleMCPError(
-                        "file_path and recipient_device are required for send operation"
-                    )
-                result = await ctx.taildrop_manager.send_file(
-                    file_path, recipient_device, sender_device, expire_hours
-                )
+                    raise TailscaleMCPError("file_path and recipient_device are required for send operation")
+                result = await ctx.taildrop_manager.send_file(file_path, recipient_device, sender_device, expire_hours)
                 return {
                     "operation": "send",
                     "result": result,
@@ -62,9 +58,7 @@ def register_file_tool(ctx: ToolContext) -> None:
 
             elif operation == "receive":
                 # transfer_id is optional when using CLI (receives all pending files)
-                result = await ctx.taildrop_manager.receive_file(
-                    transfer_id, save_path, accept_all=False
-                )
+                result = await ctx.taildrop_manager.receive_file(transfer_id, save_path, accept_all=False)
                 return {
                     "operation": "receive",
                     "result": result,
@@ -83,9 +77,7 @@ def register_file_tool(ctx: ToolContext) -> None:
 
             elif operation == "cancel":
                 if not transfer_id:
-                    raise TailscaleMCPError(
-                        "transfer_id is required for cancel operation"
-                    )
+                    raise TailscaleMCPError("transfer_id is required for cancel operation")
                 result = await ctx.taildrop_manager.cancel_transfer(transfer_id)
                 return {
                     "operation": "cancel",
@@ -95,9 +87,7 @@ def register_file_tool(ctx: ToolContext) -> None:
 
             elif operation == "status":
                 if not transfer_id:
-                    raise TailscaleMCPError(
-                        "transfer_id is required for status operation"
-                    )
+                    raise TailscaleMCPError("transfer_id is required for status operation")
                 result = await ctx.taildrop_manager.get_transfer_status(transfer_id)
                 return {
                     "operation": "status",
@@ -123,13 +113,9 @@ def register_file_tool(ctx: ToolContext) -> None:
                 raise TailscaleMCPError(f"Unknown operation: {operation}")
 
         except Exception as e:
-            logger.error(
-                "Error in tailscale_file operation", operation=operation, error=str(e)
-            )
+            logger.error("Error in tailscale_file operation", operation=operation, error=str(e))
             if is_auth_error(e):
-                payload = build_auth_error_response(
-                    operation, e, server_started_at=_TOOL_PROCESS_STARTED_AT
-                )
+                payload = build_auth_error_response(operation, e, server_started_at=_TOOL_PROCESS_STARTED_AT)
                 raise TailscaleMCPError(
                     message=(
                         "Tailscale API authentication failed (HTTP 401). "
