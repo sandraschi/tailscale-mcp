@@ -1,7 +1,7 @@
-﻿set windows-shell := ["powershell.exe", "-NoProfile", "-Command"]
+set windows-shell := ["powershell.exe", "-NoProfile", "-Command"]
 import 'scripts/just/fleet.just'
 
-# â”€â”€ Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# --- Dashboard ---
 
 # Open the interactive recipe dashboard in the browser
 default:
@@ -14,13 +14,13 @@ bootstrap:
     uv run pre-commit install
     Set-Location web_sota; npm ci; if ($LASTEXITCODE -ne 0) { npm install }
     Write-Host "Pre-commit hooks installed." -ForegroundColor Green
-# â”€â”€ Build â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# --- Build ---
 
 # Build the PyInstaller backend .exe and copy to Tauri resources
 build-sidecar:
     powershell.exe -NoProfile -File '{{justfile_directory()}}\native\build.ps1' -SidecarOnly
 
-# Build the Tauri NSIS desktop installer (full pipeline: frontend â†’ PyInstaller â†’ Rust â†’ NSIS)
+# --- Build the Tauri NSIS desktop installer  full pipeline frontend  PyInstaller  Rust  NSIS ---
 build-native:
     $env:Path = "$env:USERPROFILE\.cargo\bin;$env:Path"
     Set-Location '{{justfile_directory()}}\native'
@@ -32,13 +32,13 @@ build-native-debug:
     Set-Location '{{justfile_directory()}}\native'
     npx @tauri-apps/cli build --debug
 
-# â”€â”€ Dev â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# --- Dev ---
 
 # Start webapp (backend + frontend)
 serve:
     powershell.exe -NoProfile -File '{{justfile_directory()}}\start.ps1'
 
-# â”€â”€ Quality â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# --- Quality ---
 
 # Execute Ruff SOTA v13.1 linting
 lint:
@@ -55,7 +55,7 @@ fix:
     Set-Location '{{justfile_directory()}}\web_sota'
     npx @biomejs/biome check --write .
 
-# â”€â”€ Hardening â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# --- Hardening ---
 
 # Execute Bandit security audit
 check-sec:
@@ -67,3 +67,5 @@ audit-deps:
     Set-Location '{{justfile_directory()}}'
     uv run safety check
 
+
+# Bootstrap: install dev deps + pre-commit hook
