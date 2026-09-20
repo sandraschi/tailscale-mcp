@@ -28,6 +28,16 @@ schema_config:
       index:
         prefix: index_
         period: 24h
+    # Loki 3.x requires schema v13 + tsdb for structured metadata / OTLP.
+    # Appended (not replaced) per the documented migration path so pre-2026-09
+    # data indexed under v11/boltdb-shipper stays queryable.
+    - from: 2026-09-01
+      store: tsdb
+      object_store: filesystem
+      schema: v13
+      index:
+        prefix: index_
+        period: 24h
 
 ruler:
   alertmanager_url: http://localhost:9093
