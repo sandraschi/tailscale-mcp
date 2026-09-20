@@ -1,4 +1,4 @@
-"""Partner tailnets / people & sharing — portmanteau tool."""
+"""Partner tailnets / people & sharing - portmanteau tool."""
 
 import time
 from collections import defaultdict
@@ -45,10 +45,10 @@ def register_partner_tailnets_tool(ctx: ToolContext) -> None:
         role: str | None = None,
         user_id: str | None = None,
     ) -> dict[str, Any]:
-        """PARTNER_TAILNETS — People, membership, and tailnet-shared users in one place.
+        """PARTNER_TAILNETS - People, membership, and tailnet-shared users in one place.
 
-        PORTMANTEAU PATTERN RATIONALE: Answers “who is on my tailnet?”, “who came from
-        shared tailnets?”, and “which devices belong to which login?” without juggling
+        PORTMANTEAU PATTERN RATIONALE: Answers "who is on my tailnet?", "who came from
+        shared tailnets?", and "which devices belong to which login?" without juggling
         three different tools.
 
         Uses Tailscale Admin API ``GET /users`` (``type=member|shared`` filters) plus

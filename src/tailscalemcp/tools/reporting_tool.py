@@ -39,7 +39,7 @@ def register_reporting_tool(ctx: ToolContext) -> None:
         security_focus: bool = False,
         user_behavior: bool = False,
     ) -> dict[str, Any]:
-        """REPORTS_EXPORTS_ANALYTICS — Reporting and scheduled exports.
+        """REPORTS_EXPORTS_ANALYTICS - Reporting and scheduled exports.
 
         **Returns:** Dict with ``operation``, ``report`` / export paths, or analytics payloads.
 

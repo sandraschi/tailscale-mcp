@@ -43,7 +43,7 @@ def register_network_tool(ctx: ToolContext) -> None:
         service_id: str | None = None,
         service_payload: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """DNS_MAGICDNS_ROUTES_SERVICES — MagicDNS, DNS records, ACL-ish policy hooks, Tailscale Services.
+        """DNS_MAGICDNS_ROUTES_SERVICES - MagicDNS, DNS records, ACL-ish policy hooks, Tailscale Services.
 
         **Returns:** Dict with ``operation`` (echo or normalized sub-op), plus ``result``,
         ``configuration``, ``services``, or ``service`` keys depending on the operation.

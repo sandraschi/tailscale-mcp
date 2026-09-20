@@ -71,7 +71,7 @@ def register_new_api_tools(ctx: ToolContext) -> None:
         email: str | None = None,
         role: str | None = None,
     ) -> dict[str, Any]:
-        """MANAGE_TAILNET_INVITES — Device and user invite operations.
+        """MANAGE_TAILNET_INVITES - Device and user invite operations.
 
         Operations (invite_type='device'): list, create, get, delete, resend, accept
         Operations (invite_type='user'): list, create, get, delete, resend
@@ -159,7 +159,7 @@ def register_new_api_tools(ctx: ToolContext) -> None:
         comment: str | None = None,
         nodes: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """MANAGE_POSTURE_ATTRIBUTES — Device posture attribute operations.
+        """MANAGE_POSTURE_ATTRIBUTES - Device posture attribute operations.
 
         Operations: get, set, delete, batch_update
 
@@ -200,7 +200,7 @@ def register_new_api_tools(ctx: ToolContext) -> None:
         key_expiry_disabled: bool | None = None,
         ipv4: str | None = None,
     ) -> dict[str, Any]:
-        """MANAGE_DEVICE_KEYS — Device key and IP management operations.
+        """MANAGE_DEVICE_KEYS - Device key and IP management operations.
 
         Operations: expire, update_key_expiry, set_ip
 
@@ -243,7 +243,7 @@ def register_new_api_tools(ctx: ToolContext) -> None:
         event: str | None = None,
         stream_config: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """MANAGE_TAILNET_LOGGING — Audit logs, flow logs, log streaming.
+        """MANAGE_TAILNET_LOGGING - Audit logs, flow logs, log streaming.
 
         Operations: configuration_audit_logs, network_flow_logs, stream_status, stream_config_get, stream_config_set
 
@@ -288,7 +288,7 @@ def register_new_api_tools(ctx: ToolContext) -> None:
         subscriptions: list[str] | None = None,
         updates: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """MANAGE_TAILNET_WEBHOOKS — Native Tailscale webhook management.
+        """MANAGE_TAILNET_WEBHOOKS - Native Tailscale webhook management.
 
         Operations: list, create, get, update, delete, rotate_secret
 
@@ -335,7 +335,7 @@ def register_new_api_tools(ctx: ToolContext) -> None:
         operation: TailnetSettingsOperation,
         settings: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """MANAGE_TAILNET_SETTINGS — General tailnet settings management.
+        """MANAGE_TAILNET_SETTINGS - General tailnet settings management.
 
         Operations: get, update
 
@@ -360,7 +360,7 @@ def register_new_api_tools(ctx: ToolContext) -> None:
         operation: ContactOperation,
         contacts: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """MANAGE_TAILNET_CONTACTS — Contact preference management.
+        """MANAGE_TAILNET_CONTACTS - Contact preference management.
 
         Operations: get, update
 

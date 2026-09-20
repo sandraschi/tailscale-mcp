@@ -38,7 +38,7 @@ def register_performance_tool(ctx: ToolContext) -> None:
         scaling_factor: float = 1.2,
         performance_threshold: float = 0.8,
     ) -> dict[str, Any]:
-        """LATENCY_BANDWIDTH_BASELINE — Performance measurement and tuning (portmanteau).
+        """LATENCY_BANDWIDTH_BASELINE - Performance measurement and tuning (portmanteau).
 
         **Returns:** Dict with ``operation`` and measurement ``results`` / recommendations.
 
