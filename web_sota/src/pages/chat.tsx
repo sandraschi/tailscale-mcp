@@ -62,7 +62,7 @@ export function Chat() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(messages));
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(messages.slice(-_MAX_HISTORY)));
   }, [messages]);
   useEffect(() => {
     localStorage.setItem(PERSONALITY_KEY, personality);
