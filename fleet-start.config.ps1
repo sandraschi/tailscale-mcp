@@ -5,7 +5,7 @@
     BackendPort  = 10821
     FrontendPort = 10820
     HealthPath   = '/health'
-    WebRoot      = 'D:\Dev\repos\tailscale-mcp\web_sota'
+    WebRoot      = 'web_sota'
     Backend = @{
         Kind          = 'uvicorn'
         UvicornTarget = 'tailscalemcp.server:app'
