@@ -14,9 +14,9 @@ Cloud OpenAI-compatible APIs need ``TAILSCALE_SAMPLING_API_KEY`` (or reuse
 ``OPENAI_API_KEY`` if you wire that in your deployment).
 
 Environment (optional):
-- ``TAILSCALE_SAMPLING_BASE_URL`` — default ``http://127.0.0.1:11434/v1``
-- ``TAILSCALE_SAMPLING_MODEL`` — default ``llama3.2``
-- ``TAILSCALE_SAMPLING_API_KEY`` — optional; not required on localhost/LAN Ollama
+- ``TAILSCALE_SAMPLING_BASE_URL`` - default ``http://127.0.0.1:11434/v1``
+- ``TAILSCALE_SAMPLING_MODEL`` - default ``llama3.2``
+- ``TAILSCALE_SAMPLING_API_KEY`` - optional; not required on localhost/LAN Ollama
 """
 
 from __future__ import annotations

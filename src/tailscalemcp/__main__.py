@@ -34,7 +34,7 @@ def validate_config() -> None:
 def setup_structured_logging(log_level: str, log_file: str) -> None:
     """Setup structured logging with file and stderr output.
 
-    Applies logging config directly (not idempotent — tests call this directly).
+    Applies logging config directly (not idempotent - tests call this directly).
     """
     import logging as _logging
     import sys

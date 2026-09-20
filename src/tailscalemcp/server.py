@@ -74,7 +74,7 @@ else:
     mcp_app = None
     logger.warning("MCP server unavailable - running in degraded mode (no API key or tailnet configured)")
 
-# Reusable FastMCP Client — created once, not per-request
+# Reusable FastMCP Client - created once, not per-request
 _fastmcp_client: Any = None
 
 

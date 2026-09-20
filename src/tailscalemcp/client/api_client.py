@@ -138,9 +138,9 @@ class TailscaleAPIClient:
         url = f"{self.api_base_url}/{endpoint.lstrip('/')}"
 
         if not self.api_key:
-            raise AuthenticationError("Tailscale API key not configured — set TAILSCALE_API_KEY in Settings or .env")
+            raise AuthenticationError("Tailscale API key not configured - set TAILSCALE_API_KEY in Settings or .env")
         if not self.tailnet:
-            raise AuthenticationError("Tailnet not configured — set TAILSCALE_TAILNET in Settings or .env")
+            raise AuthenticationError("Tailnet not configured - set TAILSCALE_TAILNET in Settings or .env")
 
         headers = {
             "Authorization": f"Bearer {self.api_key}",
@@ -353,7 +353,7 @@ class TailscaleAPIClient:
         await self._request("DELETE", f"/services/{service_id}")
         logger.info("Service deleted", service_id=service_id)
 
-    # Users (Admin API v2 — see tailscale.com/api, tag users)
+    # Users (Admin API v2 - see tailscale.com/api, tag users)
     async def list_users(
         self,
         user_type: str | None = None,
