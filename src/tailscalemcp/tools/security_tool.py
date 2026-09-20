@@ -29,7 +29,7 @@ def register_security_tool(ctx: ToolContext) -> None:
         operation: SecurityOperation,
         device_id: str | None = None,
     ) -> dict[str, Any]:
-        """AUDIT — Inspect devices for configuration issues (supported ops: audit).
+        """AUDIT - Inspect devices for configuration issues (supported ops: audit).
 
         Tailscale's Admin API provides no security scanning, compliance,
         quarantine, alert, or threat detection endpoints. The ``audit``
