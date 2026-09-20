@@ -40,7 +40,7 @@ def register_integration_tool(ctx: ToolContext) -> None:
         test_connection: bool = False,
         webhook_id: str | None = None,
     ) -> dict[str, Any]:
-        """WEBHOOKS_NOTIFY_THIRDPARTY — Webhooks and chat/observability integrations.
+        """WEBHOOKS_NOTIFY_THIRDPARTY - Webhooks and chat/observability integrations.
 
         **Returns:** Dict with ``operation`` and ``result`` / webhook metadata.
 

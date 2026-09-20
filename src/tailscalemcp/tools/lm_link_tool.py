@@ -75,7 +75,7 @@ async def _run_lms(args: list[str], timeout: int = 30) -> dict[str, Any]:
     if binary is None:
         return {
             "ok": False,
-            "error": "lms CLI not found — install LM Studio or llmster (curl -fsSL https://lmstudio.ai/install.sh | bash)",
+            "error": "lms CLI not found - install LM Studio or llmster (curl -fsSL https://lmstudio.ai/install.sh | bash)",
             "error_type": "lms_not_found",
             "recovery": "Install LM Studio from https://lmstudio.ai/download or run `curl -fsSL https://lmstudio.ai/install.sh | bash` for the headless CLI.",
         }
@@ -111,7 +111,7 @@ async def _run_lms(args: list[str], timeout: int = 30) -> dict[str, Any]:
     except FileNotFoundError:
         return {
             "ok": False,
-            "error": "lms binary disappeared (race condition?) — retry",
+            "error": "lms binary disappeared (race condition?) - retry",
             "error_type": "binary_missing",
         }
     except Exception as exc:
@@ -135,12 +135,12 @@ def register_lm_link_tool(ctx: ToolContext) -> None:
 
         LM Link (Tailscale + LM Studio, Feb 2026) lets you run models on a
         powerful remote machine and access them from other devices on your
-        tailnet as if they were local — E2E encrypted, no public internet.
+        tailnet as if they were local - E2E encrypted, no public internet.
 
         Operations:
         - info: Return LM Link description and setup steps.
         - readiness: Check tailscale status and whether LM Link is likely ready.
-        - status: Show live LM Link state — this device, connected peers, their
+        - status: Show live LM Link state - this device, connected peers, their
           loaded models. Calls ``lms link status --json``.
         - enable: Enable LM Link on this device (``lms link enable``).
         - disable: Disable LM Link on this device (``lms link disable``).
@@ -193,9 +193,9 @@ def register_lm_link_tool(ctx: ToolContext) -> None:
                     "message": (
                         "Tailscale is reporting status. "
                         + (
-                            "lms CLI found — ready for LM Link operations."
+                            "lms CLI found - ready for LM Link operations."
                             if lms_ok
-                            else "LM Studio / lms CLI not found — install LM Studio for LM Link."
+                            else "LM Studio / lms CLI not found - install LM Studio for LM Link."
                         )
                     ),
                     "status_summary": status if isinstance(status, dict) else {"raw": str(status)},
@@ -211,7 +211,7 @@ def register_lm_link_tool(ctx: ToolContext) -> None:
                         "error_type": "authentication",
                         **payload,
                         "message": (
-                            "Tailscale API authentication failed — see "
+                            "Tailscale API authentication failed - see "
                             "recovery_options for stale-credentials vs "
                             "invalid-key diagnosis."
                         ),
@@ -376,7 +376,7 @@ def register_lm_link_tool(ctx: ToolContext) -> None:
 
         _prefab_registered = True
     except ImportError:
-        logger.warning("prefab-ui not installed — show_lm_link_card not registered")
+        logger.warning("prefab-ui not installed - show_lm_link_card not registered")
 
     if _prefab_registered:
 
@@ -385,7 +385,7 @@ def register_lm_link_tool(ctx: ToolContext) -> None:
             """Show LM Link peers and their loaded models as a rich Prefab card.
 
             Displays the current device's link state, connected peers, and
-            the models each peer has loaded — all in a structured card
+            the models each peer has loaded - all in a structured card
             suitable for in-chat viewing. Falls back to plain text when
             Prefab rendering is unavailable.
 
@@ -423,5 +423,5 @@ def register_lm_link_tool(ctx: ToolContext) -> None:
                     else:
                         Row(label="LM Link inactive", value="enable via get_lm_link(operation='enable')")
 
-            summary = f"LM Link — {device}: {len(peers)} peer(s), {'connected' if enabled else 'inactive'}"
+            summary = f"LM Link - {device}: {len(peers)} peer(s), {'connected' if enabled else 'inactive'}"
             return ToolResult(content=summary, structured_content=app)

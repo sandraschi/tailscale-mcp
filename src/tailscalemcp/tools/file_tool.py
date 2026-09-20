@@ -35,7 +35,7 @@ def register_file_tool(ctx: ToolContext) -> None:
         save_path: str | None = None,
         status_filter: TaildropStatusFilter | None = None,
     ) -> dict[str, Any]:
-        """TAILDROP_TRANSFER — Send, receive, list, and manage Taildrop file transfers.
+        """TAILDROP_TRANSFER - Send, receive, list, and manage Taildrop file transfers.
 
         **Returns:** Dict with ``operation``; ``send``/``receive`` include ``result``;
         ``list`` includes ``transfers``, ``count``, ``status_filter``; ``stats`` includes

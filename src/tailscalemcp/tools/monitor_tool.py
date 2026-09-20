@@ -34,7 +34,7 @@ def register_monitor_tool(ctx: ToolContext) -> None:
         include_panels: bool = True,
         include_variables: bool = True,
     ) -> dict[str, Any]:
-        """METRICS_TOPOLOGY_GRAFANA — Monitoring, Prometheus text, health, Grafana export.
+        """METRICS_TOPOLOGY_GRAFANA - Monitoring, Prometheus text, health, Grafana export.
 
         **Returns:** Dict with ``operation`` and ``status`` / ``metrics`` / ``topology`` /
         ``health_report`` / ``dashboard`` / export metadata.

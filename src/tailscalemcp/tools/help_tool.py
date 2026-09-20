@@ -41,7 +41,7 @@ def register_help_tool(ctx: ToolContext) -> None:
         ] = None,
         include_examples: bool = True,
     ) -> dict[str, Any]:
-        """STRUCTURED_HELP — Topics: overview, examples, best_practices, troubleshooting, funnel, sampling.
+        """STRUCTURED_HELP - Topics: overview, examples, best_practices, troubleshooting, funnel, sampling.
 
         **Returns:** ``topic``, ``level``, ``content`` (structured dict or overview), ``generated_at``.
         Unknown ``topic`` values produce ``content`` with ``error`` and ``available_topics``.
