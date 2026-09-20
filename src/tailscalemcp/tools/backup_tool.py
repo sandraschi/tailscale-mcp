@@ -40,7 +40,7 @@ def register_backup_tool(ctx: ToolContext) -> None:
         encryption: bool = True,
         test_restore: bool = False,
     ) -> dict[str, Any]:
-        """BACKUP_RESTORE_SCHEDULE — Configuration backup and recovery helpers.
+        """BACKUP_RESTORE_SCHEDULE - Configuration backup and recovery helpers.
 
         **Returns:** Dict with ``operation`` and ``result`` / backup lists.
 

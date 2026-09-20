@@ -225,10 +225,10 @@ async def generate_help_content(
                 "get_help": "This comprehensive help system",
                 "get_tailnet_status": "System status and health monitoring",
                 "summarize_partner_tailnets": "Partner tailnets and people/sharing summary",
-                "get_lm_link": "LM Link (Tailscale + LM Studio) operational control — status, enable/disable, peer management, device naming, and preferred device selection",
+                "get_lm_link": "LM Link (Tailscale + LM Studio) operational control - status, enable/disable, peer management, device naming, and preferred device selection",
             },
             "credentials": {
-                "env_file": "Copy .env.example to .env in the repo root (or set process env). .env is listed in .gitignore — safe for local non-mock testing.",
+                "env_file": "Copy .env.example to .env in the repo root (or set process env). .env is listed in .gitignore - safe for local non-mock testing.",
                 "required": ["TAILSCALE_API_KEY", "TAILSCALE_TAILNET"],
                 "sampling_optional": [
                     "TAILSCALE_SAMPLING_BASE_URL",
@@ -450,7 +450,7 @@ async def generate_help_content(
             "description": (
                 "For real (non-mock) API access, set TAILSCALE_API_KEY and TAILSCALE_TAILNET in a "
                 "repo-root .env file (copy .env.example). python-dotenv loads .env at startup; .env is in "
-                ".gitignore—do not commit secrets. For agentic workflows, configure a local or cloud LLM "
+                ".gitignore-do not commit secrets. For agentic workflows, configure a local or cloud LLM "
                 "or use TAILSCALE_SAMPLING_USE_CLIENT_LLM=1 with a capable MCP host."
             ),
             "tailscale_api_env": {
@@ -467,7 +467,7 @@ async def generate_help_content(
                 "run_agentic_tailnet_workflow": "SEP-1577: workflow_prompt, available_tools, max_iterations, Context",
                 "run_agentic_tailnet_workflow_sampling": "Deprecated alias; same signature as run_agentic_tailnet_workflow",
             },
-            "mcp_resource": "resource://tailscale/skills — see skills/TAILSCALE_EXPERT.md in the repo",
+            "mcp_resource": "resource://tailscale/skills - see skills/TAILSCALE_EXPERT.md in the repo",
         },
     }
 

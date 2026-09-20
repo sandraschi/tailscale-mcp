@@ -66,7 +66,7 @@ def register_device_tool(ctx: ToolContext) -> None:
             Field(description="For user_list: filter by role (e.g. admin)."),
         ] = None,
     ) -> dict[str, Any]:
-        """LIST_GET_MANAGE_DEVICES — Tailscale devices, users, auth keys (Admin API).
+        """LIST_GET_MANAGE_DEVICES - Tailscale devices, users, auth keys (Admin API).
 
         PORTMANTEAU PATTERN RATIONALE: One domain tool with an ``operation`` enum avoids dozens
         of separate tool names while keeping the MCP tool list small (fleet SOTA pattern).
@@ -81,7 +81,7 @@ def register_device_tool(ctx: ToolContext) -> None:
         - ``search``: ``results``, ``query``, ``count``
         - ``stats``: ``statistics``
         - ``exit_node`` / ``subnet_router``: ``result``, ``device_id``, routes/subnets as applicable
-        - ``user_*``: ``users`` or ``result`` (list/get only — create/update/delete not in Admin API)
+        - ``user_*``: ``users`` or ``result`` (list/get only - create/update/delete not in Admin API)
         - ``auth_key_*``: ``keys`` or ``result``
 
         **Errors:** Missing required fields or API failures raise ``TailscaleMCPError`` with a

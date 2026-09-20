@@ -2,7 +2,7 @@
 
 FastMCP 3.1+ derives MCP tool parameter schemas from Python type annotations.
 Use ``typing.Literal`` for closed enums and ``typing.Annotated[..., Field(...)]`` for
-numeric bounds so clients and reviewers (e.g. ToolBench) see full constraints—not
+numeric bounds so clients and reviewers (e.g. ToolBench) see full constraints-not
 only prose in docstrings.
 
 Response shapes: portmanteau tools return a ``dict`` that always includes an

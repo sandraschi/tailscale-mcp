@@ -38,7 +38,7 @@ def register_automation_tool(ctx: ToolContext) -> None:
         execute_now: bool = False,
         workflow_id: str | None = None,
     ) -> dict[str, Any]:
-        """WORKFLOWS_SCRIPTS_BATCH — Automation and batch operations (portmanteau).
+        """WORKFLOWS_SCRIPTS_BATCH - Automation and batch operations (portmanteau).
 
         **Returns:** Dict with ``operation`` and ``result`` / workflow metadata.
 
