@@ -53,11 +53,13 @@ def _find_lms_binary() -> str | None:
     if lms_in_path:
         return lms_in_path
     # Common Windows install paths
+    import os
+
+    local_app_data = os.environ.get("LOCALAPPDATA", os.path.expanduser(r"~\AppData\Local"))
     candidates = [
-        r"C:\Users\sandr\AppData\Local\Programs\lm-studio\lms.exe",
+        os.path.join(local_app_data, "Programs", "lm-studio", "lms.exe"),
         r"C:\Program Files\lm-studio\lms.exe",
     ]
-    import os
 
     for c in candidates:
         if os.path.isfile(c):
