@@ -1,4 +1,4 @@
-﻿# Per-repo fleet start config for tailscale-mcp
+# Per-repo fleet start config for tailscale-mcp
 # Edit ports/backend target here - start.ps1 is fleet-standard.
 @{
     Name         = 'tailscale-mcp'
@@ -10,6 +10,7 @@
         Kind          = 'uvicorn'
         UvicornTarget = 'tailscalemcp.server:app'
         SyncExtras    = @('dev')
+        SyncOnStart  = $true
         Env           = @{ WEB_PORT = '10821' }
     }
     Frontend = @{
